@@ -5,8 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
         android:name=".core.util.MyApplication"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -16,16 +16,22 @@
         android:theme="@style/Theme.Verifylabs"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.onboarding.OnboardingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.splashscreen.SplashActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Verifylabs">
+            tools:ignore="SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".presentation.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Verifylabs"></activity>
     </application>
 
 </manifest>
