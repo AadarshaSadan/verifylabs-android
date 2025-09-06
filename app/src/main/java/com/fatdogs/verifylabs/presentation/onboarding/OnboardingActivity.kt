@@ -5,18 +5,22 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.fatdogs.verifylabs.R
+import com.fatdogs.verifylabs.data.base.PreferencesHelperImpl
 import com.fatdogs.verifylabs.databinding.ActivityOnboardingBinding
 import com.fatdogs.verifylabs.presentation.MainActivity
+import com.fatdogs.verifylabs.presentation.auth.AuthBaseActivity
 
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var adapter: OnboardingAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         // 1. Setup adapter with layout resources
         val pages = listOf(
@@ -37,7 +41,7 @@ class OnboardingActivity : AppCompatActivity() {
                 binding.onboardingViewPager.currentItem = nextItem
             } else {
                 // Last page -> Navigate to MainActivity
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, AuthBaseActivity::class.java))
                 finish()
             }
         }

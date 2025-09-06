@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/media_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".presentation.media.MediaFragment">
+
+    <LinearLayout
+        android:id="@+id/media_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Select Media Button -->
+        <LinearLayout
+            android:id="@+id/btnSelectMedia"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="@drawable/drawable_verify_background_green"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_2db"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Media Files"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+        <!-- Image Preview with Overlay -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+            <ImageView
+                android:id="@+id/imageViewMedia"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/drawable_image_chooser" />
+
+            <!-- Overlay Image (tick / X / warning) -->
+            <ImageView
+                android:id="@+id/imageOverlay"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:alpha="0.7" />
+        </FrameLayout>
+
+        <!-- Status Message -->
+        <TextView
+            android:id="@+id/textStatusMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="@color/txtGreen"
+            android:layout_marginTop="8dp"
+            android:gravity="center" />
+
+        <!-- Verify / Done Button -->
+        <LinearLayout
+            android:id="@+id/btnAction"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/drawable_verify_background_green"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/textAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verify Media"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical" />
+
+            <ImageView
+                android:id="@+id/iconAction"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_2db"
+                android:layout_marginStart="12dp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

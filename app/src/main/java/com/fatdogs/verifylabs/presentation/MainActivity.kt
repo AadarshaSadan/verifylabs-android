@@ -14,7 +14,9 @@ import com.fatdogs.verifylabs.databinding.ActivityMainBinding
 import com.fatdogs.verifylabs.presentation.viewmodel.MainViewModel
 import com.fatdogs.verifylabs.core.util.Status
 import com.fatdogs.verifylabs.presentation.home.HomeFragment
+import com.fatdogs.verifylabs.presentation.media.MediaFragment
 import com.fatdogs.verifylabs.presentation.model.PostResponse
+import com.fatdogs.verifylabs.presentation.settings.SettingsFragment
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,11 +42,11 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(HomeFragment())
 
         // Setup bottom navigation
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment())
-                R.id.nav_media -> replaceFragment(HomeFragment())
-                R.id.nav_settings -> replaceFragment(HomeFragment())
+                R.id.nav_media -> replaceFragment(MediaFragment())
+                R.id.nav_settings -> replaceFragment(SettingsFragment())
             }
             true
         }

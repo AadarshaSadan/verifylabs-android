@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Base Material colors can stay the same or tweak slightly -->
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 
-    <color name="app_background">#ECF5EC</color>
-
-    <!-- Theme-dependent light colors -->
-    <color name="colorBlack">#000000</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBackground1">#1B1B1B</color>
-    <color name="colorBackground2">#0D0D0D</color>
-    <color name="colorWhiteGray">#DADADA</color>
+    <color name="app_background">#00000000</color>
+    <!-- Dark theme overrides -->
+    <color name="colorBlack">#FFFFFF</color>
+    <color name="colorWhite">#000000</color>
+    <color name="colorBackground1">#121212</color>
+    <color name="colorBackground2">#1E1E1E</color>
+    <color name="colorWhiteGray">#B3B3B3</color>
     <color name="colorBackground5">#1B1B1B</color>
-    <color name="menuBackground">#f1f1f1</color>
-    <color name="colorBackgroundMain">#D9D9D9</color>
+    <color name="menuBackground">#181818</color>
+    <color name="colorBackgroundMain">#121212</color>
     <color name="backRed">#FAD1D1</color>
-    <color name="backBlue">#5455AAFD</color>
+    <color name="backBlue">#2C3BE9</color>
     <color name="bacakGreen">#4F8BC34A</color>
     <color name="txtGreen">#4CAF50</color>
     <color name="txtBlue">#55AAFD</color>
     <color name="colorTrackSubject">#B3B3B3</color>
-    <color name="shadowColor">#D9D9D9</color>
+    <color name="shadowColor">#2A2A2A</color>
     <color name="very_light_blue">#203A99C8</color>
 
     <!-- Shapes -->
     <color name="shape_background">#121212</color>
     <color name="shape_stroke">#373737</color>
-    <color name="support_box_background">#212121</color>
     <color name="support_box_border">#424242</color>
 
     <!-- Status -->
@@ -44,9 +43,7 @@
     <color name="statusTextLight">#000000</color>
     <color name="statusTextDark">#FFFFFF</color>
     <color name="text_app_blue">#72326DDB</color>
-
-    <color name="verifylabs_logo_only_dashboard">#272B27</color>
+    <color name="verifylabs_logo_only_dashboard">#EDF1EA</color>
     <color name="verifylabs_logo_green">#38B031</color>
-
 
 </resources>
