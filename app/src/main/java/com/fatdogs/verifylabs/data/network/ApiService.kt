@@ -3,6 +3,7 @@ package com.fatdogs.verifylabs.data.network
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -16,11 +17,27 @@ interface ApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
-    // Upload media (image/video)
-    @Multipart
-    @POST("verifyMedia") // replace with your actual endpoint
-    suspend fun uploadMedia(
-        @Part file: MultipartBody.Part,
-        @Part("media_type") mediaType: RequestBody
+
+    @POST("wp_users")
+    suspend fun postSignUp(@Body body: JsonObject): Response<JsonObject>
+
+
+    // Direct upload to S3
+    @PUT
+    suspend fun uploadToS3(
+        @Url url: String,
+        @Body  requestBody: RequestBody
+    ): Response<ResponseBody> // The response type can be adjusted based on your needs
+
+
+    @POST("verify")
+    suspend fun verifyMedia(
+        @Body body: JsonObject
     ): Response<JsonObject>
+
+
+   @POST("check")
+   suspend fun checkCredits(
+       @Body body: JsonObject
+   ): Response<JsonObject>
 }

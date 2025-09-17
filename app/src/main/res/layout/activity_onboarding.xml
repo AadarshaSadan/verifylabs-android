@@ -9,22 +9,25 @@
     android:background="@color/app_background"
     tools:context=".presentation.onboarding.OnboardingActivity">
 
-    <!-- 1. ViewPager2 for onboarding pages -->
+    <!-- ViewPager2 for onboarding pages -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/onboardingViewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 2. Bottom layout for dots and next button -->
+    <!-- Bottom layout for dots and next button -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_marginBottom="@dimen/bottom_layout_margin"
+        android:padding="@dimen/padding_standard"
+        android:minHeight="@dimen/bottom_layout_min_height"
         app:layout_constraintTop_toBottomOf="@id/onboardingViewPager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,13 +38,14 @@
             android:id="@+id/spring_dots_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-20dp"
+            android:layout_marginStart="@dimen/dots_margin_start"
             app:dampingRatio="0.5"
-            app:dotsColor="@color/white"
-            app:dotsSize="10dp"
-            app:dotsSpacing="6dp"
-            app:dotsStrokeColor="#686864"
-            app:dotsStrokeWidth="2dp"
+            app:dotsColor="@color/colorBlack"
+            app:dotsStrokeColor="@color/verifylabs_dots_indicator"
+            app:dotsSize="@dimen/dots_size"
+            app:dotsSpacing="@dimen/dots_spacing"
+            app:circularflow_viewCenter="@color/verifylabs_dots_indicator"
+            app:dotsStrokeWidth="@dimen/dots_stroke_width"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -52,8 +56,10 @@
             android:id="@+id/btnNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Next"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="@dimen/text_size_button"
+            android:text="@string/next_button"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

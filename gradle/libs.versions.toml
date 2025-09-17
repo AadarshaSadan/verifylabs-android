@@ -15,6 +15,7 @@ appcompat = "1.7.1"
 material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
+purchases = "9.7.0"
 retrofit = "2.9.0"
 gson = "2.11.0"
 kspVersion = "2.0.0-1.0.23"
@@ -44,6 +45,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+purchases = { module = "com.revenuecat.purchases:purchases", version.ref = "purchases" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 

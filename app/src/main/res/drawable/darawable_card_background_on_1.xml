@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#EBF5EC" />
+    <solid android:color="@color/app_background_2" />
     <corners android:radius="16dp" /> <!-- Optional: Adjust radius for rounded corners -->
 </shape>

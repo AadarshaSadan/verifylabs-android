@@ -1,34 +1,34 @@
-package com.fatdogs.verifylabs.presentation.auth.login
+package com.fatdogs.verifylabs.presentation.auth.signup
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.fatdogs.verifylabs.R
 import com.fatdogs.verifylabs.core.util.Resource
 import com.fatdogs.verifylabs.core.util.Status
 import com.fatdogs.verifylabs.data.base.PreferenceHelper
-import com.fatdogs.verifylabs.databinding.FragmentLoginBinding
-import com.fatdogs.verifylabs.presentation.MainActivity
-import com.fatdogs.verifylabs.presentation.auth.signup.FragmentSignUp
-import com.google.gson.Gson
+import com.fatdogs.verifylabs.databinding.FragmentSignUpBinding
+import com.fatdogs.verifylabs.presentation.auth.AuthBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class FragmentSignUp : Fragment() {
 
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
 
-    private var _binding: FragmentLoginBinding? = null
+    private val tag = "SignUpFragment"
+    private val secretKey = "dZnxiwh!o*%cf!dNk3kP8R&P"
+    private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
-    private lateinit var loginViewModel: LoginViewModel
-    private val tag = "LoginFragment"
+
+    private lateinit var signUpViewModel: SignUpViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +36,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,7 +44,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize ViewModel
-        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        signUpViewModel = ViewModelProvider(this)[SignUpViewModel::class.java]
 
         setupClickListeners()
         setupObservers()
@@ -52,41 +52,53 @@ class LoginFragment : Fragment() {
 
     // Set up click listeners for UI elements
     private fun setupClickListeners() {
-        // Handle login button click
-        binding.btnGetStarted.setOnClickListener {
+        binding.btnCreateAccount.setOnClickListener {
+            val fullName = binding.etFullName.text.toString().trim()
+            val email = binding.etEmail.text.toString().trim()
             val username = binding.etUsername.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
+            val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
             // Validate input fields
-            if (!validateInputs(username, password)) {
+            if (!validateInputs(fullName, email, username, password, confirmPassword)) {
                 return@setOnClickListener
             }
 
-            // Save credentials to preferences
-            preferenceHelper.setUserName(username)
-            preferenceHelper.setPassword(password)
-
-            // Call login API
-            loginViewModel.login(username, password)
-        }
-
-        // Navigate to SignUp fragment
-        binding.btnCreateAccount.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.auth_fragment_container, FragmentSignUp())
-                .addToBackStack(null)
-                .commit()
+            // Call signup API
+            signUpViewModel.signUp(fullName, email, username, password, secretKey)
         }
     }
 
     // Validate user inputs and set error messages if invalid
-    private fun validateInputs(username: String, password: String): Boolean {
+    private fun validateInputs(
+        fullName: String,
+        email: String,
+        username: String,
+        password: String,
+        confirmPassword: String
+    ): Boolean {
+        if (fullName.isEmpty()) {
+            binding.etFullName.error = "Enter full name"
+            return false
+        }
+        if (email.isEmpty()) {
+            binding.etEmail.error = "Enter email"
+            return false
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.etEmail.error = "Enter a valid email"
+            return false
+        }
         if (username.isEmpty()) {
-            binding.etUsername.error = "Please enter username"
+            binding.etUsername.error = "Enter username"
             return false
         }
         if (password.isEmpty()) {
-            binding.etPassword.error = "Please enter password"
+            binding.etPassword.error = "Enter password"
+            return false
+        }
+        if (password != confirmPassword) {
+            binding.etConfirmPassword.error = "Passwords do not match"
             return false
         }
         return true
@@ -94,19 +106,16 @@ class LoginFragment : Fragment() {
 
     // Set up observers for ViewModel responses
     private fun setupObservers() {
-        loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
+        signUpViewModel.getSignUpResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.LOADING -> {
-                    Toast.makeText(requireContext(), "Logging in...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Signing up...", Toast.LENGTH_SHORT).show()
                 }
                 Status.SUCCESS -> {
+                    Toast.makeText(requireContext(), "Sign up successful!", Toast.LENGTH_SHORT).show()
                     resource.data?.let {
                         try {
-                            val response = Gson().fromJson(it.toString(), apiResponseLogin::class.java)
-                            preferenceHelper.setApiKey(response.apiKey)
-                            preferenceHelper.setIsLoggedIn(true)
-                            preferenceHelper.setCreditReamaining(response.credits)
-                            Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
+                            Log.d(tag, "SignUp Response: ${resource.data}")
                             navigateToMainActivity()
                         } catch (e: Exception) {
                             Toast.makeText(requireContext(), "Parsing error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -114,15 +123,15 @@ class LoginFragment : Fragment() {
                     }
                 }
                 Status.ERROR -> {
-                    Toast.makeText(requireContext(), "Login Failed: ${resource.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Sign up failed: ${resource.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    // Navigate to MainActivity and clear back stack
+    // Navigate to AuthBaseActivity and clear back stack
     private fun navigateToMainActivity() {
-        val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+        val intent = Intent(requireActivity(), AuthBaseActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)

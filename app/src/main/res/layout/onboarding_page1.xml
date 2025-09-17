@@ -7,46 +7,120 @@
     android:background="@color/app_background"
     android:padding="24dp">
 
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="wrap_content"
+    <!-- Card background container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:background="@drawable/darawable_card_background_on_1"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="15dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Line 1 -->
 
+        <!-- Line 2 -->
         <TextView
+            android:id="@+id/textViewProtecting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginTop="15dp"
-            android:text="Protecting Humans in the age of AI \n\n\n\n\n"
+            android:text="Protecting"
             android:textAlignment="textStart"
-            android:textColor="@color/black"
-            android:textSize="50dp"
-            android:textStyle="bold" />
+            android:textColor="@color/colorWhite"
+            android:textSize="55sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.253"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/textViewProtecting2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_"
+            android:drawablePadding="20dp"
+            android:text="Humans"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorWhite"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textViewProtecting"
+            app:layout_constraintStart_toStartOf="@+id/textViewProtecting"
+            app:layout_constraintTop_toBottomOf="@id/textViewProtecting" />
 
-    </RelativeLayout>
+        <!-- Line 3 -->
+        <TextView
+            android:id="@+id/textViewProtecting3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="in the age"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorWhite"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textViewProtecting2"
+            app:layout_constraintStart_toStartOf="@+id/textViewProtecting2"
+            app:layout_constraintTop_toBottomOf="@id/textViewProtecting2" />
 
-    <!-- Onboarding Image -->
-    <LinearLayout
+        <!-- Line 4 -->
+        <TextView
+            android:id="@+id/textViewProtecting4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/verifylabs_robot_icon_light_grey_rgb_1__traced_"
+            android:drawablePadding="20dp"
+            android:text="of"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorWhite"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/textViewProtecting3"
+            app:layout_constraintTop_toBottomOf="@id/textViewProtecting3" />
+
+        <!-- Line 5 -->
+        <TextView
+            android:id="@+id/textViewProtecting5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="of"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorWhite"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/textViewProtecting4"
+            app:layout_constraintStart_toEndOf="@id/textViewProtecting4"
+            android:layout_marginStart="15dp" />
+
+        <!-- Line 6 -->
+        <TextView
+            android:id="@+id/textViewProtecting6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI\n\n\n\n"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorWhite"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/textViewProtecting4"
+            app:layout_constraintStart_toEndOf="@id/textViewProtecting5"
+            android:layout_marginStart="15dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Onboarding Logo -->
+    <ImageView
         android:id="@+id/imgOnboarding"
         android:layout_width="250dp"
         android:layout_height="27dp"
-        android:background="@drawable/only_verifylabs_logo"
+        android:src="@drawable/only_verifylabs_logo"
         android:contentDescription="Onboarding Logo"
-        android:orientation="horizontal"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
-    <!-- Description -->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,12 +9,16 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="app_background">#ECF5EC</color>
+    <color name="app_background_2">#434341</color>
 
     <!-- Theme-dependent light colors -->
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBackground1">#1B1B1B</color>
     <color name="colorBackground2">#0D0D0D</color>
+    <color name="colorBackground3">#0D0D0D</color>
+
+
     <color name="colorWhiteGray">#DADADA</color>
     <color name="colorBackground5">#1B1B1B</color>
     <color name="menuBackground">#f1f1f1</color>
@@ -47,6 +51,7 @@
 
     <color name="verifylabs_logo_only_dashboard">#272B27</color>
     <color name="verifylabs_logo_green">#38B031</color>
+    <color name="verifylabs_dots_indicator">#9C9DA1</color>
 
 
 </resources>

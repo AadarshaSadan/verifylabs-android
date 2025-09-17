@@ -10,6 +10,8 @@
     <color name="white">#FFFFFF</color>
 
     <color name="app_background">#00000000</color>
+    <color name="app_background_2">#ECF5EC</color>
+    <color name="colorBackground3">#FFFFFF</color>
     <!-- Dark theme overrides -->
     <color name="colorBlack">#FFFFFF</color>
     <color name="colorWhite">#000000</color>
@@ -45,5 +47,6 @@
     <color name="text_app_blue">#72326DDB</color>
     <color name="verifylabs_logo_only_dashboard">#EDF1EA</color>
     <color name="verifylabs_logo_green">#38B031</color>
+    <color name="verifylabs_dots_indicator">#9C9DA1</color>
 
 </resources>

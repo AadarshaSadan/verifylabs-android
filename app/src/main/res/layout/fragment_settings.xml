@@ -56,14 +56,17 @@
                         android:src="@drawable/ic_user"
                         android:contentDescription="User" />
 
-                    <TextView
-                        android:id="@+id/tvUsername"
-                        android:layout_width="wrap_content"
+
+                    <EditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
-                        android:text="Username"
                         android:textColor="@color/colorBlack"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:background="@null"
+                        android:inputType="textPersonName" />
+
                 </LinearLayout>
 
                 <View
@@ -175,6 +178,7 @@
                 android:id="@+id/btnPurchaseCredits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:backgroundTint="@android:color/holo_red_dark"
                 android:text="Purchase Credits"
                 android:textColor="@android:color/white"
@@ -205,6 +209,7 @@
                     android:id="@+id/tvCreditsRemaining"
                     android:padding="3dp"
                     android:layout_width="0dp"
+
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="Credits Remaining: 100"

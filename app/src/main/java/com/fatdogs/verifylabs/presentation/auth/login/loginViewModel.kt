@@ -22,6 +22,10 @@ class LoginViewModel @Inject constructor(private val repository: ApiRepository) 
     private val errorMessage = MutableLiveData<String>()
     private val _loginResponse = SingleLiveEvent<Resource<JsonObject>>()
 
+    private val _creditsResponse = SingleLiveEvent<Resource<JsonObject>>()
+    fun getCreditsResponse(): LiveData<Resource<JsonObject>> = _creditsResponse
+
+
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception: ${throwable.localizedMessage}")
     }
@@ -43,6 +47,25 @@ class LoginViewModel @Inject constructor(private val repository: ApiRepository) 
                 _loginResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
             } finally {
                 loading.postValue(false)
+            }
+        }
+    }
+
+
+    // -------------------- CHECK CREDITS --------------------
+    fun checkCredits(username: String, apiKey: String) {
+        _creditsResponse.postValue(Resource.loading(null))
+
+        viewModelScope.launch(exceptionHandler) {
+            try {
+                val response = repository.checkCredits(username, apiKey)
+                if (response.isSuccessful && response.body() != null) {
+                    _creditsResponse.postValue(Resource.success(response.body()))
+                } else {
+                    _creditsResponse.postValue(Resource.error("Failed to fetch credits: ${response.message()}", null))
+                }
+            } catch (e: Exception) {
+                _creditsResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
             }
         }
     }

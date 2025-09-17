@@ -6,7 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:overScrollMode="always"
+    android:scrollbars="vertical"
     android:background="?android:windowBackground"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false"
+    android:paddingBottom="32dp"
     tools:context=".presentation.auth.login.LoginFragment">
 
     <LinearLayout
@@ -17,13 +22,21 @@
         android:gravity="center_horizontal">
 
         <!-- Top Icon / App Logo -->
-        <ImageView
+        <androidx.cardview.widget.CardView
             android:id="@+id/imgAppIcon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/verifylabs_logo"
+            android:layout_marginTop="50dp"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:elevation="2dp"
+            app:background="@drawable/verifylabs_logo"
             android:contentDescription="@string/app_icon"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/verifylabs_logo" />
+        </androidx.cardview.widget.CardView>
 
         <!-- Welcome Text -->
         <TextView
@@ -31,6 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome Back"
+            android:textColor="@color/colorBlack"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
@@ -40,49 +54,77 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sign in to continue to VerifyLabs"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/verifylabs_dots_indicator"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:layout_marginBottom="24dp" />
 
-        <!-- Username TextInput -->
+        <!-- Username Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_text_input"
+            android:hint="Enter your username"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusTopStart="@dimen/til_rad"
+            app:boxCornerRadiusTopEnd="@dimen/til_rad"
+            app:boxCornerRadiusBottomStart="@dimen/til_rad"
+            app:boxCornerRadiusBottomEnd="@dimen/til_rad">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:inputType="text"
-                android:padding="12dp" />
-
+                android:padding="12dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Password TextInput -->
+        <!-- Password Field -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            android:layout_marginBottom="24dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp"
+            android:hint="Enter your password"
+            android:background="@drawable/bg_text_input"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:endIconMode="password_toggle"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusTopStart="@dimen/til_rad"
+            app:boxCornerRadiusTopEnd="@dimen/til_rad"
+            app:boxCornerRadiusBottomStart="@dimen/til_rad"
+            app:boxCornerRadiusBottomEnd="@dimen/til_rad">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:padding="12dp" />
-
+                android:padding="12dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Get Started Button -->
@@ -91,21 +133,22 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:text="Get Started"
-            android:backgroundTint="?attr/colorPrimary"
+            android:background="@color/verifylabs_dots_indicator"
             android:textColor="@android:color/white"
             android:layout_marginBottom="16dp" />
 
-        <!-- Sign up prompt -->
+        <!-- Sign Up Prompt -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:gravity="center">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account? "
+                android:text="Don't have an account?"
+                android:textColor="@color/verifylabs_dots_indicator"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <Button
@@ -113,12 +156,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create Account"
-                android:background="?android:selectableItemBackground"
+                android:drawableBottom="@drawable/bg_rectangle_create_account"
                 android:textColor="?attr/colorPrimary"
                 android:padding="0dp"
                 android:minWidth="0dp"
-                android:minHeight="0dp" />
-
+                android:minHeight="0dp"
+                android:drawablePadding="3dp"
+                android:layout_marginTop="5dp"/>
         </LinearLayout>
 
     </LinearLayout>
