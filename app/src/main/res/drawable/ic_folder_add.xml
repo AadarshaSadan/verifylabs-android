@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="115"
+    android:viewportHeight="115">
+
+  <!-- Main rectangle outline in white -->
+  <path
+      android:pathData="M105.42,91.04C105.42,93.58 104.41,96.02 102.61,97.82C100.81,99.62 98.37,100.63 95.83,100.63H19.17C16.62,100.63 14.19,99.62 12.39,97.82C10.59,96.02 9.58,93.58 9.58,91.04V23.96C9.58,21.42 10.59,18.98 12.39,17.18C14.19,15.38 16.62,14.38 19.17,14.38H43.12L52.71,28.75H95.83C98.37,28.75 100.81,29.76 102.61,31.56C104.41,33.35 105.42,35.79 105.42,38.33V91.04Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="8"
+      android:fillColor="#00000000"
+      android:strokeColor="#ffffff"
+      android:strokeLineCap="round"/>
+
+  <!-- Circle in white -->
+  <path
+      android:pathData="M86.25,52.71C99.48,52.71 110.21,41.98 110.21,28.75C110.21,15.52 99.48,4.79 86.25,4.79C73.02,4.79 62.29,15.52 62.29,28.75C62.29,41.98 73.02,52.71 86.25,52.71Z"
+      android:fillColor="#ffffff"/>
+
+  <!-- White plus sign on top of the circle -->
+  <path
+      android:pathData="M86.25,19.17 L86.25,38.33 M76.67,28.75 H95.83"
+      android:strokeLineJoin="round"
+      android:strokeWidth="6"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/txtGreen"
+      android:strokeLineCap="round"/>
+
+  <!-- Small horizontal line in white -->
+  <path
+      android:pathData="M10,38H62"
+      android:strokeLineJoin="round"
+      android:strokeWidth="8"
+      android:fillColor="#00000000"
+      android:strokeColor="#ffffff"
+      android:strokeLineCap="round"/>
+</vector>

@@ -203,6 +203,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:weightSum="2">
 
                 <TextView
@@ -268,7 +271,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
+                    android:focusable="true"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -301,6 +306,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -323,5 +331,57 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+
+
+        <!-- About Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="20dp"
+            android:id="@+id/aboutCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp"
+            android:padding="12dp"
+            app:cardElevation="0dp"
+            android:background="@android:color/white">
+
+            <!-- About Us -->
+            <LinearLayout
+                android:id="@+id/btnAboutus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:padding="12dp"
+                android:focusable="true"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:id="@+id/ivtvAbout"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/info_circle"
+                    android:contentDescription="About" />
+
+                <TextView
+                    android:id="@+id/tvabout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:textColor="@color/colorBlack"
+                    android:text="About and legal"
+                    android:textSize="16sp" />
+
+                <!-- Chevron Icon -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_cheveron_right"
+                    android:contentDescription="Navigate" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

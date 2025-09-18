@@ -89,4 +89,15 @@ interface PreferenceHelper {
     fun setPassword(password: String)
 
     fun  getPassword(): String?
+
+    fun setSelectedMediaPath(path: String?)
+    fun getSelectedMediaPath(): String?
+
+    fun setSelectedMediaType(type: String?)
+    fun getSelectedMediaType(): String?
+
+    fun setSavedMediaFragmentState(stateJson: String?)
+    fun getSavedMediaFragmentState(): String?
+
+
 }

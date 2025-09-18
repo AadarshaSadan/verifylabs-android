@@ -58,6 +58,8 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
         val s3Path = "${mediaType.folder}/${mediaType.prefix}${timestamp}_$randomStr.$fileExtension"
         val s3Url = "$bucketUrl/$s3Path"
 
+        Log.d("MediaFragment", "uploadMedia: s3Url: $s3Url")
+
         val requestFile = file.asRequestBody("${mediaType.value}/*".toMediaTypeOrNull())
 
         return try {

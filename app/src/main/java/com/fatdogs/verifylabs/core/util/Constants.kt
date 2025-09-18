@@ -12,5 +12,10 @@ class Constants {
         const val IS_LOGGED_IN = "is_logged_in"
         const val DARK_THEME="dark theme"
         const val API_KEYS="api_keys"
+        const val SELECTED_MEDIA_PATH = "selected_media_path"
+        const val SELECTED_MEDIA_TYPE = "selected_media_type"
+        const val SAVED_MEDIA_FRAGMENT_STATE = "saved_media_fragment_state"
+
+
     }
 }

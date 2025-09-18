@@ -30,7 +30,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_2db"
+                android:src="@drawable/ic_add_image"
                 android:layout_gravity="center_vertical" />
 
             <TextView
@@ -43,17 +43,51 @@
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
 
-        <!-- Image Preview with Overlay -->
+        <!-- Media Preview with Overlay -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="250dp">
 
+            <!-- Image Preview -->
             <ImageView
                 android:id="@+id/imageViewMedia"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="centerInside"
-                android:background="@drawable/drawable_image_chooser" />
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:background="@drawable/drawable_image_chooser"
+                android:visibility="visible" />
+
+            <!-- Video Preview -->
+            <VideoView
+                android:id="@+id/videoViewMedia"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- Audio Preview (simple icon) -->
+            <LinearLayout
+                android:id="@+id/audioContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/audioIcon"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_media" />
+
+                <TextView
+                    android:id="@+id/audioFileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Audio File"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
 
             <!-- Overlay Image (tick / X / warning) -->
             <ImageView
@@ -65,24 +99,68 @@
                 android:scaleType="fitCenter"
                 android:visibility="visible"
                 android:alpha="0.7" />
+
         </FrameLayout>
 
         <!-- Status Message -->
-        <TextView
-            android:id="@+id/textStatusMessage"
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:id="@+id/layoutInfoStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text=""
-            android:textSize="14sp"
-            android:textColor="@color/txtGreen"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/txtIdentifixation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="#ffffff"
+                        android:paddingTop="6dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:paddingBottom="6dp"/>
+                    <ImageView
+                        android:id="@+id/imgIdentification"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="16dp"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+            android:id="@+id/textStatusMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25dp"
+            android:visibility="visible"
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack"
             android:layout_marginTop="8dp"
             android:gravity="center" />
+
+        </LinearLayout>
 
         <!-- Verify / Done Button -->
         <LinearLayout
             android:id="@+id/btnAction"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:orientation="horizontal"
@@ -94,6 +172,15 @@
             android:clickable="true"
             android:focusable="true">
 
+            <ImageView
+                android:id="@+id/iconAction"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_folder_add"
+                android:layout_marginStart="12dp"
+                android:layout_gravity="center_vertical" />
+
             <TextView
                 android:id="@+id/textAction"
                 android:layout_width="wrap_content"
@@ -103,13 +190,7 @@
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical" />
 
-            <ImageView
-                android:id="@+id/iconAction"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_2db"
-                android:layout_marginStart="12dp"
-                android:layout_gravity="center_vertical" />
+
         </LinearLayout>
 
     </LinearLayout>

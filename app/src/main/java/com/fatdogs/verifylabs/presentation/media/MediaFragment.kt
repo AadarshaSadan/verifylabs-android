@@ -1,81 +1,109 @@
 package com.fatdogs.verifylabs.presentation.media
 
+import InternetHelper
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.MediaController
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fatdogs.verifylabs.R
-import com.fatdogs.verifylabs.core.util.Resource
 import com.fatdogs.verifylabs.core.util.Status
 import com.fatdogs.verifylabs.data.base.PreferenceHelper
 import com.fatdogs.verifylabs.databinding.FragmentMediaBinding
-import com.fatdogs.verifylabs.presentation.auth.login.apiResponseLogin
 import com.fatdogs.verifylabs.presentation.viewmodel.MediaViewModel
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 import javax.inject.Inject
 
-enum class ScanButtonState {VERIFY, SCANNING, DONE }
+enum class ScanButtonState { VERIFY, SCANNING, DONE, FAILED }
 
 @AndroidEntryPoint
 class MediaFragment : Fragment() {
 
     private val TAG = "MediaFragment"
     private var _binding: FragmentMediaBinding? = null
+    private val binding get() = _binding ?: error("Binding is null")
 
+    private lateinit var viewModel: MediaViewModel
 
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
 
-    private val binding get() = _binding!!
-
-    private lateinit var viewModel: MediaViewModel
     private var buttonState = ScanButtonState.VERIFY
     private var selectedMediaUri: Uri? = null
     private var mediaType = MediaType.IMAGE
 
+    // Internet monitoring
+    private lateinit var internetHelper: InternetHelper
+    private var isMonitoringActive = false // Track monitoring state
+
+    // Timestamp recording
+    private var timestampHandler: Handler? = null
+    private var timestampRunnable: Runnable? = null
+    private val timestampList = mutableListOf<Long>()
+    private val timestampInterval: Long = 1000 // 1 second
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions.all { it.value }) selectMedia() else showPermissionDialog()
+        try {
+            if (permissions.all { it.value }) {
+                selectMedia()
+            } else {
+                showPermissionDialog()
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error handling permission result: ${e.message}")
+        }
     }
 
     private val selectMediaLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        uri?.let {
-            selectedMediaUri = it
-            binding.imageViewMedia.setImageURI(it)
-            binding.imageViewMedia.elevation = 3f
-            binding.imageViewMedia.background = null
-            binding.imageOverlay.visibility=View.GONE
-            binding.imageViewMedia.visibility = View.VISIBLE
-            binding.btnAction.visibility = View.VISIBLE
-            setButtonState(ScanButtonState.VERIFY)
-            updateStatus("", false)
+        try {
+            uri?.let {
+                resetUI()
+                selectedMediaUri = it
+                mediaType = when (requireContext().contentResolver.getType(it)?.substringBefore("/")) {
+                    "video" -> MediaType.VIDEO
+                    "audio" -> MediaType.AUDIO
+                    else -> MediaType.IMAGE
+                }
 
-            // Determine media type based on MIME type
-            mediaType = when (requireContext().contentResolver.getType(it)?.substringBefore("/")) {
-                "video" -> MediaType.VIDEO
-                "audio" -> MediaType.AUDIO
-                else -> MediaType.IMAGE
+                val file = getFileFromUri(requireContext(), it)
+                file?.let { localFile ->
+                    preferenceHelper.setSelectedMediaPath(localFile.absolutePath)
+                    preferenceHelper.setSelectedMediaType(mediaType.name)
+                } ?: run {
+                    Log.d(TAG, "Failed to get file from URI")
+                    updateStatus("Failed to process media file", true)
+                    return@let
+                }
+
+                showPreview(it)
+                setButtonState(ScanButtonState.VERIFY)
+                updateStatus("", false)
             }
-            Log.d(TAG, "Selected media URI: $it, Type: $mediaType")
+        } catch (e: Exception) {
+            Log.d(TAG, "Error handling media selection: ${e.message}")
+            updateStatus("Error selecting media", true)
         }
     }
 
@@ -90,87 +118,215 @@ class MediaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[MediaViewModel::class.java]
+        try {
+            viewModel = ViewModelProvider(this)[MediaViewModel::class.java]
+            internetHelper = InternetHelper(requireContext()) // Initialize here
 
-        binding.btnSelectMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
-        binding.btnAction.setOnClickListener {
-            when (buttonState) {
-                ScanButtonState.VERIFY -> startUpload()
-                ScanButtonState.SCANNING -> {}
-                ScanButtonState.DONE ->{ resetUI() }
+            // Restore previously selected media
+            val savedPath = preferenceHelper.getSelectedMediaPath()
+            val savedType = preferenceHelper.getSelectedMediaType()
+            if (!savedPath.isNullOrEmpty() && !savedType.isNullOrEmpty()) {
+                val file = File(savedPath)
+                if (file.exists()) {
+                    mediaType = MediaType.valueOf(savedType)
+                    selectedMediaUri = Uri.fromFile(file)
+                    showPreview(selectedMediaUri!!)
+                    setButtonState(ScanButtonState.VERIFY)
+                }
             }
+
+            binding.btnSelectMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
+            binding.btnAction.setOnClickListener {
+                try {
+                    when (buttonState) {
+                        ScanButtonState.VERIFY -> startUpload()
+                        ScanButtonState.SCANNING -> {
+                            isMonitoringActive = true // Set monitoring active
+                            internetHelper.startMonitoring()
+                            internetHelper.isConnected.observe(viewLifecycleOwner) { connected ->
+                                if (!connected) {
+                                    updateStatus("No internet connection", true)
+                                    setButtonState(ScanButtonState.FAILED)
+                                }
+                            }
+                        }
+                        ScanButtonState.DONE -> {
+                            resetUI()
+                            clearSavedMedia()
+                        }
+                        ScanButtonState.FAILED -> {}
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, "Error handling button action: ${e.message}")
+                    updateStatus("Error performing action", true)
+                }
+            }
+
+            observeViewModel()
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in onViewCreated: ${e.message}")
         }
-
-        observeViewModel()
-
-
-
     }
 
-
-    private fun  resetUI(){
-        binding.imageViewMedia.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.drawable_image_chooser))
-        binding.imageViewMedia.elevation = 0f
-        binding.imageViewMedia.background = ContextCompat.getDrawable(requireContext(),R.drawable.drawable_image_chooser)
-        binding.imageOverlay.visibility=View.GONE
-        binding.imageViewMedia.visibility = View.VISIBLE
-        binding.btnAction.visibility = View.GONE
-        setButtonState(ScanButtonState.VERIFY)
-        updateStatus("", false)
-        selectedMediaUri=null
+    private fun initChangeBtnColor() {
+        try {
+            when (buttonState) {
+                ScanButtonState.VERIFY -> {
+                    binding.btnAction.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_green)
+                }
+                ScanButtonState.SCANNING -> {
+                    binding.btnAction.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_blue)
+                    binding.iconAction.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_seach_icon)
+                    )
+                }
+                ScanButtonState.DONE -> {
+                    binding.btnAction.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_blue)
+                    binding.iconAction.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_tick_icon)
+                    )
+                }
+                ScanButtonState.FAILED -> {
+                    binding.iconAction.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_cloud_cross)
+                    )
+                    binding.btnAction.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error changing button color: ${e.message}")
+        }
     }
-
 
     private fun checkMediaPermissionsAndSelect() {
-        val permissions = mutableListOf<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-            permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-            permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
-        } else {
-            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+        try {
+            val permissions = mutableListOf<String>()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
+            } else {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
 
-        val allGranted = permissions.all { perm ->
-            ContextCompat.checkSelfPermission(requireContext(), perm) == android.content.pm.PackageManager.PERMISSION_GRANTED
-        }
+            val allGranted = permissions.all { perm ->
+                ContextCompat.checkSelfPermission(requireContext(), perm) ==
+                        android.content.pm.PackageManager.PERMISSION_GRANTED
+            }
 
-        if (allGranted) selectMedia()
-        else requestPermissionLauncher.launch(permissions.toTypedArray())
+            if (allGranted) {
+                selectMedia()
+            } else {
+                requestPermissionLauncher.launch(permissions.toTypedArray())
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error checking media permissions: ${e.message}")
+            updateStatus("Error checking permissions", true)
+        }
     }
 
     private fun selectMedia() {
-        selectMediaLauncher.launch("image/*,video/*,audio/*")
+        try {
+            selectMediaLauncher.launch(arrayOf("image/*", "video/*", "audio/*"))
+        } catch (e: Exception) {
+            Log.d(TAG, "Error launching media selector: ${e.message}")
+            updateStatus("Error selecting media", true)
+        }
     }
 
     private fun showPermissionDialog() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Permission Required")
-            .setMessage("You need to grant media access to select files.")
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            .show()
+        try {
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Permission Required")
+                .setMessage("Media access is required to select files. Please grant the permission in app settings.")
+                .setCancelable(false)
+                .setPositiveButton("Open Settings") { dialog, _ ->
+                    dialog.dismiss()
+                    openAppSettings()
+                }
+                .show()
+        } catch (e: Exception) {
+            Log.d(TAG, "Error showing permission dialog: ${e.message}")
+        }
+    }
+
+    private fun openAppSettings() {
+        try {
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.fromParts("package", requireContext().packageName, null)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.d(TAG, "Error opening app settings: ${e.message}")
+        }
+    }
+
+    private fun showPreview(uri: Uri) {
+        try {
+            when (mediaType) {
+                MediaType.IMAGE -> {
+                    binding.imageViewMedia.visibility = View.VISIBLE
+                    binding.videoViewMedia.visibility = View.GONE
+                    binding.imageViewMedia.setImageURI(uri)
+                }
+                MediaType.VIDEO -> {
+                    binding.imageViewMedia.visibility = View.GONE
+                    binding.videoViewMedia.visibility = View.VISIBLE
+                    binding.videoViewMedia.setVideoURI(uri)
+                    val mediaController = MediaController(requireContext())
+                    mediaController.setAnchorView(binding.videoViewMedia)
+                    binding.videoViewMedia.setMediaController(mediaController)
+                    binding.videoViewMedia.setOnPreparedListener { mp ->
+                        mp.isLooping = true
+                        binding.videoViewMedia.start()
+                    }
+                }
+                MediaType.AUDIO -> {
+                    binding.imageViewMedia.visibility = View.VISIBLE
+                    binding.videoViewMedia.visibility = View.GONE
+                    binding.imageViewMedia.setImageResource(R.drawable.ic_media)
+                }
+            }
+            binding.imageOverlay.visibility = View.GONE
+            binding.btnAction.visibility = View.VISIBLE
+        } catch (e: Exception) {
+            Log.d(TAG, "Error showing media preview: ${e.message}")
+            updateStatus("Error displaying media", true)
+        }
     }
 
     private fun startUpload() {
-        selectedMediaUri?.let { uri ->
-            val filePath = getFileFromUri(requireContext(), uri)?.absolutePath ?: return
-            val file = File(filePath)
-            if (file.length() > 100 * 1024 * 1024) { // 100 MB limit
-                updateStatus("File too large (max 100MB)", true)
-                return
-            }
+        try {
+            selectedMediaUri?.let { uri ->
+                val filePath = getFileFromUri(requireContext(), uri)?.absolutePath ?: return
+                val file = File(filePath)
+                if (file.length() > 100 * 1024 * 1024) {
+                    updateStatus("File too large (max 100MB)", true)
+                    return
+                }
 
-            Log.d(TAG, "Starting upload for file: $filePath, Type: $mediaType")
-            setButtonState(ScanButtonState.SCANNING)
-            updateStatus("Uploading media...", false)
-            viewModel.uploadMedia(filePath, mediaType)
+                Log.d(TAG, "Starting upload for file: $filePath, Type: $mediaType")
+                setButtonState(ScanButtonState.SCANNING)
+                updateStatus("Uploading media...", false)
+                viewModel.uploadMedia(filePath, mediaType)
+            } ?: run {
+                Log.d(TAG, "No media URI selected for upload")
+                updateStatus("No media selected", true)
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error starting upload: ${e.message}")
+            updateStatus("Error uploading media", true)
+            setButtonState(ScanButtonState.FAILED)
         }
     }
 
     private fun getFileFromUri(context: Context, uri: Uri): File? {
-        val fileName = getFileName(context, uri) ?: "temp_file"
-        val tempFile = File(context.cacheDir, fileName)
         try {
+            val fileName = getFileName(context, uri) ?: "temp_file"
+            val tempFile = File(context.cacheDir, fileName)
             context.contentResolver.openInputStream(uri)?.use { inputStream ->
                 FileOutputStream(tempFile).use { outputStream ->
                     inputStream.copyTo(outputStream)
@@ -178,157 +334,229 @@ class MediaFragment : Fragment() {
             }
             return tempFile
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to copy file from URI", e)
+            Log.d(TAG, "Failed to copy file from URI: ${e.message}")
             updateStatus("Failed to process file", true)
             return null
         }
     }
 
     private fun getFileName(context: Context, uri: Uri): String? {
-        var name: String? = null
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                name = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+        try {
+            var name: String? = null
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                }
             }
+            return name
+        } catch (e: Exception) {
+            Log.d(TAG, "Error getting file name: ${e.message}")
+            return null
         }
-        return name
     }
 
     private fun observeViewModel() {
-        viewModel.getUploadResponse().observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.LOADING -> {
-                    setButtonState(ScanButtonState.SCANNING)
-                    updateStatus("Uploading media...", false)
-                }
-            Status.SUCCESS -> {
-                Log.d(TAG, "observeViewModelUrl: ${resource.data}")
-                   val uploadedUrl = resource.data?.get("uploadedUrl")?.asString ?: "Unknown URL"
-
-
-//
-//                Log.d(TAG, "observeViewModel: Uploaded URL: $uploadedUrl")
-                    updateStatus("Verifying media...", false)
-                    viewModel.verifyMedia(
-                        username = preferenceHelper.getUserName().toString(), // Replace with actual username
-                        apiKey = preferenceHelper.getApiKey().toString(),   // Replace with actual API key
-                        mediaType = mediaType.value,
-                        mediaUrl = uploadedUrl
-                    )
-                }
-             Status.ERROR -> {
-                 Log.d(TAG, "observeViewModel: ${resource.message}")
-                    updateStatus("Upload failed: ${resource.message}", true)
-                    setButtonState(ScanButtonState.VERIFY)
-                }
-            }
-        }
-
-        viewModel.getLoading().observe(viewLifecycleOwner) { isLoading ->
-            binding.btnAction.isEnabled = !isLoading
-        }
-
-        viewModel.getErrorMessage().observe(viewLifecycleOwner) { error ->
-            updateStatus(error, true)
-        }
-
-
-        viewModel.getVerifyResponse().observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.LOADING -> {
-                    setButtonState(ScanButtonState.SCANNING)
-                    updateStatus("Verifying media...", false)
-                }
-                Status.SUCCESS -> {
-                    Log.d(TAG, "Verification response: ${resource.data}")
-                    try {
-                        val response = Gson().fromJson(
-                            resource.data.toString(),
-                            VerificationResponse::class.java
-                        )
-                        updateStatus("Verification result: ${response.bandName}\n${response.bandDescription}", false)
-//                         when(response.band){
-//                             1,2 -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.txtGreen))
-//                             3,4 -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.yellow))
-//                             5 -> binding.textStatusMessage.setTextColor(Color.RED)
-//                             else -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple_200))
-//                         }
-
-                        binding.textStatusMessage.visibility= View.VISIBLE
-                        binding.imageOverlay.visibility=View.VISIBLE
-//                        binding.imageOverlay.setImageURI(verifylabs_tick_icon_light_grey_rgb_2__traced___1_)
-
-                        binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.verifylabs_tick_icon_light_grey_rgb_2__traced___1_))
-
-                        when(response.band){
-                            1,2 -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.txtGreen))
-//                            3,4 -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.yellow))
-                            5 -> binding.textStatusMessage.setTextColor(Color.RED)
-                            else -> binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple_200))
+        try {
+            viewModel.getUploadResponse().observe(viewLifecycleOwner) { resource ->
+                try {
+                    when (resource.status) {
+                        Status.LOADING -> {
+                            setButtonState(ScanButtonState.SCANNING)
+                            updateStatus("Uploading media...", false)
                         }
-
-                        setButtonState(ScanButtonState.DONE)
-                    }catch (e:Exception){
-                        Log.d(TAG, "onViewCreated: ${e.message}")
+                        Status.SUCCESS -> {
+                            val uploadedUrl = resource.data?.get("uploadedUrl")?.asString ?: "Unknown URL"
+                            updateStatus("Verifying media...", false)
+                            viewModel.verifyMedia(
+                                username = preferenceHelper.getUserName().toString(),
+                                apiKey = preferenceHelper.getApiKey().toString(),
+                                mediaType = mediaType.value,
+                                mediaUrl = uploadedUrl
+                            )
+                        }
+                        Status.ERROR -> {
+                            updateStatus("Upload failed: ${resource.message}", true)
+                            setButtonState(ScanButtonState.FAILED)
+                        }
                     }
-
-
-                }
-                Status.ERROR -> {
-                    Log.d(TAG, "Verification error: ${resource.message}")
-                    updateStatus("Verification failed: ${resource.message}", true)
-//                    setButtonState(ScanButtonState.UPLOAD)
+                } catch (e: Exception) {
+                    Log.d(TAG, "Error handling upload response: ${e.message}")
+                    updateStatus("Error processing upload response", true)
                 }
             }
+
+            viewModel.getVerifyResponse().observe(viewLifecycleOwner) { resource ->
+                try {
+                    when (resource.status) {
+                        Status.LOADING -> {
+                            setButtonState(ScanButtonState.SCANNING)
+                            updateStatus("Verifying media...", false)
+                        }
+                        Status.SUCCESS -> {
+                            val response = Gson().fromJson(
+                                resource.data.toString(),
+                                VerificationResponse::class.java
+                            )
+
+                            Log.d(TAG, "observeViewModel: ${resource.data}")
+
+                            binding.layoutInfoStatus.visibility = View.VISIBLE
+                            binding.textStatusMessage.visibility = View.VISIBLE
+                            binding.imageOverlay.visibility = View.VISIBLE
+
+                            binding.textStatusMessage.text = "${response.bandDescription}"
+                            binding.txtIdentifixation.text = "${getBandResult(response.band)}"
+
+                            when (response.band) {
+                                1, 2 -> { // Human-made
+                                    binding.imageOverlay.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_tick_icon_light_grey_rgb_2__traced___1_)
+                                    )
+                                    binding.txtIdentifixation.background =
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_green)
+                                    binding.imgIdentification.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_)
+                                    )
+                                }
+                                3 -> { // Inconclusive
+                                    binding.imageOverlay.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_gray_area)
+                                    )
+                                    binding.txtIdentifixation.background =
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_gray)
+                                    binding.imgIdentification.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_question_circle)
+                                    )
+                                }
+                                4, 5 -> { // Likely AI / AI
+                                    binding.imageOverlay.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_red_cross_tranparent)
+                                    )
+                                    binding.txtIdentifixation.background =
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red)
+                                    binding.imgIdentification.setImageDrawable(
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_)
+                                    )
+                                }
+                            }
+
+                            setButtonState(ScanButtonState.DONE)
+                        }
+                        Status.ERROR -> {
+                            Toast.makeText(requireContext(), "${resource.message}", Toast.LENGTH_SHORT).show()
+                            updateStatus("Verification failed: ${resource.message}", true)
+                            setButtonState(ScanButtonState.FAILED)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, "Error handling verification response: ${e.message}")
+                    updateStatus("Error processing verification response", true)
+                    setButtonState(ScanButtonState.FAILED)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error setting up ViewModel observers: ${e.message}")
         }
     }
 
-
-
-
     private fun setButtonState(state: ScanButtonState) {
-        buttonState = state
-        when (state) {
-            ScanButtonState.VERIFY -> {
-                binding.btnAction.visibility = View.VISIBLE
-                binding.textAction.text = "Upload Media"
-               // binding.iconAction.setImageResource(R.drawable.ic_upload)
+        try {
+            buttonState = state
+            binding.btnAction.visibility = View.VISIBLE
+            binding.textAction.text = when (state) {
+                ScanButtonState.VERIFY -> "Verify Media"
+                ScanButtonState.SCANNING -> "Scanning..."
+                ScanButtonState.DONE -> "Done!"
+                ScanButtonState.FAILED -> "FAILED!"
             }
-            ScanButtonState.SCANNING -> {
-                binding.btnAction.visibility = View.VISIBLE
-                binding.textAction.text = "Scanning..."
-              //  binding.iconAction.setImageResource(R.drawable.ic_loading)
-            }
-            ScanButtonState.DONE -> {
-                binding.btnAction.visibility = View.VISIBLE
-                binding.textAction.text = "Done!"
-               // binding.iconAction.setImageResource(R.drawable.ic_done)
-            }
+            initChangeBtnColor()
+        } catch (e: Exception) {
+            Log.d(TAG, "Error setting button state: ${e.message}")
         }
     }
 
     private fun updateStatus(message: String, isError: Boolean) {
-        binding.textStatusMessage.text = message
-        binding.textStatusMessage.setTextColor(
-            if (isError) Color.RED else ContextCompat.getColor(requireContext(), R.color.txtGreen)
-        )
-    }
-
-
-    private fun getBandResult(band: Int?): String {
-        return when (band) {
-            1 -> "Man-made ✅"
-            2 -> "Likely Man-made ✅"
-            3 -> "Inconclusive ⚠️"
-            4 -> "Likely AI ⚠️"
-            5 -> "AI-generated ❌"
-            else -> "Unknown ❓"
+        try {
+            _binding?.textStatusMessage?.text = message
+            _binding?.textStatusMessage?.setTextColor(
+                if (isError) Color.RED else ContextCompat.getColor(requireContext(), R.color.colorBlack)
+            )
+        } catch (e: Exception) {
+            Log.d(TAG, "Error updating status: ${e.message}")
         }
     }
 
+    private fun resetUI() {
+        try {
+            binding.imageViewMedia.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.drawable_image_chooser)
+            )
+            binding.imageViewMedia.visibility = View.VISIBLE
+            binding.videoViewMedia.visibility = View.GONE
+            binding.imageOverlay.visibility = View.GONE
+            binding.btnAction.visibility = View.GONE
+            binding.layoutInfoStatus.visibility = View.GONE
+            setButtonState(ScanButtonState.VERIFY)
+            updateStatus("", false)
+            selectedMediaUri = null
+        } catch (e: Exception) {
+            Log.d(TAG, "Error resetting UI: ${e.message}")
+        }
+    }
+
+    private fun clearSavedMedia() {
+        try {
+            preferenceHelper.getSelectedMediaPath()?.let { path ->
+                val file = File(path)
+                if (file.exists()) {
+                    file.delete() // Clean up temporary file
+                }
+            }
+            preferenceHelper.setSelectedMediaPath(null)
+            preferenceHelper.setSelectedMediaType(null)
+        } catch (e: Exception) {
+            Log.d(TAG, "Error clearing saved media: ${e.message}")
+        }
+    }
+
+    private fun getBandResult(band: Int?): String {
+        try {
+            return when (band) {
+                1 -> "Human Made"
+                2 -> "Likely Human Made"
+                3 -> "Inconclusive"
+                4 -> "Likely AI"
+                5 -> "AI-generated"
+                else -> "Unknown"
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Error getting band result: ${e.message}")
+            return "Unknown"
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            binding.videoViewMedia.pause()
+        } catch (e: Exception) {
+            Log.d(TAG, "Error pausing video: ${e.message}")
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        try {
+            binding.videoViewMedia.stopPlayback() // Stop video playback
+            timestampHandler?.removeCallbacksAndMessages(null) // Clear Handler callbacks
+            timestampHandler = null
+            timestampRunnable = null
+            if(isMonitoringActive) {
+                internetHelper.stopMonitoring() // Stop network monitoring
+            }
+            _binding = null // Clear binding
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in onDestroyView: ${e.message}")
+        }
     }
 }

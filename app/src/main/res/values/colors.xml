@@ -53,5 +53,7 @@
     <color name="verifylabs_logo_green">#38B031</color>
     <color name="verifylabs_dots_indicator">#9C9DA1</color>
 
+    <color name="verifylabs_button_blue_color">#007CFF</color>
+
 
 </resources>

@@ -80,6 +80,31 @@ class PreferencesHelperImpl @Inject constructor(
         return mPrefs.getString(Constants.PASSWORD, null)
     }
 
+    override fun setSelectedMediaPath(path: String?) {
+        mPrefs.edit().putString(Constants.SELECTED_MEDIA_PATH, path).apply()
+    }
+
+    override fun getSelectedMediaPath(): String? {
+        return mPrefs.getString(Constants.SELECTED_MEDIA_PATH, null)
+    }
+
+    override fun setSelectedMediaType(type: String?) {
+        mPrefs.edit().putString(Constants.SELECTED_MEDIA_TYPE, type).apply()
+    }
+
+    override fun getSelectedMediaType(): String? {
+        return mPrefs.getString(Constants.SELECTED_MEDIA_TYPE, null)
+    }
+
+    override fun setSavedMediaFragmentState(stateJson: String?) {
+        mPrefs.edit().putString(Constants.SAVED_MEDIA_FRAGMENT_STATE, stateJson).apply()
+    }
+
+    override fun getSavedMediaFragmentState(): String? {
+        return mPrefs.getString(Constants.SAVED_MEDIA_FRAGMENT_STATE, null)
+    }
+
+
     override fun clear() {
         mPrefs.edit().clear().apply()
     }
