@@ -481,7 +481,7 @@ class MediaFragment : Fragment() {
                                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_red_cross_tranparent)
                                     )
                                     binding.txtIdentifixation.background =
-                                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red)
+                                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red_without_radius)
                                     binding.imgIdentification.setImageDrawable(
                                         ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_)
                                     )

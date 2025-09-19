@@ -8,8 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="app_background">#ECF5EC</color>
+    <color name="app_background">#ffffff</color>
     <color name="app_background_2">#434341</color>
+    <color name="app_background_3">#F2F2F6</color>
 
     <!-- Theme-dependent light colors -->
     <color name="colorBlack">#000000</color>
