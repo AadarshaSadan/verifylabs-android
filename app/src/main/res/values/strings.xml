@@ -5,4 +5,5 @@
     <string name="app_icon">app_icon</string>
     <string name="todo">TODO</string>
     <string name="next_button">Next</string>
+    <string name="about_legal"><![CDATA[About & legal]]></string>
 </resources>

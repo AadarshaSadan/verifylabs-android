@@ -20,9 +20,10 @@
             android:id="@+id/tvManualCredentials"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manual Credentials"
-            android:textSize="16sp"
-            android:textColor="@color/colorBlack"
+            android:text="    Manual Credentials"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:textColor="#AAB2AA"
             android:paddingBottom="8dp" />
 
         <androidx.cardview.widget.CardView
@@ -51,8 +52,8 @@
 
                     <ImageView
                         android:id="@+id/ivUserIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_user"
                         android:contentDescription="User" />
 
@@ -86,8 +87,8 @@
 
                     <ImageView
                         android:id="@+id/ivPasswordIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_password"
                         android:contentDescription="Password" />
 
@@ -119,8 +120,8 @@
 
                     <ImageView
                         android:id="@+id/ivKeyIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_key"
                         android:contentDescription="API Key" />
 
@@ -131,7 +132,7 @@
                         android:layout_marginStart="12dp"
                         android:text="API Key: 12345-ABCDE"
                         android:textColor="@color/colorBlack"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/font_body" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -147,15 +148,46 @@
             app:cardElevation="0dp"
             android:background="@android:color/white">
 
-            <Button
+<!--            <Button-->
+<!--                android:id="@+id/btnTestSave"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:backgroundTint="@color/verifylabs_logo_green"-->
+<!--                android:text="Test and Save"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textStyle="bold" />-->
+
+            <LinearLayout
                 android:id="@+id/btnTestSave"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:backgroundTint="@color/verifylabs_logo_green"
-                android:text="Test and Save"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
+                android:layout_height="42dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@drawable/drawable_verify_background_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_margin="10dp">
+
+<!--                <ImageView-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:src="@drawable/ic_tick_icon"-->
+<!--                    android:layout_gravity="center_vertical" />-->
+
+                <TextView
+                    android:id="@+id/tvTestSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Test and Save"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical" />
+            </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
         <!-- Section 3: Purchase Credits -->
@@ -174,18 +206,49 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/btnPurchaseCredits"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:backgroundTint="@android:color/holo_red_dark"
-                android:text="Purchase Credits"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:paddingVertical="12dp"/>
+<!--            <Button-->
+<!--                android:id="@+id/btnPurchaseCredits"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:backgroundTint="@android:color/holo_red_dark"-->
+<!--                android:text="Purchase Credits"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textStyle="bold"-->
+<!--                android:paddingVertical="12dp"/>-->
 
-            <!-- Divider Line -->
+                <LinearLayout
+                    android:id="@+id/btnPurchaseCredits"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:background="@drawable/drawable_verify_background_btn_failed_likely_red"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_margin="10dp">
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="24dp"-->
+<!--                        android:layout_height="24dp"-->
+<!--                        android:src="@drawable/ic_credit_card"-->
+<!--                        android:layout_gravity="center_vertical" />-->
+
+                    <TextView
+                        android:id="@+id/tvPurchaseCredits"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Purchase Credits"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+
+                <!-- Divider Line -->
             <View
                 android:id="@+id/dividerCredits"
                 android:layout_below="@id/btnPurchaseCredits"
@@ -206,14 +269,13 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:weightSum="2">
+                android:weightSum="4">
 
                 <TextView
                     android:id="@+id/tvCreditsRemaining"
                     android:padding="3dp"
                     android:layout_width="0dp"
-
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:layout_height="wrap_content"
                     android:text="Credits Remaining: 100"
                     android:drawableStart="@drawable/ic_credit_card"
@@ -229,7 +291,6 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-
                     android:text="Refresh"
                     android:textColor="@color/verifylabs_logo_green"
                     android:gravity="end"
@@ -245,9 +306,10 @@
             android:id="@+id/tvAccountManagement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account Management"
-            android:textSize="16sp"
-            android:textColor="@color/colorBlack"
+            android:text="    Account Management"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textColor="#AAB2AA"
             android:paddingBottom="8dp" />
 
         <androidx.cardview.widget.CardView
@@ -278,8 +340,8 @@
 
                     <ImageView
                         android:id="@+id/ivLogoutIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_logout"
                         android:contentDescription="Logout" />
 
@@ -313,8 +375,8 @@
 
                     <ImageView
                         android:id="@+id/ivDeleteIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/ic_delete"
                         android:contentDescription="Delete Account" />
 
@@ -359,8 +421,8 @@
 
                 <ImageView
                     android:id="@+id/ivtvAbout"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/info_circle"
                     android:contentDescription="About" />
 
@@ -371,13 +433,13 @@
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
                     android:textColor="@color/colorBlack"
-                    android:text="About and legal"
+                    android:text="@string/about_legal"
                     android:textSize="16sp" />
 
                 <!-- Chevron Icon -->
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/ic_cheveron_right"
                     android:contentDescription="Navigate" />
 

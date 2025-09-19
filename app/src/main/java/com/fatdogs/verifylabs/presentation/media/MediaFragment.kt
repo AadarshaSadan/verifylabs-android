@@ -137,35 +137,83 @@ class MediaFragment : Fragment() {
 
             binding.btnSelectMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
             binding.btnAction.setOnClickListener {
-                try {
-                    when (buttonState) {
-                        ScanButtonState.VERIFY -> startUpload()
-                        ScanButtonState.SCANNING -> {
-                            isMonitoringActive = true // Set monitoring active
-                            internetHelper.startMonitoring()
-                            internetHelper.isConnected.observe(viewLifecycleOwner) { connected ->
-                                if (!connected) {
-                                    updateStatus("No internet connection", true)
-                                    setButtonState(ScanButtonState.FAILED)
+
+                viewModel.checkCredits(
+                    username = preferenceHelper.getUserName().toString(),
+                    apiKey = preferenceHelper.getApiKey().toString()
+                )
+
+                val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
+
+                if (totalCredits <= 0) {
+                    binding.btnAction.visibility=View.GONE
+                    binding.layoutNoCreditStatus.visibility=View.VISIBLE
+                } else {
+                    binding.layoutNoCreditStatus.visibility=View.GONE
+                    try {
+                        when (buttonState) {
+                            ScanButtonState.VERIFY -> startUpload()
+                            ScanButtonState.SCANNING -> {
+                                isMonitoringActive = true // Set monitoring active
+                                internetHelper.startMonitoring()
+                                internetHelper.isConnected.observe(viewLifecycleOwner) { connected ->
+                                    if (!connected) {
+                                        updateStatus("No internet connection", true)
+                                        setButtonState(ScanButtonState.FAILED)
+                                    }
                                 }
                             }
+
+                            ScanButtonState.DONE -> {
+                                resetUI()
+                                clearSavedMedia()
+                            }
+
+                            ScanButtonState.FAILED -> {}
                         }
-                        ScanButtonState.DONE -> {
-                            resetUI()
-                            clearSavedMedia()
-                        }
-                        ScanButtonState.FAILED -> {}
+                    } catch (e: Exception) {
+                        Log.d(TAG, "Error handling button action: ${e.message}")
+                        updateStatus("Error performing action", true)
                     }
-                } catch (e: Exception) {
-                    Log.d(TAG, "Error handling button action: ${e.message}")
-                    updateStatus("Error performing action", true)
                 }
+
+
             }
 
-            observeViewModel()
+
         } catch (e: Exception) {
             Log.d(TAG, "Error in onViewCreated: ${e.message}")
         }
+
+
+        observeViewModel()
+        obServereCredits()
+
+    }
+
+    private fun obServereCredits(){
+        // Observe credits
+        viewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    val creditsJson = resource.data
+                    val credits = creditsJson?.get("credits")?.asInt ?: 0
+                    val monthlyCredits = creditsJson?.get("creditsMonthly")?.asInt ?: 0
+                    val totalCredits = credits + monthlyCredits
+                    preferenceHelper.setCreditReamaining(totalCredits)
+                  //  binding.tvCredits.text = "Credits Remaining: $totalCredits"
+                    binding.btnAction.isEnabled = totalCredits > 0
+                    binding.btnAction.alpha = if (totalCredits > 0) 1f else 0.5f
+                }
+                Status.ERROR -> {
+                    binding.btnAction.isEnabled = false
+                    binding.btnAction.alpha = 0.5f
+                }
+                else -> {}
+            }
+        }
+
+
     }
 
     private fun initChangeBtnColor() {

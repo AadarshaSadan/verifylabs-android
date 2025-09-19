@@ -190,7 +190,7 @@ class SettingsFragment : Fragment() {
                 when (resource.status) {
                     Status.LOADING -> {
                         Log.d(TAG, "Logging in...")
-                        binding.btnTestSave.text = "Saving..."
+                        binding.tvTestSave.text = "Saving..."
                         binding.btnTestSave.isEnabled = false
                     }
                     Status.SUCCESS -> {
@@ -202,7 +202,7 @@ class SettingsFragment : Fragment() {
                                 preferenceHelper.setCreditReamaining(response.credits) // Fixed typo
                                 binding.tvApiKey.text = "API KEY: ${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
                                 binding.tvCreditsRemaining.text = "Credits Remaining: ${preferenceHelper.getCreditRemaining() ?: 0}"
-                                binding.btnTestSave.text = "Saved"
+                                binding.tvTestSave.text = "Saved"
                                 binding.btnTestSave.isEnabled = true
                                 Log.d(TAG, "Login successful, API key: ${response.apiKey}")
                             } catch (e: Exception) {
@@ -210,7 +210,7 @@ class SettingsFragment : Fragment() {
                             }
                         } ?: run {
                             Log.w(TAG, "Login response success but data is null")
-                            binding.btnTestSave.text = "Error! Try Again"
+                            binding.tvTestSave.text = "Error! Try Again"
                             binding.btnTestSave.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red)
                             binding.btnTestSave.isEnabled = true
                             if (isAdded) {
@@ -220,7 +220,7 @@ class SettingsFragment : Fragment() {
                     }
                     Status.ERROR -> {
                         Log.e(TAG, "Login error: ${resource.message}")
-                        binding.btnTestSave.text = "Error! Try Again"
+                        binding.tvTestSave.text = "Error! Try Again"
                         binding.btnTestSave.isEnabled = true
                         if (isAdded) {
                             Toast.makeText(requireContext(), resource.message ?: "Login failed", Toast.LENGTH_SHORT).show()

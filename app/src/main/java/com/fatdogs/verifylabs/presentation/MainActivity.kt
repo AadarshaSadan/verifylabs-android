@@ -16,9 +16,7 @@ import com.fatdogs.verifylabs.presentation.viewmodel.MainViewModel
 import com.fatdogs.verifylabs.data.base.PreferenceHelper
 import com.fatdogs.verifylabs.presentation.home.HomeFragment
 import com.fatdogs.verifylabs.presentation.media.MediaFragment
-import com.fatdogs.verifylabs.presentation.model.PostResponse
 import com.fatdogs.verifylabs.presentation.settings.SettingsFragment
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -58,9 +56,17 @@ class MainActivity : AppCompatActivity() {
             // Load default fragment (Home)
             replaceFragment(HomeFragment())
 
-            // Setup bottom navigation
+            // Setup bottom navigation with haptic feedback
+            binding?.bottomNavigationView?.itemRippleColor=null
+            binding?.bottomNavigationView?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            binding?.bottomNavigationView?.backgroundTintList = null
             binding?.bottomNavigationView?.setOnItemSelectedListener { item ->
                 try {
+                    // 🔔 Trigger haptic feedback on nav click
+                    binding?.bottomNavigationView?.performHapticFeedback(
+                        android.view.HapticFeedbackConstants.KEYBOARD_TAP
+                    )
+
                     when (item.itemId) {
                         R.id.nav_home -> replaceFragment(HomeFragment())
                         R.id.nav_media -> replaceFragment(MediaFragment())
@@ -88,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // Clear binding to prevent memory leaks
         binding = null
-        // Remove observers to prevent memory leaks
+        // Remove observers if needed
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -108,7 +114,6 @@ class MainActivity : AppCompatActivity() {
     fun showBottomNavigation(show: Boolean) {
         binding?.bottomNavigationView?.visibility = if (show) View.VISIBLE else View.GONE
     }
-
 
     private fun clearSavedMedia() {
         try {

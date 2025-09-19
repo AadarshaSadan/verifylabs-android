@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/media_scroll"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     android:padding="16dp"
     tools:context=".presentation.media.MediaFragment">
@@ -157,10 +158,64 @@
 
         </LinearLayout>
 
+
+
+        <!-- No credit Message -->
+
+        <LinearLayout
+            android:id="@+id/layoutNoCreditStatus"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/drawable_verify_background_orange"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="start"
+                        android:src="@drawable/ic_no_credits"
+                        android:layout_marginStart="16dp"/>
+
+                    <TextView
+                        android:id="@+id/txtNoCredit"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_height="wrap_content"
+                        android:text="Insufficient credits. Please upgrade or buy More."
+                        android:textSize="16sp"
+                        android:textColor="#ffffff"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:paddingBottom="6dp"/>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
         <!-- Verify / Done Button -->
         <LinearLayout
             android:id="@+id/btnAction"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:orientation="horizontal"

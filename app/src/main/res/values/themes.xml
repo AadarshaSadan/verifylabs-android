@@ -13,6 +13,26 @@
         <item name="colorPrimaryDark">@color/app_background</item>
         <item name="colorAccent">@color/app_background</item>
         <item name="android:statusBarColor">@color/app_background</item>
+        <!-- ✅ Control BottomNavigationView text -->
+        <item name="bottomNavigationStyle">@style/CustomBottomNavigationView</item>
+
+    </style>
+
+
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/BottomNavTextActive</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavTextInactive</item>
+        <item name="itemRippleColor">@null</item> <!-- removes ripple -->
+    </style>
+
+
+    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">12sp</item> <!-- Bigger for active -->
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">12sp</item> <!-- Smaller for inactive -->
     </style>
 
 </resources>

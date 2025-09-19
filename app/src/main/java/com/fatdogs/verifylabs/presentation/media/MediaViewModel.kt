@@ -23,32 +23,11 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
     private val errorMessage = MutableLiveData<String>()
     private val _uploadResponse = SingleLiveEvent<Resource<JsonObject>>()
     private val _verifyResponse = SingleLiveEvent<Resource<JsonObject>>()
+    private val _creditsResponse = SingleLiveEvent<Resource<JsonObject>>()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception: ${throwable.localizedMessage}")
     }
-
-//    fun uploadMedia(filePath: String, mediaType: MediaType) {
-//        _uploadResponse.postValue(Resource.loading(null))
-//        loading.postValue(true)
-//        job?.cancel()
-//        job = viewModelScope.launch(exceptionHandler) {
-//            try {
-//                val response = repository.uploadMedia(filePath, mediaType)
-//                if (response.isSuccessful) {
-//                    _uploadResponse.postValue(Resource.success(response.body()))
-//                } else {
-//                    _uploadResponse.postValue(Resource.error(response.message(), null))
-//                    onError("Upload failed: ${response.message()}")
-//                }
-//            } catch (e: Exception) {
-//                _uploadResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
-//                onError(e.message ?: "Unknown error")
-//            } finally {
-//                loading.postValue(false)
-//            }
-//        }
-//    }
 
     fun uploadMedia(filePath: String, mediaType: MediaType) {
         _uploadResponse.postValue(Resource.loading(null))
@@ -88,8 +67,26 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
         }
     }
 
+    // -------------------- CHECK CREDITS --------------------
+    fun checkCredits(username: String, apiKey: String) {
+        _creditsResponse.postValue(Resource.loading(null))
+        viewModelScope.launch(exceptionHandler) {
+            try {
+                val response = repository.checkCredits(username, apiKey)
+                if (response.isSuccessful && response.body() != null) {
+                    _creditsResponse.postValue(Resource.success(response.body()))
+                } else {
+                    _creditsResponse.postValue(Resource.error("Failed to fetch credits: ${response.message()}", null))
+                }
+            } catch (e: Exception) {
+                _creditsResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
+            }
+        }
+    }
+
     fun getUploadResponse(): LiveData<Resource<JsonObject>> = _uploadResponse
     fun getVerifyResponse(): LiveData<Resource<JsonObject>> = _verifyResponse
+    fun getCreditsResponse(): LiveData<Resource<JsonObject>> = _creditsResponse
     fun getLoading(): LiveData<Boolean> = loading
     fun getErrorMessage(): LiveData<String> = errorMessage
 

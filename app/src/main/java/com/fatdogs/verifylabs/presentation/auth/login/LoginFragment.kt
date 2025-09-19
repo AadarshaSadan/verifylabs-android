@@ -105,7 +105,7 @@ class LoginFragment : Fragment() {
                             val response = Gson().fromJson(it.toString(), apiResponseLogin::class.java)
                             preferenceHelper.setApiKey(response.apiKey)
                             preferenceHelper.setIsLoggedIn(true)
-                            preferenceHelper.setCreditReamaining(response.credits)
+                            preferenceHelper.setCreditReamaining(response.credits+response.creditsMonthly)
                             Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
                             navigateToMainActivity()
                         } catch (e: Exception) {
