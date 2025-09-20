@@ -10,5 +10,5 @@
     <!-- Gray border -->
     <stroke
         android:width="2dp"
-        android:color="#AAB2AA" />
+        android:color="@color/txtGreen" />
 </shape>

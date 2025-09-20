@@ -3,8 +3,8 @@
     <dimen name="padding_standard">16dp</dimen>
     <dimen name="bottom_layout_min_height">72dp</dimen>
     <dimen name="dots_margin_start">-20dp</dimen>
-    <dimen name="dots_size">10dp</dimen>
-    <dimen name="dots_spacing">6dp</dimen>
+    <dimen name="dots_size">8dp</dimen>
+    <dimen name="dots_spacing">3dp</dimen>
     <dimen name="dots_stroke_width">2dp</dimen>
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="til_rad">6dp</dimen>

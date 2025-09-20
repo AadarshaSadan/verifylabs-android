@@ -8,7 +8,7 @@
         android:pathData="M0,0h2856v1108h-2856z"/>
     <path
         android:pathData="M2856,0H0V1108H2856V0Z"
-        android:fillColor="@color/app_background"/>
+        android:fillColor="@color/app_background_before_login"/>
     <path
         android:pathData="M2612.8,243.7H2539.6V316.9H2612.8V243.7Z"
         android:fillColor="#E6070D"/>

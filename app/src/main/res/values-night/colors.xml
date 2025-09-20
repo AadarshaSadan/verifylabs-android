@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base Material colors can stay the same or tweak slightly -->
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
@@ -13,6 +12,7 @@
     <color name="app_background_2">#ECF5EC</color>
     <color name="colorBackground3">#FFFFFF</color>
     <color name="app_background_3">#000000</color>
+    <color name="app_background_before_login">#262B26</color>
     <!-- Dark theme overrides -->
     <color name="colorBlack">#FFFFFF</color>
     <color name="colorWhite">#000000</color>
@@ -43,12 +43,11 @@
     <color name="statusDefault">#B0BEC5</color>
 
     <!-- Status text -->
-    <color name="statusTextLight">#000000</color>
-    <color name="statusTextDark">#FFFFFF</color>
+    <color name="statusTextLight">#FFFFFF</color> <!-- Fixed for dark mode: light text -->
+    <color name="statusTextDark">#000000</color>
     <color name="text_app_blue">#72326DDB</color>
     <color name="verifylabs_logo_only_dashboard">#EDF1EA</color>
     <color name="verifylabs_logo_green">#38B031</color>
     <color name="verifylabs_dots_indicator">#9C9DA1</color>
     <color name="verifylabs_button_blue_color">#007CFF</color>
-
 </resources>

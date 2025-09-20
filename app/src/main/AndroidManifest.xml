@@ -3,14 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- For Android 13+ -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-
-    <!-- For Android <=12 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
 
     <application
         android:name=".core.util.MyApplication"
@@ -24,41 +20,31 @@
         android:theme="@style/Theme.Verifylabs"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.auth.AuthBaseActivity"
-            android:exported="false" />
+            android:name=".presentation.auth.signup.SignUpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Verifylabs"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".presentation.onboarding.OnboardingActivity"
-            android:exported="false" />
+            android:theme="@style/Theme.Verifylabs"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".presentation.splashscreen.SplashActivity"
             android:exported="true"
+            android:theme="@style/Theme.Verifylabs"
+            android:screenOrientation="portrait"
             tools:ignore="SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".presentation.MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Verifylabs" />
-
-
-        <!-- WorkManager provider override -->
-<!--        <provider-->
-<!--            android:name="androidx.startup.InitializationProvider"-->
-<!--            android:authorities="${applicationId}.androidx-startup"-->
-<!--            android:exported="false"-->
-<!--            tools:node="merge">-->
-<!--            <meta-data-->
-<!--                android:name="androidx.work.WorkManagerInitializer"-->
-<!--                android:value="androidx.startup"-->
-<!--                tools:node="remove" />-->
-<!--        </provider>-->
-
+            android:theme="@style/Theme.Verifylabs"
+            android:screenOrientation="portrait" />
     </application>
-
-
 
 </manifest>

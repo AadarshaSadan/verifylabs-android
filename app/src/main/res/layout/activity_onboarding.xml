@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
+    android:background="@color/app_background_before_login"
     tools:context=".presentation.onboarding.OnboardingActivity">
 
     <!-- ViewPager2 for onboarding pages -->
@@ -44,7 +44,6 @@
             app:dotsStrokeColor="@color/verifylabs_dots_indicator"
             app:dotsSize="@dimen/dots_size"
             app:dotsSpacing="@dimen/dots_spacing"
-            app:circularflow_viewCenter="@color/verifylabs_dots_indicator"
             app:dotsStrokeWidth="@dimen/dots_stroke_width"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

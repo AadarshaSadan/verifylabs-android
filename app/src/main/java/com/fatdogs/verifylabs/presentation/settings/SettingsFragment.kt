@@ -6,18 +6,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fatdogs.verifylabs.R
-import com.fatdogs.verifylabs.core.util.Resource
 import com.fatdogs.verifylabs.core.util.Status
 import com.fatdogs.verifylabs.data.base.PreferenceHelper
 import com.fatdogs.verifylabs.databinding.FragmentSettingsBinding
-import com.fatdogs.verifylabs.presentation.auth.AuthBaseActivity
 import com.fatdogs.verifylabs.presentation.auth.login.LoginViewModel
-import com.fatdogs.verifylabs.presentation.auth.login.apiResponseLogin
+import com.fatdogs.verifylabs.presentation.auth.login.ApiResponseLogin
+import com.fatdogs.verifylabs.presentation.onboarding.OnboardingActivity
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -123,7 +124,7 @@ class SettingsFragment : Fragment() {
                     preferenceHelper.clear()
                     if (isAdded) {
                         startActivity(
-                            Intent(requireActivity(), AuthBaseActivity::class.java).apply {
+                            Intent(requireActivity(), OnboardingActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             }
                         )
@@ -136,6 +137,14 @@ class SettingsFragment : Fragment() {
                     }
                 }
             }
+
+
+            binding.btnPurchaseCredits.setOnLongClickListener {
+                showPurchaseCreditsDialog()
+                true
+            }
+
+
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up click listeners: ${e.message}", e)
             if (isAdded) {
@@ -196,7 +205,7 @@ class SettingsFragment : Fragment() {
                     Status.SUCCESS -> {
                         resource.data?.let { dataJson ->
                             try {
-                                val response = Gson().fromJson(dataJson.toString(), apiResponseLogin::class.java)
+                                val response = Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
                                 preferenceHelper.setApiKey(response.apiKey)
                                 preferenceHelper.setIsLoggedIn(true)
                                 preferenceHelper.setCreditReamaining(response.credits) // Fixed typo
@@ -235,6 +244,34 @@ class SettingsFragment : Fragment() {
             }
         }
     }
+
+
+    private fun showPurchaseCreditsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_success, null)
+
+        // Customize title and message
+        dialogView.findViewById<TextView>(R.id.title).text = "Purchase Credits"
+        dialogView.findViewById<TextView>(R.id.message).text = "Do you want to purchase more credits?"
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Handle OK button
+        dialogView.findViewById<Button>(R.id.ok).setOnClickListener {
+            dialog.dismiss()
+            Toast.makeText(requireContext(), "Purchase flow starts here!", Toast.LENGTH_SHORT).show()
+            // TODO: Start your purchase activity or API call here
+        }
+
+        // Handle Cancel button
+        dialogView.findViewById<Button>(R.id.cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

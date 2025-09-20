@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -21,32 +22,36 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
-    // 1. Declare the binding
     private lateinit var binding: ActivitySplashBinding
 
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 2. Inflate the binding
+        // Inflate binding
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Apply window insets safely
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
-        if(preferenceHelper.isLoggedIn())
-        {
-            startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+        // Check login status
+        if (preferenceHelper.isLoggedIn()) {
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
             overridePendingTransition(R.anim.slide_in_up, R.anim.nothing_ani)
             return
         }
 
-        // 3. Delayed execution to navigate to MainActivity
+        // Delayed navigation to OnboardingActivity
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this@SplashActivity, OnboardingActivity::class.java))
+            startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
             overridePendingTransition(R.anim.slide_in_up, R.anim.nothing_ani)
         }, 2000)

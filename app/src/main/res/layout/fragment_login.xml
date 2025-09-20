@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:overScrollMode="always"
-    android:scrollbars="vertical"
-    android:background="?android:windowBackground"
     android:fitsSystemWindows="true"
-    android:clipToPadding="false"
-    android:paddingBottom="32dp"
-    tools:context=".presentation.auth.login.LoginFragment">
+    android:overScrollMode="always"
+    android:background="@color/app_background_before_login"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,8 +20,8 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/imgAppIcon"
             android:layout_marginTop="50dp"
-            android:layout_width="200dp"
-            android:layout_height="80dp"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
             android:elevation="2dp"
             app:background="@drawable/verifylabs_logo"
             android:contentDescription="@string/app_icon"
@@ -43,127 +38,116 @@
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome Back"
+            android:layout_marginTop="16dp"
+            android:text="@string/welcome_back"
+            android:textSize="24sp"
             android:textColor="@color/colorBlack"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvSignInPrompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign in to continue to VerifyLabs"
+            android:layout_marginTop="6dp"
+            android:textSize="14sp"
+            android:paddingHorizontal="16dp"
+            android:text="@string/sign_in_to_continue_to_verifylabs"
             android:textColor="@color/verifylabs_dots_indicator"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_marginBottom="24dp" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <!-- Username Field -->
-        <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Username"
-            android:textStyle="bold"
+            android:layout_marginTop="18dp"
+            android:inputType="text"
             android:textSize="16sp"
-            android:textColor="@color/colorBlack" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="16dp"
+            android:padding="12dp"
+            android:hint="@string/username"
+            android:drawablePadding="12dp"
+            android:paddingHorizontal="15dp"
+            android:drawableStart="@drawable/ic_user"
             android:background="@drawable/bg_text_input"
-            android:hint="Enter your username"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:boxBackgroundMode="filled"
-            app:boxCornerRadiusTopStart="@dimen/til_rad"
-            app:boxCornerRadiusTopEnd="@dimen/til_rad"
-            app:boxCornerRadiusBottomStart="@dimen/til_rad"
-            app:boxCornerRadiusBottomEnd="@dimen/til_rad">
+            android:textColor="@color/colorBlack"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:enabled="true" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:padding="12dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/colorBlack"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Password Field -->
-        <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password"
-            android:textStyle="bold"
+            android:layout_marginTop="18dp"
+            android:inputType="textPassword"
             android:textSize="16sp"
-            android:textColor="@color/colorBlack" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="24dp"
-            android:hint="Enter your password"
+            android:drawableStart="@drawable/ic_password"
+            android:drawablePadding="10dp"
+            android:padding="12dp"
             android:background="@drawable/bg_text_input"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:endIconMode="password_toggle"
-            app:boxBackgroundMode="filled"
-            app:boxCornerRadiusTopStart="@dimen/til_rad"
-            app:boxCornerRadiusTopEnd="@dimen/til_rad"
-            app:boxCornerRadiusBottomStart="@dimen/til_rad"
-            app:boxCornerRadiusBottomEnd="@dimen/til_rad">
+            android:hint="@string/password"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="15dp"
+            android:textColor="@color/colorBlack"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:enabled="true" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:padding="12dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/colorBlack"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Get Started Button -->
-        <Button
+        <!-- Sign In Button -->
+        <LinearLayout
             android:id="@+id/btnGetStarted"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Get Started"
-            android:background="@color/verifylabs_dots_indicator"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/drawable_verify_background_btn_failed_likely_gray"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/tvSignIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SIGN IN"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
 
         <!-- Sign Up Prompt -->
         <LinearLayout
+            android:id="@+id/btnCreateAccount"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="50dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="50dp"
             android:gravity="center">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account?"
-                android:textColor="@color/verifylabs_dots_indicator"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                android:text="@string/don_t_have_an_account"
+                android:textSize="14sp"
+                android:textColor="@color/colorBlack" />
 
-            <Button
-                android:id="@+id/btnCreateAccount"
+            <TextView
+                android:layout_marginStart="5dp"
+                android:id="@+id/tvSignUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create Account"
-                android:drawableBottom="@drawable/bg_rectangle_create_account"
-                android:textColor="?attr/colorPrimary"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:drawablePadding="3dp"
-                android:layout_marginTop="5dp"/>
+                android:text="@string/sign_up_here"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/txtGreen" />
         </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

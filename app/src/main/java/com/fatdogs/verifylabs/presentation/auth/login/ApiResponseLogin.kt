@@ -2,7 +2,7 @@ package com.fatdogs.verifylabs.presentation.auth.login
 
 import com.google.gson.annotations.SerializedName
 
-data class apiResponseLogin(
+data class ApiResponseLogin(
     @SerializedName("api_key")
     val apiKey: String,
     @SerializedName("expiry")
