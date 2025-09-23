@@ -87,6 +87,10 @@ class MediaFragment : Fragment() {
                     else -> MediaType.IMAGE
                 }
 
+                binding.iconAction.setImageDrawable(
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_folder_add)
+                )
+
                 val file = getFileFromUri(requireContext(), it)
                 file?.let { localFile ->
                     preferenceHelper.setSelectedMediaPath(localFile.absolutePath)
@@ -136,6 +140,10 @@ class MediaFragment : Fragment() {
             }
 
             binding.btnSelectMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
+
+            binding.imageViewMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
+
+
             binding.btnAction.setOnClickListener {
 
                 viewModel.checkCredits(
@@ -221,7 +229,7 @@ class MediaFragment : Fragment() {
             when (buttonState) {
                 ScanButtonState.VERIFY -> {
                     binding.btnAction.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_green)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_gray_less_radius)
                 }
                 ScanButtonState.SCANNING -> {
                     binding.btnAction.background =
@@ -544,7 +552,7 @@ class MediaFragment : Fragment() {
             binding.imageOverlay.visibility = View.GONE
             binding.btnAction.visibility = View.GONE
             binding.layoutInfoStatus.visibility = View.GONE
-            setButtonState(ScanButtonState.VERIFY)
+//            setButtonState(ScanButtonState.VERIFY)
             updateStatus("", false)
             selectedMediaUri = null
         } catch (e: Exception) {

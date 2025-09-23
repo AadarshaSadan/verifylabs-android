@@ -39,17 +39,21 @@ class MainActivity : AppCompatActivity() {
             setContentView(binding?.root ?: return)
 
             // Apply system window insets for edge-to-edge layout
-            binding?.root?.let { rootView ->
-                try {
-                    ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-                        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                        insets
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error setting window insets: ${e.message}", e)
-                }
-            } ?: Log.e(TAG, "Root view is null, cannot set window insets")
+//            binding?.root?.let { rootView ->
+//                try {
+//                    ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
+//                        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//                        v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+//                        insets
+//                    }
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "Error setting window insets: ${e.message}", e)
+//                }
+//            } ?: Log.e(TAG, "Root view is null, cannot set window insets")
+
+
+
+
 
             clearSavedMedia()
 

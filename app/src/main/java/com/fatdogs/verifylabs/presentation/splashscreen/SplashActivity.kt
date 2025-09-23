@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.fatdogs.verifylabs.R
 import com.fatdogs.verifylabs.core.util.BaseActivity
@@ -33,6 +34,13 @@ class SplashActivity : AppCompatActivity() {
         // Inflate binding
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val isLightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_NO
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.isAppearanceLightStatusBars = isLightMode
+        window.statusBarColor = getColor(R.color.app_background_before_login)
 
         // Apply window insets safely
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->

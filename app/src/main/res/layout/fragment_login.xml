@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
+        android:paddingRight="24dp"
+        android:paddingLeft="24dp"
         android:gravity="center_horizontal">
 
         <!-- Top Icon / App Logo -->
@@ -56,44 +57,67 @@
             android:textColor="@color/verifylabs_dots_indicator"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUsername"
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:inputType="text"
-            android:textSize="16sp"
-            android:padding="12dp"
+            app:startIconTint="@null"
             android:hint="@string/username"
-            android:drawablePadding="12dp"
-            android:paddingHorizontal="15dp"
-            android:drawableStart="@drawable/ic_user"
-            android:background="@drawable/bg_text_input"
-            android:textColor="@color/colorBlack"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:enabled="true" />
+            app:startIconDrawable="@drawable/ic_user"
+            app:hintTextColor="@color/colorBlack"
+            app:hintEnabled="false">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPassword"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="16sp"
+                android:hint="@string/username"
+                android:background="@drawable/bg_text_input"
+                android:textColor="@color/colorBlack"
+                android:paddingStart="48dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:enabled="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:inputType="textPassword"
-            android:textSize="16sp"
-            android:drawableStart="@drawable/ic_password"
-            android:drawablePadding="10dp"
-            android:padding="12dp"
-            android:background="@drawable/bg_text_input"
+            app:startIconTint="@null"
             android:hint="@string/password"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="15dp"
-            android:textColor="@color/colorBlack"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:enabled="true" />
+            app:startIconDrawable="@drawable/ic_password"
+            app:endIconMode="password_toggle"
+            app:hintTextColor="@color/colorBlack"
+            app:hintEnabled="false">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textSize="16sp"
+                android:hint="@string/password"
+                android:background="@drawable/bg_text_input"
+                android:textColor="@color/colorBlack"
+                android:paddingStart="48dp"
+                android:paddingEnd="60dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:enabled="true" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Sign In Button -->
         <LinearLayout
@@ -124,11 +148,8 @@
             android:id="@+id/btnCreateAccount"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:background="?android:selectableItemBackground"
-            android:padding="12dp"
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="50dp"
             android:gravity="center">
 
             <TextView

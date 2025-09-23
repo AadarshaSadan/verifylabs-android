@@ -4,10 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fatdogs.verifylabs.R
@@ -17,15 +20,19 @@ import com.fatdogs.verifylabs.data.base.PreferenceHelper
 import com.fatdogs.verifylabs.databinding.FragmentLoginBinding
 import com.fatdogs.verifylabs.presentation.MainActivity
 import com.fatdogs.verifylabs.presentation.auth.signup.SignUpActivity
+import com.fatdogs.verifylabs.presentation.onboarding.OnboardingActivity
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.math.log
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
+
+    private val TAG = "LoginFragment"
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -37,18 +44,42 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         setupClickListeners()
         setupTextWatchers()
         setupObservers()
+        observeKeyboard()
     }
+
+
+    private fun observeKeyboard() {
+        val rootView = binding.root
+        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+            val r = android.graphics.Rect()
+            rootView.getWindowVisibleDisplayFrame(r)
+            val screenHeight = rootView.rootView.height
+            val keypadHeight = screenHeight - r.bottom
+
+            val isKeyboardOpen = keypadHeight > screenHeight * 0.15 // 15% threshold
+
+
+            // Call the activity method to hide/show bottom layout
+            (activity as? OnboardingActivity)?.setBottomLayoutVisibility(!isKeyboardOpen)
+        }
+    }
+
+
 
     private fun setupClickListeners() {
         binding.btnGetStarted.setOnClickListener {

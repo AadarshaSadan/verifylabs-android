@@ -1,6 +1,7 @@
 package com.fatdogs.verifylabs.presentation.onboarding
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -19,6 +20,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var prefs: PreferencesHelperImpl
+    private val TAG = "OnboardingActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,12 +36,7 @@ class OnboardingActivity : AppCompatActivity() {
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Apply window insets
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+
 
         // Setup ViewPager2 adapter
         val totalPages = 3
@@ -60,6 +57,8 @@ class OnboardingActivity : AppCompatActivity() {
         binding.onboardingViewPager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+                // Bottom layout visible for pages 0 and 1
+
                 binding.btnNext.visibility = if (position == totalPages - 1) View.GONE else View.VISIBLE
             }
         })
@@ -76,4 +75,10 @@ class OnboardingActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun setBottomLayoutVisibility(visible: Boolean) {
+        binding.bottomLayout.visibility = if (visible)View.VISIBLE else View.GONE
+
+    }
+
 }

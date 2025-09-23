@@ -27,6 +27,7 @@
     <color name="bacakGreen">#4F8BC34A</color>
     <color name="txtGreen">#4CAF50</color>
     <color name="txtBlue">#55AAFD</color>
+    <color name="txtclick_blue">#007AFF</color>
     <color name="colorTrackSubject">#B3B3B3</color>
     <color name="shadowColor">#2A2A2A</color>
     <color name="very_light_blue">#203A99C8</color>
@@ -50,4 +51,6 @@
     <color name="verifylabs_logo_green">#38B031</color>
     <color name="verifylabs_dots_indicator">#9C9DA1</color>
     <color name="verifylabs_button_blue_color">#007CFF</color>
+
+    <color name="color_media_image">#434341</color>
 </resources>
