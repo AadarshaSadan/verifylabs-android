@@ -1,5 +1,6 @@
 package com.fatdogs.verifylabs.data.network
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -40,4 +41,12 @@ interface ApiService {
    suspend fun checkCredits(
        @Body body: JsonObject
    ): Response<JsonObject>
+
+
+    @POST("plans")
+    suspend fun getPlans(
+        @Body body: JsonObject
+    ): Response<JsonArray>
+
+
 }

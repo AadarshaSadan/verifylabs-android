@@ -127,4 +127,6 @@ class MainActivity : AppCompatActivity() {
             Log.e(TAG, "Error clearing saved media: ${e.message}", e)
         }
     }
+
+
 }

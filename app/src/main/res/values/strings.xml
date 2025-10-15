@@ -46,4 +46,8 @@
     <string name="sign_up_here"> Sign Up Here</string>
     <string name="if_you_want_to_test_an_audio_file_share">if you want to test an audio file Share</string>
     <string name="the_file_into_the_verifylabs_extension_instead">the file into the verifyLabs extension instead</string>
+    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="about_legal_"><![CDATA[About & Legal]]></string>
+    <string name="_2025_verifylabs_n_nall_rights_reserved">© 2025 VerifyLabs. \n\nAll rights reserved.</string>
+    <string name="credits_remaining">Credits Remaining: %1$s</string>
 </resources>

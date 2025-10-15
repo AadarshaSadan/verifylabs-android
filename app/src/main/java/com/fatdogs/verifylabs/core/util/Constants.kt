@@ -2,6 +2,7 @@ package com.fatdogs.verifylabs.core.util
 
 class Constants {
     companion object {
+        val SECRET_KEY= "dZnxiwh!o*%cf!dNk3kP8R&P"
         val PASSWORD="password"
         val CREDIT_REMAINING = "credit_remaining"
         const val USER_NAME ="user_name"

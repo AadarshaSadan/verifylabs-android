@@ -59,6 +59,6 @@
     <color name="verifylabs_button_blue_color">#007CFF</color>
 
     <color name="color_media_image">#E8E8E9</color>
-
+    <color name="color_about_us_drawable">#F2F2F6</color>
 
 </resources>

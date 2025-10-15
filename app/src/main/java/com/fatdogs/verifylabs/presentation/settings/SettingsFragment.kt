@@ -6,21 +6,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.fatdogs.verifylabs.R
+import com.fatdogs.verifylabs.core.util.Constants
 import com.fatdogs.verifylabs.core.util.Status
 import com.fatdogs.verifylabs.data.base.PreferenceHelper
 import com.fatdogs.verifylabs.databinding.FragmentSettingsBinding
-import com.fatdogs.verifylabs.presentation.auth.login.LoginViewModel
 import com.fatdogs.verifylabs.presentation.auth.login.ApiResponseLogin
+import com.fatdogs.verifylabs.presentation.auth.login.LoginViewModel
 import com.fatdogs.verifylabs.presentation.onboarding.OnboardingActivity
+import com.fatdogs.verifylabs.presentation.plan.PlanResponse
+import com.fatdogs.verifylabs.presentation.purchasecredits.PurchaseCreditsBottomSheet
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,6 +36,8 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var loginViewModel: LoginViewModel
+    private lateinit var planViewModel: PlanViewModel
+    private var planList: List<PlanResponse> = emptyList()
 
     companion object {
         private const val TAG = "SettingsFragment"
@@ -42,236 +47,150 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        try {
-            _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-            return binding.root
-        } catch (e: Exception) {
-            Log.e(TAG, "Error inflating view: ${e.message}", e)
-            return null
-        }
+    ): View {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        try {
-            loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
-            setupUi()
-            setupObservers()
-            setupClickListeners()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in onViewCreated: ${e.message}", e)
-            if (isAdded) {
-                Toast.makeText(requireContext(), "Error initializing settings", Toast.LENGTH_SHORT).show()
-            }
-        }
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        planViewModel = ViewModelProvider(this)[PlanViewModel::class.java]
+
+        setupUi()
+        setupObservers()
+        setupClickListeners()
+        fetchPlans()
     }
 
     private fun setupUi() {
-        try {
-            binding.etUsername.setText(preferenceHelper.getUserName() ?: "")
-            binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
-            binding.tvApiKey.text = "API KEY: ${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
-            binding.tvCreditsRemaining.text = "Credits Remaining: ${preferenceHelper.getCreditRemaining() ?: 0}"
-        } catch (e: Exception) {
-            Log.e(TAG, "Error setting up UI: ${e.message}", e)
-            if (isAdded) {
-                Toast.makeText(requireContext(), "Error loading settings", Toast.LENGTH_SHORT).show()
+        binding.etUsername.setText(preferenceHelper.getUserName() ?: "")
+        binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
+        binding.tvApiKey.text = "API KEY: ${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
+        // disable the purchase button until plans are loaded
+        binding.btnPurchaseCredits.isEnabled = false
+        binding.btnPurchaseCredits.alpha = 0.5f
+
+
+            if(preferenceHelper.getCreditRemaining() != null){
+                val storeCredits = preferenceHelper.getCreditRemaining()
+                val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+                binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                binding.tvCreditsRemaining.visibility = View.VISIBLE
+            } else {
+                binding.tvCreditsRemaining.visibility = View.GONE
             }
-        }
+
     }
 
     private fun setupClickListeners() {
-        try {
-            binding.llCreditsInfo.setOnClickListener {
-                try {
-                    loginViewModel.checkCredits(
-                        preferenceHelper.getUserName() ?: "",
-                        preferenceHelper.getApiKey() ?: ""
-                    )
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error checking credits: ${e.message}", e)
-                    if (isAdded) {
-                        Toast.makeText(requireContext(), "Error checking credits", Toast.LENGTH_SHORT).show()
-                    }
+        binding.llCreditsInfo.setOnClickListener {
+            loginViewModel.checkCredits(
+                preferenceHelper.getUserName() ?: "",
+                preferenceHelper.getApiKey() ?: ""
+            )
+        }
+
+        binding.btnTestSave.setOnClickListener {
+            val username = binding.etUsername.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                loginViewModel.login(username, password)
+            } else {
+                Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.llLogout.setOnClickListener {
+            preferenceHelper.setIsLoggedIn(false)
+            preferenceHelper.clear()
+            startActivity(
+                Intent(requireActivity(), OnboardingActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
+            )
+            requireActivity().finish()
+        }
+
+        binding.btnPurchaseCredits.setOnClickListener {
+            if (planList.isEmpty()) {
+                Toast.makeText(requireContext(), "Please wait, loading plans...", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
-            binding.btnTestSave.setOnClickListener {
-                try {
-                    val username = binding.etUsername.text.toString().trim()
-                    val password = binding.etPassword.text.toString().trim()
-
-                    if (username.isNotEmpty() && password.isNotEmpty()) {
-                        loginViewModel.login(username, password)
-                    } else {
-                        Log.w(TAG, "Username or password is empty")
-                        if (isAdded) {
-                            Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error handling save button click: ${e.message}", e)
-                    if (isAdded) {
-                        Toast.makeText(requireContext(), "Error saving settings", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            val tag = "PurchaseCreditsBottomSheet"
+            val existingSheet = parentFragmentManager.findFragmentByTag(tag)
+            if (existingSheet == null) {
+                val bottomSheet = PurchaseCreditsBottomSheet.newInstance(ArrayList(planList))
+                bottomSheet.show(parentFragmentManager, tag)
+            } else {
+                Log.d(TAG, "PurchaseCreditsBottomSheet is already shown")
             }
+        }
 
-            binding.llLogout.setOnClickListener {
-                try {
-                    preferenceHelper.setIsLoggedIn(false)
-                    preferenceHelper.clear()
-                    if (isAdded) {
-                        startActivity(
-                            Intent(requireActivity(), OnboardingActivity::class.java).apply {
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            }
-                        )
-                        requireActivity().finish()
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error handling logout: ${e.message}", e)
-                    if (isAdded) {
-                        Toast.makeText(requireContext(), "Error logging out", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-
-            binding.btnPurchaseCredits.setOnLongClickListener {
-                showPurchaseCreditsDialog()
-                true
-            }
-
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error setting up click listeners: ${e.message}", e)
-            if (isAdded) {
-                Toast.makeText(requireContext(), "Error initializing click listeners", Toast.LENGTH_SHORT).show()
-            }
+        binding.btnAboutus.setOnClickListener {
+            val bottomSheet = AboutUsBottomSheet()
+            bottomSheet.show(parentFragmentManager, "AboutUsBottomSheet")
         }
     }
 
     private fun setupObservers() {
-        try {
-            loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
-                when (resource.status) {
-                    Status.LOADING -> {
-                        Log.d(TAG, "Checking credits...")
-                        if (isAdded) {
-                            Toast.makeText(requireContext(), "Checking credits...", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    Status.SUCCESS -> {
-                        resource.data?.let { dataJson ->
-                            try {
-                                val response = Gson().fromJson(dataJson.toString(), ApiResponseCredits::class.java)
-                                val totalCredits = (response.credits ?: 0) + (response.creditsMonthly ?: 0)
-                                binding.tvCreditsRemaining.text = "Credits Remaining: $totalCredits"
-                                preferenceHelper.setCreditReamaining(totalCredits) // Fixed typo
-                                Log.d(TAG, "Credits updated: $totalCredits")
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Credits parsing error: ${e.message}", e)
-                                if (isAdded) {
-                                    Toast.makeText(requireContext(), "Error parsing credits data", Toast.LENGTH_SHORT).show()
-                                } else {
-
-                                }
-                            }
-                        } ?: run {
-                            Log.w(TAG, "Credits response success but data is null")
-                            if (isAdded) {
-                                Toast.makeText(requireContext(), "No credits data available", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                    Status.ERROR -> {
-                        Log.e(TAG, "Credits error: ${resource.message}")
-                        if (isAdded) {
-                            Toast.makeText(requireContext(), resource.message ?: "Failed to get credits", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+        loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
+            when (resource.status) {
+                Status.LOADING -> {
+                    binding.tvTestSave.text = "Saving..."
+                    binding.btnTestSave.isEnabled = false
                 }
-            }
-
-            loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
-                when (resource.status) {
-                    Status.LOADING -> {
-                        Log.d(TAG, "Logging in...")
-                        binding.tvTestSave.text = "Saving..."
-                        binding.btnTestSave.isEnabled = false
-                    }
-                    Status.SUCCESS -> {
-                        resource.data?.let { dataJson ->
-                            try {
-                                val response = Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
-                                preferenceHelper.setApiKey(response.apiKey)
-                                preferenceHelper.setIsLoggedIn(true)
-                                preferenceHelper.setCreditReamaining(response.credits) // Fixed typo
-                                binding.tvApiKey.text = "API KEY: ${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
-                                binding.tvCreditsRemaining.text = "Credits Remaining: ${preferenceHelper.getCreditRemaining() ?: 0}"
-                                binding.tvTestSave.text = "Saved"
-                                binding.btnTestSave.isEnabled = true
-                                Log.d(TAG, "Login successful, API key: ${response.apiKey}")
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Login parsing error: ${e.message}", e)
-                            }
-                        } ?: run {
-                            Log.w(TAG, "Login response success but data is null")
-                            binding.tvTestSave.text = "Error! Try Again"
-                            binding.btnTestSave.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_btn_failed_likely_red)
-                            binding.btnTestSave.isEnabled = true
-                            if (isAdded) {
-                                Toast.makeText(requireContext(), "No login data available", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                    Status.ERROR -> {
-                        Log.e(TAG, "Login error: ${resource.message}")
-                        binding.tvTestSave.text = "Error! Try Again"
+                Status.SUCCESS -> {
+                    resource.data?.let { dataJson ->
+                        val response = Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
+                        preferenceHelper.setApiKey(response.apiKey)
+                        preferenceHelper.setIsLoggedIn(true)
+                        preferenceHelper.setCreditReamaining(response.credits)
+                        binding.tvApiKey.text = "API KEY: ${response.apiKey.take(6)}....."
+                        binding.tvTestSave.text = "Saved"
                         binding.btnTestSave.isEnabled = true
-                        if (isAdded) {
-                            Toast.makeText(requireContext(), resource.message ?: "Login failed", Toast.LENGTH_SHORT).show()
-                        }
+                        val storeCredits = preferenceHelper.getCreditRemaining()
+                        val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+                        binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
                     }
                 }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error setting up observers: ${e.message}", e)
-            if (isAdded) {
-                Toast.makeText(requireContext(), "Error initializing observers", Toast.LENGTH_SHORT).show()
+                Status.ERROR -> {
+                    binding.tvTestSave.text = "Error! Try Again"
+                    binding.btnTestSave.isEnabled = true
+                    Toast.makeText(requireContext(), resource.message ?: "Login failed", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
+    private fun fetchPlans() {
+        planViewModel.getPlans(Constants.SECRET_KEY)
+        planViewModel.plansObserver.observe(viewLifecycleOwner) { resource ->
+            when (resource.status) {
+                Status.LOADING -> {
+                    Log.d(TAG, "Fetching plans...")
+                  //  binding.btnPurchaseCredits = "Loading plans..."
+                }
+                Status.SUCCESS -> {
+                    resource.data?.let {
+                        planList = it
+                        Log.d(TAG, "Plans fetched: $planList")
 
-    private fun showPurchaseCreditsDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_success, null)
-
-        // Customize title and message
-        dialogView.findViewById<TextView>(R.id.title).text = "Purchase Credits"
-        dialogView.findViewById<TextView>(R.id.message).text = "Do you want to purchase more credits?"
-
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        // Handle OK button
-        dialogView.findViewById<Button>(R.id.ok).setOnClickListener {
-            dialog.dismiss()
-            Toast.makeText(requireContext(), "Purchase flow starts here!", Toast.LENGTH_SHORT).show()
-            // TODO: Start your purchase activity or API call here
+                        // enable purchase button
+                        binding.btnPurchaseCredits.isEnabled = true
+                        binding.btnPurchaseCredits.alpha = 1f
+                       // binding.btnPurchaseCredits.text = "Purchase Credits"
+                    }
+                }
+                Status.ERROR -> {
+                    Log.e(TAG, "Error fetching plans: ${resource.message}")
+                   // binding.btnPurchaseCredits.text = "Failed to load plans"
+                    Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
-
-        // Handle Cancel button
-        dialogView.findViewById<Button>(R.id.cancel).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
