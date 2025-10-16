@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace 'com.fatdogs.verifylabs'
+    namespace 'com.verifylabs.ai'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.fatdogs.verifylabs"
+        applicationId "com.verifylabs.ai"
         minSdk 24
         targetSdk 35
         versionCode 1
