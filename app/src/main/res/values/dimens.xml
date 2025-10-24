@@ -19,4 +19,15 @@
     <dimen name="font_title3">18sp</dimen>
     <dimen name="font_title2">22sp</dimen>
     <dimen name="font_title1">28sp</dimen>
+
+
+    <dimen name="margin_default">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">12dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_large">10dp</dimen>
+    <dimen name="text_size_small">11sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+
 </resources>

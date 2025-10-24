@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinAndroidKsp)
     alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.google.services)
 
 
 }
@@ -16,8 +17,8 @@ android {
         applicationId "com.verifylabs.ai"
         minSdk 24
         targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +38,46 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file(System.getProperty("user.home") + "/.android/debug.keystore")
+            storePassword "android"
+            keyAlias "AndroidDebugKey"
+            keyPassword "android"
+        }
+
+        release {
+            storeFile file("/Users/aadarshabajagain/AndroidStudioProjects/keystore/Androidappkey/verifylabs/verifylabskey.jks")
+            storePassword "L@bSr2D#8"   // replace with your actual password
+            keyAlias "verifylabs"                 // replace with your key alias
+            keyPassword "L@bSr2D#8"           // replace with your key password
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
     }
 }
 
@@ -69,9 +110,18 @@ dependencies {
     implementation libs.androidx.appcompat
 
 
+    //lottie animation
+    implementation libs.lottie
+
     //for in-app purchase
 
     implementation(libs.purchases)
+
+    // Firebase
+    implementation(libs.firebase.analytics.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.google.firebase.analytics.ktx)
+
 
 
     testImplementation libs.junit

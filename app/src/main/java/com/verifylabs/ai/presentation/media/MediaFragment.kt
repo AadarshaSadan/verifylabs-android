@@ -420,6 +420,8 @@ class MediaFragment : Fragment() {
                             updateStatus("Uploading media...", false)
                         }
                         Status.SUCCESS -> {
+
+
                             val uploadedUrl = resource.data?.get("uploadedUrl")?.asString ?: "Unknown URL"
                             updateStatus("Verifying media...", false)
                             viewModel.verifyMedia(
@@ -452,6 +454,14 @@ class MediaFragment : Fragment() {
                                 resource.data.toString(),
                                 VerificationResponse::class.java
                             )
+
+                            if (response.error != null) {
+                                updateStatus("Verification error: ${response.error}", true)
+                                binding.textStatusMessage.text = "${response.bandDescription}"
+                                binding.txtIdentifixation.text = "${response.error}"
+                                setButtonState(ScanButtonState.FAILED)
+                                return@observe
+                            }
 
                             Log.d(TAG, "observeViewModel: ${resource.data}")
 

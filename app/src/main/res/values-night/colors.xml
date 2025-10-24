@@ -44,7 +44,7 @@
     <color name="statusDefault">#B0BEC5</color>
 
     <!-- Status text -->
-    <color name="statusTextLight">#FFFFFF</color> <!-- Fixed for dark mode: light text -->
+    <color name="statusTextLight">#FFFFFF</color>
     <color name="statusTextDark">#000000</color>
     <color name="text_app_blue">#72326DDB</color>
     <color name="verifylabs_logo_only_dashboard">#EDF1EA</color>
@@ -54,4 +54,7 @@
 
     <color name="color_media_image">#434341</color>
     <color name="color_about_us_drawable">#000000</color>
+    <color name="color_share_screen_background">#80000000</color>
+
+
 </resources>

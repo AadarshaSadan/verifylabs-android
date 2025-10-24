@@ -20,31 +20,70 @@
         android:theme="@style/Theme.Verifylabs"
         tools:targetApi="31">
         <activity
+            android:name=".share.ShareReceiverActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Verifylabs">
+
+            <!-- Handles single shared media -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+
+            <!-- Handles multiple shared media -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+
+            <!-- Handles "Open with" from file managers -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".presentation.auth.signup.SignUpActivity"
             android:exported="false"
-            android:theme="@style/Theme.Verifylabs"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Verifylabs" />
         <activity
             android:name=".presentation.onboarding.OnboardingActivity"
-            android:theme="@style/Theme.Verifylabs"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Verifylabs" />
         <activity
             android:name=".presentation.splashscreen.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.Verifylabs"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.Verifylabs"
             tools:ignore="SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <activity
             android:name=".presentation.MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Verifylabs"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Verifylabs" />
     </application>
 
 </manifest>

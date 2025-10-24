@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/media_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:fitsSystemWindows="true"
+    android:background="@color/app_background_before_login"
+    tools:context=".share.ShareReceiverActivity">
+
+    <!-- Top Dashboard View -->
+    <View
+        android:id="@+id/viewVerifyLab"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@drawable/verify_labs_dashboard_all"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="32dp" />
+
+    <!-- Media Preview with CardView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardMedia"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:padding="10dp"
+        android:layout_marginTop="24dp"
+        android:clipChildren="false"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewVerifyLab">
+
+        <!-- Image Preview -->
+        <ImageView
+            android:id="@+id/imageViewMedia"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:visibility="visible" />
+
+        <!-- Video Preview -->
+        <VideoView
+            android:id="@+id/videoViewMedia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- Audio Preview -->
+        <LinearLayout
+            android:id="@+id/audioContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/audioIcon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_media" />
+
+            <TextView
+                android:id="@+id/audioFileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Audio File"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <!-- Overlay Image (tick / X / warning) -->
+        <ImageView
+            android:id="@+id/imageOverlay"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:alpha="0.7"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <!-- Lottie Animation (Uploading/Verifying) -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/search" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Status Message -->
+    <LinearLayout
+        android:id="@+id/layoutInfoStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardMedia">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtIdentifixation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textAlignment="center"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/imgIdentification"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textStatusMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <!-- No credit Message -->
+    <LinearLayout
+        android:id="@+id/layoutNoCreditStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layoutHelp"
+        android:layout_marginTop="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/drawable_verify_background_orange"
+            android:paddingVertical="20dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_no_credits"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/txtNoCredit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/insufficient_credits_please_upgrade_or_buy_more"
+                    android:textSize="16sp"
+                    android:textColor="#ffffff" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <!-- Credits Info -->
+    <LinearLayout
+        android:id="@+id/layoutHelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/bg_rectangular_box_gray"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ProgressBar
+            android:id="@+id/progressCredits"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyle" />
+
+        <TextView
+            android:id="@+id/tvCreditsRemaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:text="@string/credits_remaining_0"
+            android:textColor="@color/colorBlack"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_remaining_credit_card" />
+    </LinearLayout>
+
+
+
+    <!-- Select Media Button -->
+    <LinearLayout
+        android:id="@+id/btnDone"
+        android:layout_width="100dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/drawable_verify_background_green"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutHelp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_tick_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="@string/done"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

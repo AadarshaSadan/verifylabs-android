@@ -61,4 +61,5 @@
     <color name="color_media_image">#E8E8E9</color>
     <color name="color_about_us_drawable">#F2F2F6</color>
 
+    <color name="color_share_screen_background">#80D0D0D0</color>
 </resources>

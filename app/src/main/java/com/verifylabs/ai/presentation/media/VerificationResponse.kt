@@ -7,6 +7,9 @@ data class VerificationResponse(
     @SerializedName("media_type")
     val mediaType: String,
 
+    @SerializedName("error")
+    val error: String?,
+
     @SerializedName("score")
     val score: Double,
 

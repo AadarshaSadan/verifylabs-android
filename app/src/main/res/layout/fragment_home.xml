@@ -74,12 +74,12 @@
             android:id="@+id/tvCreditsRemaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_credit_card"
             android:drawablePadding="5dp"
             android:gravity="center_horizontal"
             android:padding="3dp"
-            android:text="Credits Remaining: 100"
+            android:text="@string/credits_remaining_0"
             android:textColor="@color/colorBlack"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_remaining_credit_card" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
