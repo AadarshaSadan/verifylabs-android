@@ -10,6 +10,10 @@
         android:icon="@drawable/ic_media"
         android:title="Test Media" />
 
+    <item android:id="@+id/nav_audio"
+        android:icon="@drawable/ic_audio_nav"
+        android:title="Audio" />
+
     <item
         android:id="@+id/nav_settings"
         android:title="Settings"

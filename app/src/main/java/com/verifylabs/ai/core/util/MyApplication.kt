@@ -15,7 +15,7 @@ class MyApplication : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
         Purchases.configure(
-            PurchasesConfiguration.Builder(this, "sk_LgBpMBEefiXYuMtvvyqNRoPkAtaHP")
+            PurchasesConfiguration.Builder(this, "goog_yXbrYeLKvZzhEGSeDqSRKpyDsRo")
                 .appUserID(null) // or provide custom user id if you handle accounts
                 .build()
 

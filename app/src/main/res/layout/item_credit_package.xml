@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:layout_marginBottom="10dp"
-      android:background="@drawable/drawable_verify_background_white_radius"
+    android:background="@drawable/drawable_verify_background_white_radius"
+    android:orientation="vertical"
     android:padding="12dp">
 
     <!-- Main horizontal item -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginVertical="6dp"
         android:gravity="center_vertical"
-        android:layout_marginVertical="6dp">
+        android:orientation="horizontal">
 
         <!-- Coin image with badge -->
         <FrameLayout
@@ -26,28 +25,29 @@
                 android:id="@+id/imgCoins"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/verifylabs_circle_square_icon"
-                android:contentDescription="Coins icon" />
+                android:contentDescription="Coins icon"
+                android:src="@drawable/verifylabs_circle_square_icon" />
 
             <TextView
                 android:id="@+id/tvBadge"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="top|end"
-                android:visibility="gone"
                 android:background="@drawable/drawable_verify_background_btn_blue"
-                android:text="250"
-                android:textSize="10sp"
-                android:textColor="@android:color/white"
                 android:gravity="center"
-                android:padding="2dp"/>
+                android:padding="2dp"
+                android:text="250"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:visibility="gone" />
         </FrameLayout>
 
         <!-- Credit info -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
             android:orientation="vertical">
 
             <TextView
@@ -55,53 +55,49 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1000 Credits"
+                android:textColor="@color/colorBlack"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorBlack" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$6.99"
-                android:textSize="16sp"
-                android:textColor="@color/txtBlue" />
+                android:textColor="@color/txtBlue"
+                android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- Buy button aligned to the right -->
         <LinearLayout
             android:id="@+id/btnBuyCredits"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingStart="30dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingEnd="30dp"
+            android:layout_width="120dp"
+            android:layout_height="30dp"
             android:background="@drawable/drawable_buy_in_app_purchase"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvBuyCredits"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Buy"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_gravity="center_vertical" />
+                android:textStyle="bold" />
         </LinearLayout>
+
     </LinearLayout>
 
     <!-- Extra text below the main item -->
     <TextView
         android:id="@+id/tvExtraText"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="100  VerifyLabs Credits"
-        android:textColor="@color/shape_stroke"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="4dp"
+        android:text=""
+        android:textColor="#AAB2AA"
+        android:textSize="14sp" />
 </LinearLayout>

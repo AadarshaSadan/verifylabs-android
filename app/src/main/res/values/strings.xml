@@ -53,4 +53,5 @@
     <string name="credits_remaining_0">Credits Remaining: 0</string>
     <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
     <string name="done">Done</string>
+    <string name="start_recording">start_recording\n\n</string>
 </resources>

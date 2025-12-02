@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1047338092885",
-    "project_id": "verifylabs-ai",
-    "storage_bucket": "verifylabs-ai.firebasestorage.app"
+    "project_number": "840854010163",
+    "project_id": "verifylabs-f40ba",
+    "storage_bucket": "verifylabs-f40ba.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1047338092885:android:45500e36e8d8e82713c7dc",
+        "mobilesdk_app_id": "1:840854010163:android:13ae746aafe5d3f9c0e646",
         "android_client_info": {
           "package_name": "com.verifylabs.ai"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCZFOf3_Ft-5NManq9odxJ1EqgnG_m2mgU"
+          "current_key": "AIzaSyDsa_eeSThNISYM2ubeIXStpHcb-B9PDzU"
         }
       ],
       "services": {

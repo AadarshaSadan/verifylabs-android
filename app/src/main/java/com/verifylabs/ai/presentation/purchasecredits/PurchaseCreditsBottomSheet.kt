@@ -6,20 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.verifylabs.ai.R
-import com.verifylabs.ai.core.util.Constants
-import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.databinding.FragmentPurchaseCreditsBottomSheetBinding
 import com.verifylabs.ai.presentation.plan.CreditPackage
 import com.verifylabs.ai.presentation.plan.CreditPackageAdapter
-import com.verifylabs.ai.presentation.plan.PlanResponse
-import com.verifylabs.ai.presentation.settings.PlanViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getOfferingsWith
+import com.revenuecat.purchases.purchasePackageWith
+import com.revenuecat.purchases.restorePurchasesWith
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -28,141 +27,120 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
 
     private var _binding: FragmentPurchaseCreditsBottomSheetBinding? = null
     private val binding get() = _binding!!
-    @Inject
-    lateinit var preferenceHelper: PreferenceHelper
 
-    private lateinit var planViewModel: PlanViewModel
+    @Inject lateinit var preferenceHelper: PreferenceHelper
     private var adapter: CreditPackageAdapter? = null
-    private val planList: MutableList<PlanResponse> = mutableListOf()
+    private val TAG = "PurchaseCreditsBS"
 
-    override fun getTheme(): Int = R.style.FullScreenBottomSheetDialogTheme
-    private val TAG = "PurchaseCreditsBottomSheet"
+    override fun getTheme() = R.style.FullScreenBottomSheetDialogTheme
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPurchaseCreditsBottomSheetBinding.inflate(inflater, container, false)
-
-        planViewModel = ViewModelProvider(this)[PlanViewModel::class.java]
-        setupUI()
-        setupAdapter()
-        setupStickyHeader()
-
-        val receivedPlans = arguments?.getSerializable(ARG_PLANS) as? ArrayList<PlanResponse>
-        if (!receivedPlans.isNullOrEmpty()) {
-            Log.d(TAG, "Received ${receivedPlans} plans from SettingsFragment")
-            updateAdapter(receivedPlans)
-        } else {
-            Log.d(TAG, "No plans passed, fetching from API")
-            fetchPlans()
-        }
-
         return binding.root
     }
-
-    private fun setupUI() {
-        binding.tvCurrentBalance.text = "${preferenceHelper.getCreditRemaining() ?: 0}"
-        binding.tvHeaderTitle.alpha = 0f // initially hidden
-    }
-
-    private fun setupStickyHeader() {
-        // Listen to scroll changes
-        binding.nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-
-            // Threshold: when main title scrolls past 150px (adjust as needed)
-            val threshold = binding.tvTitle.top
-
-            if (scrollY > threshold) {
-                // Fade in header
-                if (binding.tvHeaderTitle.alpha == 0f) {
-                    binding.tvHeaderTitle.animate().alpha(1f).setDuration(500).start()
-                }
-            } else {
-                // Fade out header
-                if (binding.tvHeaderTitle.alpha == 1f) {
-                    binding.tvHeaderTitle.animate().alpha(0f).setDuration(500).start()
-                }
-            }
-        }
-    }
-
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        (dialog as? BottomSheetDialog)?.behavior?.apply {
-//            state = BottomSheetBehavior.STATE_EXPANDED
-//            skipCollapsed = true
-//
-//        }
-//
-//        // Make background transparent so rounded corners show
-//        (dialog as? BottomSheetDialog)?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-//
-//        binding.btnClose.setOnClickListener { dismiss() }
-//    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bottomSheetDialog = dialog as? BottomSheetDialog
-        bottomSheetDialog?.behavior?.apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            skipCollapsed = true
-        }
+        setupUI()
+        setupRecyclerView()
+        loadOfferings()
 
-        // Make the dialog window transparent
-        bottomSheetDialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        // Fix extra white background by making the container transparent and clipping corners
-        val bottomSheet = bottomSheetDialog?.findViewById<View>(
-            com.google.android.material.R.id.design_bottom_sheet
-        )
-        bottomSheet?.let {
-            it.setBackgroundResource(android.R.color.transparent) // remove default white
-            it.clipToOutline = true // ensure rounded corners clip content
+        (dialog as? BottomSheetDialog)?.apply {
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.skipCollapsed = true
         }
 
         binding.btnClose.setOnClickListener { dismiss() }
     }
 
-
-    private fun setupAdapter() {
-        adapter = CreditPackageAdapter(emptyList()) { selected ->
-            Toast.makeText(requireContext(), "Selected ${selected.credits} credits", Toast.LENGTH_SHORT).show()
-        }
-        binding.rvCreditPackages.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvCreditPackages.adapter = adapter
+    private fun setupUI() {
+        binding.tvCurrentBalance.text = "${preferenceHelper.getCreditRemaining() ?: 0}"
+        binding.tvRestorePurchase.setOnClickListener { restorePurchases() }
     }
 
-    private fun updateAdapter(plans: List<PlanResponse>) {
-        val creditPackages = plans.map { plan ->
-            CreditPackage(
-                R.drawable.verifylabs_circle_square_icon,
-                plan.credits,
-                plan.price.toDoubleOrNull() ?: 0.0,
-                plan.name
+    private fun setupRecyclerView() {
+        adapter = CreditPackageAdapter { selectedPackage ->
+            Purchases.sharedInstance.purchasePackageWith(
+                requireActivity(),
+                selectedPackage.rcPackage,
+                onError = { error, userCancelled ->
+                    if (!userCancelled) {
+                        Toast.makeText(requireContext(), "Purchase failed: ${error.message}", Toast.LENGTH_LONG).show()
+                    }
+                },
+                onSuccess = { _, customerInfo ->
+                    Toast.makeText(requireContext(), "Thank you! ${selectedPackage.buttonText} successful", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                }
             )
         }
-        adapter?.updateList(creditPackages)
+        binding.rvCreditPackages.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@PurchaseCreditsBottomSheet.adapter
+            isNestedScrollingEnabled = false
+        }
     }
 
-    private fun fetchPlans() {
-        planViewModel.getPlans(Constants.SECRET_KEY)
-        planViewModel.plansObserver.observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    resource.data?.let { plans ->
-                        planList.clear()
-                        planList.addAll(plans)
-                        updateAdapter(plans)
+    private fun loadOfferings() {
+        Purchases.sharedInstance.getOfferingsWith(
+            onError = { error ->
+                Log.e(TAG, "Failed to load offerings")
+                Toast.makeText(requireContext(), "Network error. Try again.", Toast.LENGTH_SHORT).show()
+            },
+            onSuccess = { offerings ->
+                val current = offerings.current ?: return@getOfferingsWith
+
+                val packages = current.availablePackages.mapNotNull { pkg ->
+                    val product = pkg.product
+                    val isSub = product.subscriptionOptions != null
+
+                    val credits = if (isSub) 0 else {
+                        // Extract number from title or description
+                        (product.title + product.description)
+                            .let { "\\d+".toRegex().find(it)?.value?.toIntOrNull() ?: 0 }
                     }
+
+                    Log.d(TAG, "product title: ${product.title} ")
+
+//                    val cleanName = product.title
+//                        .substringBefore("(").trim()
+//                        .let { if (it.contains("Credits")) it.substringBefore("Credits").trim() else it }
+//                        .ifBlank { if (isSub) product.title.substringBefore("(").trim() else "Credit Pack" }
+
+                    val cleanName = product.title
+                        .replace(Regex("\\(.*\\)"), "")
+                        .trim()
+
+
+                    Log.d(TAG, "cleanName: $cleanName, credits: $credits, isSub: $isSub")
+
+                    CreditPackage(
+                        imageRes = R.drawable.verifylabs_circle_square_icon,
+                        credits = credits,
+                        priceUsd = product.price.amountMicros / 1_000_000.0,
+                        name = cleanName,
+                        description = product.description,
+                        rcPackage = pkg,
+                        isSubscription = isSub
+                    )
                 }
-                Status.ERROR -> {
-                    Toast.makeText(requireContext(), "Failed to fetch plans", Toast.LENGTH_SHORT).show()
-                }
-                else -> {}
+
+                // Mark best value (highest credits per dollar)
+                val bestValue = packages.filter { !it.isSubscription && it.credits > 0 }
+                    .maxByOrNull { it.credits / it.priceUsd }
+
+                val finalList = packages.map { it.copy(isBestValue = it == bestValue) }
+
+                adapter?.submitList(finalList)
             }
+        )
+    }
+
+    private fun restorePurchases() {
+        Purchases.sharedInstance.restorePurchasesWith { customerInfo ->
+            Toast.makeText(requireContext(), "Purchases restored!", Toast.LENGTH_SHORT).show()
+            // Optional: refresh balance from backend or customerInfo
         }
     }
 
@@ -172,18 +150,6 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        private const val ARG_PLANS = "plans"
-
-        fun newInstance(plans: ArrayList<PlanResponse>): PurchaseCreditsBottomSheet {
-            val fragment = PurchaseCreditsBottomSheet()
-            val bundle = Bundle().apply {
-                putSerializable(ARG_PLANS, plans)
-            }
-            fragment.arguments = bundle
-            return fragment
-        }
+        fun newInstance() = PurchaseCreditsBottomSheet()
     }
-
-
 }
-

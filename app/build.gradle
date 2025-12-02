@@ -17,8 +17,8 @@ android {
         applicationId "com.verifylabs.ai"
         minSdk 24
         targetSdk 35
-        versionCode 3
-        versionName "1.2"
+        versionCode 7
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,7 +49,7 @@ android {
         }
 
         release {
-            storeFile file("/Users/aadarshabajagain/AndroidStudioProjects/keystore/Androidappkey/verifylabs/verifylabskey.jks")
+            storeFile file("/Users/aadarshabajagain/AndroidStudioProjects/verifylabs/verifylabskey")
             storePassword "L@bSr2D#8"   // replace with your actual password
             keyAlias "verifylabs"                 // replace with your key alias
             keyPassword "L@bSr2D#8"           // replace with your key password
@@ -116,6 +116,8 @@ dependencies {
     //for in-app purchase
 
     implementation(libs.purchases)
+
+    implementation libs.purchases.v770
 
     // Firebase
     implementation(libs.firebase.analytics.ktx)

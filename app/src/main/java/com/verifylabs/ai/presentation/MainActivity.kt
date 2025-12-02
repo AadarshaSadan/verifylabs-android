@@ -12,6 +12,7 @@ import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.ActivityMainBinding
 import com.verifylabs.ai.presentation.viewmodel.MainViewModel
 import com.verifylabs.ai.data.base.PreferenceHelper
+import com.verifylabs.ai.presentation.audio.FragmentAudio
 import com.verifylabs.ai.presentation.home.HomeFragment
 import com.verifylabs.ai.presentation.media.MediaFragment
 import com.verifylabs.ai.presentation.settings.SettingsFragment
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.nav_home -> replaceFragment(HomeFragment())
                         R.id.nav_media -> replaceFragment(MediaFragment())
                         R.id.nav_settings -> replaceFragment(SettingsFragment())
+                        R.id.nav_audio -> replaceFragment(FragmentAudio())
                         else -> {
                             Log.w(TAG, "Unknown navigation item selected: ${item.itemId}")
                             false

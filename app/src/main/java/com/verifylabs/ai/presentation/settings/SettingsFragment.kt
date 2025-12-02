@@ -111,16 +111,27 @@ class SettingsFragment : Fragment() {
             requireActivity().finish()
         }
 
-        binding.btnPurchaseCredits.setOnClickListener {
-            if (planList.isEmpty()) {
-                Toast.makeText(requireContext(), "Please wait, loading plans...", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+//        binding.btnPurchaseCredits.setOnClickListener {
+//            if (planList.isEmpty()) {
+//                Toast.makeText(requireContext(), "Please wait, loading plans...", Toast.LENGTH_SHORT).show()
+//                return@setOnClickListener
+//            }
+//
+//            val tag = "PurchaseCreditsBottomSheet"
+//            val existingSheet = parentFragmentManager.findFragmentByTag(tag)
+//            if (existingSheet == null) {
+//             //   val bottomSheet = PurchaseCreditsBottomSheet.newInstance(ArrayList(planList))
+//                bottomSheet.show(parentFragmentManager, tag)
+//            } else {
+//                Log.d(TAG, "PurchaseCreditsBottomSheet is already shown")
+//            }
+//        }
 
+        binding.btnPurchaseCredits.setOnClickListener {
             val tag = "PurchaseCreditsBottomSheet"
             val existingSheet = parentFragmentManager.findFragmentByTag(tag)
             if (existingSheet == null) {
-                val bottomSheet = PurchaseCreditsBottomSheet.newInstance(ArrayList(planList))
+                val bottomSheet = PurchaseCreditsBottomSheet.newInstance()
                 bottomSheet.show(parentFragmentManager, tag)
             } else {
                 Log.d(TAG, "PurchaseCreditsBottomSheet is already shown")
