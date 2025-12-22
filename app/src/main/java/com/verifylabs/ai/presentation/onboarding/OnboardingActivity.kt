@@ -56,7 +56,7 @@ class OnboardingActivity : AppCompatActivity() {
                 super.onPageSelected(position)
                 // Bottom layout visible for pages 0 and 1
 
-                binding.btnNext.visibility = if (position == totalPages - 1) View.GONE else View.VISIBLE
+              //  binding.btnNext.visibility = if (position == totalPages - 1) View.GONE else View.VISIBLE
             }
         })
 
@@ -65,12 +65,12 @@ class OnboardingActivity : AppCompatActivity() {
         binding.onboardingViewPager.setCurrentItem(startPage, false)
 
         // Next button click
-        binding.btnNext.setOnClickListener {
-            val nextItem = binding.onboardingViewPager.currentItem + 1
-            if (nextItem < totalPages) {
-                binding.onboardingViewPager.currentItem = nextItem
-            }
-        }
+//        binding.btnNext.setOnClickListener {
+//            val nextItem = binding.onboardingViewPager.currentItem + 1
+//            if (nextItem < totalPages) {
+//                binding.onboardingViewPager.currentItem = nextItem
+//            }
+//        }
     }
 
     fun setBottomLayoutVisibility(visible: Boolean) {

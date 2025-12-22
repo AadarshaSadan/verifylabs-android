@@ -26,13 +26,13 @@ class SignUpViewModel @Inject constructor(private val repository: ApiRepository)
         onError("Exception: ${throwable.localizedMessage}")
     }
 
-    fun signUp(fullName: String, email: String, username: String, password: String,secretKey: String) {
+    fun signUp(fullName: String, email: String, username: String, password: String,secretKey: String,isVerified:Int) {
         _signUpResponse.postValue(Resource.loading(null))
         loading.postValue(true)
         job?.cancel()
         job = viewModelScope.launch(exceptionHandler) {
             try {
-                val response = repository.postSignUp(fullName, email, username, password,secretKey)
+                val response = repository.postSignUp(fullName, email, username, password,secretKey,isVerified)
                 if (response.isSuccessful) {
                     _signUpResponse.postValue(Resource.success(response.body()))
                 } else {

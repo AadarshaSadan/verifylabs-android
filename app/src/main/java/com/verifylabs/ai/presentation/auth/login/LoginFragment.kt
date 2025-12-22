@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -161,6 +162,7 @@ class LoginFragment : Fragment() {
                     resource.data?.let {
                         try {
                             val response = Gson().fromJson(it.toString(), ApiResponseLogin::class.java)
+                            Log.d(TAG, "setupObservers: Login Response: $response")
                             preferenceHelper.setApiKey(response.apiKey)
                             preferenceHelper.setIsLoggedIn(true)
                             preferenceHelper.setCreditReamaining(response.credits + response.creditsMonthly)
@@ -174,6 +176,7 @@ class LoginFragment : Fragment() {
                 Status.ERROR -> {
                     binding.tvSignIn.text= getString(R.string.sign_in_login)
                     Toast.makeText(requireContext(), "Login Failed: ${resource.message}", Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "setupObservers: Login Error: ${resource.message}")
                 }
             }
         }

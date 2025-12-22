@@ -13,10 +13,10 @@
         <item name="colorPrimaryDark">@color/app_background</item>
         <item name="colorAccent">@color/app_background</item>
         <item name="android:statusBarColor">@color/app_background</item>
-        <!-- ✅ Control BottomNavigationView text -->
         <item name="bottomNavigationStyle">@style/CustomBottomNavigationView</item>
 
     </style>
+
 
 
     <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
@@ -27,12 +27,12 @@
 
 
     <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">11sp</item> <!-- Bigger for active -->
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">10sp</item> <!-- Bigger for active -->
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">11sp</item> <!-- Smaller for inactive -->
+        <item name="android:textSize">10sp</item> <!-- Smaller for inactive -->
     </style>
 
     <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">

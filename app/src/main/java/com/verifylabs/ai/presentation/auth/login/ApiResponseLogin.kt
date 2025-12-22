@@ -10,5 +10,10 @@ data class ApiResponseLogin(
     @SerializedName("credits_monthly")
     val creditsMonthly: Int,
     @SerializedName("credits")
-    val credits: Int
+    val credits: Int,
+
+    @SerializedName("error")
+    val error: String?
+
+
 )

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet_rounded"
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
+
+    <!-- ================= HANDLE BAR ================= -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="6dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_handle_bar" />
+
+    <!-- ================= CONTENT ================= -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <!-- ICON GROUP -->
+            <FrameLayout
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginTop="12dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_circle_light_green" />
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_mail_outline"
+                    app:tint="@color/primary_brand" />
+            </FrameLayout>
+
+            <!-- TITLE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="Verify Your Email"
+                android:textColor="@color/header_text"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <!-- SUBTITLE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="We've sent a verification link to:"
+                android:textColor="@color/secondary_text"
+                android:textSize="18sp" />
+
+            <!-- EMAIL -->
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="test@gmail.com"
+                android:textColor="@color/primary_brand"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- DESCRIPTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:maxWidth="280dp"
+                android:text="Please check your email and click the verification link before logging in."
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp" />
+
+            <!-- INFO CARD -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_info_card"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- ICON + TITLE -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/info_fill_svgrepo_com"
+                        app:tint="@color/primary_brand" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Important"
+                        android:textColor="@color/header_text"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- BULLET POINTS WITH ICONS -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:orientation="vertical">
+
+                    <!-- Bullet 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/time_4_verify"
+                            app:tint="@color/primary_brand" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="The link expires in 24 hours"
+                            android:textColor="@color/header_text"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Bullet 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/shield_check_verify"
+                            app:tint="@color/primary_brand" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="You must verify before logging in"
+                            android:textColor="@color/header_text"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Bullet 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_mail_about"
+                            app:tint="@color/primary_brand" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Check your spam folder if not received"
+                            android:textColor="@color/header_text"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- OPEN EMAIL BUTTON -->
+            <LinearLayout
+                android:id="@+id/btnOpenEmail"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/bg_primary_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <!-- Icon on the left -->
+                <ImageView
+                    android:id="@+id/ivEmailIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="open_email_app"
+                    android:src="@drawable/email_letter_mail"
+                    app:tint="@android:color/white" />
+
+                <!-- Text -->
+                <TextView
+                    android:id="@+id/tvOpenEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="12dp"
+                    android:text="Open Email App"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- VERIFY LATER -->
+            <LinearLayout
+                android:id="@+id/btnVerifyLaterContainer"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/btnVerifyLater"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="I'll Verify Later"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

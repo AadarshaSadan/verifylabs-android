@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Use theme color for Light/Dark mode -->
+    <solid android:color="@color/icon_container"/>
+    <corners android:radius="1000dp"/>
+</shape>

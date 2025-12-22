@@ -1,6 +1,7 @@
 package com.verifylabs.ai.presentation.auth.signup
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,10 +12,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson
 import com.verifylabs.ai.R
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.databinding.ActivitySignUpBinding
+import com.verifylabs.ai.presentation.auth.login.ApiResponseLogin
+import com.verifylabs.ai.presentation.auth.verifybottomsheet.VerifyEmailBottomSheet
 import com.verifylabs.ai.presentation.onboarding.OnboardingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -25,48 +29,50 @@ class SignUpActivity : AppCompatActivity() {
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
 
-    private val TAG = "SignUpActivity"
-    private val secretKey = "dZnxiwh!o*%cf!dNk3kP8R&P"
-
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var signUpViewModel: SignUpViewModel
+
+    private val secretKey = "dZnxiwh!o*%cf!dNk3kP8R&P"
+
+    private val isVerified=0;
+
+    private val TAG = "SignUpActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Enable edge-to-edge layout
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Set status bar appearance to match theme
-        val isLightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_NO
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.isAppearanceLightStatusBars = isLightMode
-        window.statusBarColor = getColor(R.color.app_background_before_login)
-
-        // Initialize binding and set content view
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Simplified window insets handling
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            binding.scrollView.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.ime()).bottom)
+            binding.scrollView.setPadding(
+                0, 0, 0,
+                insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            )
             insets
         }
 
-        // Initialize ViewModel and clear state
         signUpViewModel = ViewModelProvider(this)[SignUpViewModel::class.java]
-    //    signUpViewModel.clearSignUpResponse() // Reset ViewModel state
 
-        setupClickListeners()
         setupTextWatchers()
+        setupClickListeners()
         setupObservers()
+
+
+
+       updateSignUpButtonState()
     }
 
+    // -------------------- CLICK LISTENERS --------------------
+
     private fun setupClickListeners() {
+
         binding.btnCreateAccount.setOnClickListener {
-            Log.d(TAG, "Create Account button clicked")
+
             val fullName = binding.etFullUsername.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
             val username = binding.etUsername.text.toString().trim()
@@ -75,78 +81,98 @@ class SignUpActivity : AppCompatActivity() {
 
             if (!validateInputs(fullName, email, username, password, confirmPassword)) return@setOnClickListener
 
-            Log.d(TAG, "Signing up with - FullName: $fullName, Email: $email, Username: $username")
-            signUpViewModel.signUp(fullName, email, username, password, secretKey)
+            signUpViewModel.signUp(
+                fullName,
+                email,
+                username,
+                password,
+                secretKey,
+                isVerified
+            )
         }
 
-        // Navigate back to Login screen
-        binding.btnSignInPrompt.setOnClickListener {
-            Log.d(TAG, "Sign In button clicked")
-            finish()
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        binding.cbAgreeTerms.setOnCheckedChangeListener { _, _ ->
+            updateSignUpButtonState()
         }
 
-        // Back button navigation
-        binding.btnBack.setOnClickListener {
-            Log.d(TAG, "Back button clicked")
-            finish()
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        binding.tvTerms.setOnClickListener {
+                openWebUrl("https://verifylabs.ai/terms/")
         }
+
+        binding.tvPrivacy.setOnClickListener {
+
+            openWebUrl("https://verifylabs.ai/privacy/")
+        }
+
+        binding.btnBack.setOnClickListener { finish() }
+        binding.btnSignInPrompt.setOnClickListener { finish() }
     }
 
+    // -------------------- TEXT WATCHERS (LIKE LOGIN) --------------------
+
     private fun setupTextWatchers() {
-        val textWatcher = object : TextWatcher {
+        val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
             override fun afterTextChanged(s: Editable?) {
-                val fullName = binding.etFullUsername.text.toString().trim()
-                val email = binding.etEmail.text.toString().trim()
-                val username = binding.etUsername.text.toString().trim()
-                val password = binding.etPassword.text.toString().trim()
-                val confirmPassword = binding.etConfirmPassword.text.toString().trim()
-
-                // Update input field backgrounds
-                binding.etFullUsername.setBackgroundResource(
-                    if (fullName.isEmpty()) R.drawable.bg_text_input
-                    else R.drawable.bg_text_input_green
-                )
-                binding.etEmail.setBackgroundResource(
-                    if (email.isEmpty()) R.drawable.bg_text_input
-                    else R.drawable.bg_text_input_green
-                )
-                binding.etUsername.setBackgroundResource(
-                    if (username.isEmpty()) R.drawable.bg_text_input
-                    else R.drawable.bg_text_input_green
-                )
-                binding.etPassword.setBackgroundResource(
-                    if (password.isEmpty()) R.drawable.bg_text_input
-                    else R.drawable.bg_text_input_green
-                )
-                binding.etConfirmPassword.setBackgroundResource(
-                    if (confirmPassword.isEmpty()) R.drawable.bg_text_input
-                    else R.drawable.bg_text_input_green
-                )
-
-                // Update Create Account button state
-                binding.btnCreateAccount.isEnabled = username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()
-                binding.btnCreateAccount.setBackgroundResource(
-                    if (binding.btnCreateAccount.isEnabled)
-                        R.drawable.drawable_verify_background_green_radius_more
-                    else
-                        R.drawable.drawable_verify_background_btn_failed_likely_gray
-                )
+                updateSignUpButtonState()
             }
         }
 
-        // Attach TextWatcher to all input fields
-        binding.etFullUsername.addTextChangedListener(textWatcher)
-        binding.etEmail.addTextChangedListener(textWatcher)
-        binding.etUsername.addTextChangedListener(textWatcher)
-        binding.etPassword.addTextChangedListener(textWatcher)
-        binding.etConfirmPassword.addTextChangedListener(textWatcher)
+        binding.etFullUsername.addTextChangedListener(watcher)
+        binding.etEmail.addTextChangedListener(watcher)
+        binding.etUsername.addTextChangedListener(watcher)
+        binding.etPassword.addTextChangedListener(watcher)
+        binding.etConfirmPassword.addTextChangedListener(watcher)
     }
+
+    // -------------------- UI STATE UPDATE (EXACT LIKE LOGIN) --------------------
+
+    private fun updateSignUpButtonState() {
+
+        val fullName = binding.etFullUsername.text.toString().trim()
+        val email = binding.etEmail.text.toString().trim()
+        val username = binding.etUsername.text.toString().trim()
+        val password = binding.etPassword.text.toString().trim()
+        val confirmPassword = binding.etConfirmPassword.text.toString().trim()
+
+        // Input background change
+        binding.etFullUsername.setBackgroundResource(
+            if (fullName.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+        binding.etEmail.setBackgroundResource(
+            if (email.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+        binding.etUsername.setBackgroundResource(
+            if (username.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+        binding.etPassword.setBackgroundResource(
+            if (password.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+        binding.etConfirmPassword.setBackgroundResource(
+            if (confirmPassword.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+
+        val enableButton =
+            fullName.isNotEmpty() &&
+                    email.isNotEmpty() &&
+                    android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
+                    username.isNotEmpty() &&
+                    password.isNotEmpty() &&
+                    confirmPassword.isNotEmpty() &&
+                    password == confirmPassword &&
+                    binding.cbAgreeTerms.isChecked
+
+        binding.btnCreateAccount.isEnabled = enableButton
+        binding.btnCreateAccount.setBackgroundResource(
+            if (enableButton)
+                R.drawable.drawable_verify_background_green_radius_more
+            else
+                R.drawable.drawable_verify_background_btn_failed_likely_gray
+        )
+    }
+
+    // -------------------- VALIDATION --------------------
 
     private fun validateInputs(
         fullName: String,
@@ -155,6 +181,19 @@ class SignUpActivity : AppCompatActivity() {
         password: String,
         confirmPassword: String
     ): Boolean {
+
+        if (fullName.isEmpty()) {
+            binding.etFullUsername.error = "Enter full name"
+            return false
+        }
+        if (email.isEmpty()) {
+            binding.etEmail.error = "Enter email"
+            return false
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.etEmail.error = "Invalid email"
+            return false
+        }
         if (username.isEmpty()) {
             binding.etUsername.error = "Enter username"
             return false
@@ -164,19 +203,21 @@ class SignUpActivity : AppCompatActivity() {
             return false
         }
         if (confirmPassword.isEmpty()) {
-            binding.etConfirmPassword.error = "Enter confirm password"
+            binding.etConfirmPassword.error = "Confirm password"
             return false
         }
         if (password != confirmPassword) {
             binding.etConfirmPassword.error = "Passwords do not match"
             return false
         }
-        if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.etEmail.error = "Enter a valid email"
+        if (!binding.cbAgreeTerms.isChecked) {
+            showToast("Please accept Terms & Privacy Policy")
             return false
         }
         return true
     }
+
+    // -------------------- OBSERVERS --------------------
 
     private fun setupObservers() {
         signUpViewModel.getSignUpResponse().observe(this) { resource ->
@@ -184,41 +225,71 @@ class SignUpActivity : AppCompatActivity() {
                 Status.LOADING -> {
                     binding.tvCreateAccount.text = getString(R.string.creating_account_now)
                 }
+
+
                 Status.SUCCESS -> {
-                    Toast.makeText(this, "Sign up successful!", Toast.LENGTH_SHORT).show()
                     resource.data?.let {
-                        Log.d(TAG, "SignUp Response: $it")
-                        navigateToMainActivity()
-                    } ?: run {
-                        Toast.makeText(this, "No data received", Toast.LENGTH_SHORT).show()
+                        try {
+                            val response = Gson().fromJson(it.toString(), SignUpVerificationResponse::class.java)
+                            Log.d(TAG, "setupObservers: Sign Up Response: ${response.toString()}")
+
+                            // Show success toast
+                            showToast("Sign up successful. Please verify your email before logging in.")
+
+                            // Get the email from the input field (or response if available)
+                            val email = binding.etEmail.text.toString().trim()
+
+                            // Open the bottom sheet with the email
+                            val bottomSheet = VerifyEmailBottomSheet.newInstance(email)
+                            bottomSheet.isCancelable = false
+                            bottomSheet.show(supportFragmentManager, "VerifyEmailBottomSheet")
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
+
+
                 Status.ERROR -> {
-                    binding.tvCreateAccount.text = getString(R.string.create_account)
-                    Toast.makeText(this, "Sign up failed: ${resource.message}", Toast.LENGTH_SHORT).show()
+                    binding.tvCreateAccount.text = getString(R.string.create)
+                    showToast(resource.message ?: "Sign up failed")
                 }
             }
         }
     }
 
-    private fun navigateToMainActivity() {
-        Log.d(TAG, "Navigating to OnboardingActivity")
-        val intent = Intent(this, OnboardingActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("START_PAGE", 2)
-        }
-        startActivity(intent)
-        finish()
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+    // -------------------- NAVIGATION --------------------
+
+//    private fun navigateToMainActivity() {
+//        startActivity(
+//            Intent(this, OnboardingActivity::class.java).apply {
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                putExtra("START_PAGE", 2)
+//            }
+//        )
+//        finish()
+//    }
+
+    // -------------------- HELPERS --------------------
+
+    private fun openWebUrl(url: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Clear click listeners to prevent memory leaks
         if (::binding.isInitialized) {
             binding.btnCreateAccount.setOnClickListener(null)
-            binding.tvSignIn.setOnClickListener(null)
             binding.btnBack.setOnClickListener(null)
+            binding.btnSignInPrompt.setOnClickListener(null)
         }
     }
+
+
+
 }

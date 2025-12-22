@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:background="@android:color/white"
+    android:elevation="8dp"
+    app:cardCornerRadius="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <!-- Message -->
+        <TextView
+            android:id="@+id/message_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="8dp" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="0dp" />
+
+        <!-- Buttons (stacked vertically like iOS) -->
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log Out"
+            android:textColor="@color/backRed"
+            android:background="@android:color/transparent"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@android:color/black"
+            android:background="@android:color/transparent"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

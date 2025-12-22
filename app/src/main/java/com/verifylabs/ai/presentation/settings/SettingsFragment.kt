@@ -65,21 +65,16 @@ class SettingsFragment : Fragment() {
     private fun setupUi() {
         binding.etUsername.setText(preferenceHelper.getUserName() ?: "")
         binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
-        binding.tvApiKey.text = "API KEY: ${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
+        binding.tvApiKey.text = "API KEY:${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
+
         // disable the purchase button until plans are loaded
         binding.btnPurchaseCredits.isEnabled = false
         binding.btnPurchaseCredits.alpha = 0.5f
 
-
-            if(preferenceHelper.getCreditRemaining() != null){
-                val storeCredits = preferenceHelper.getCreditRemaining()
-                val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-                binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
-                binding.tvCreditsRemaining.visibility = View.VISIBLE
-            } else {
-                binding.tvCreditsRemaining.visibility = View.GONE
-            }
-
+        val storeCredits = preferenceHelper.getCreditRemaining()
+        val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+        binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.tvCreditsRemaining.visibility = View.VISIBLE
     }
 
     private fun setupClickListeners() {
@@ -110,22 +105,6 @@ class SettingsFragment : Fragment() {
             )
             requireActivity().finish()
         }
-
-//        binding.btnPurchaseCredits.setOnClickListener {
-//            if (planList.isEmpty()) {
-//                Toast.makeText(requireContext(), "Please wait, loading plans...", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            val tag = "PurchaseCreditsBottomSheet"
-//            val existingSheet = parentFragmentManager.findFragmentByTag(tag)
-//            if (existingSheet == null) {
-//             //   val bottomSheet = PurchaseCreditsBottomSheet.newInstance(ArrayList(planList))
-//                bottomSheet.show(parentFragmentManager, tag)
-//            } else {
-//                Log.d(TAG, "PurchaseCreditsBottomSheet is already shown")
-//            }
-//        }
 
         binding.btnPurchaseCredits.setOnClickListener {
             val tag = "PurchaseCreditsBottomSheet"
@@ -180,22 +159,18 @@ class SettingsFragment : Fragment() {
             when (resource.status) {
                 Status.LOADING -> {
                     Log.d(TAG, "Fetching plans...")
-                  //  binding.btnPurchaseCredits = "Loading plans..."
                 }
                 Status.SUCCESS -> {
                     resource.data?.let {
                         planList = it
                         Log.d(TAG, "Plans fetched: $planList")
-
                         // enable purchase button
                         binding.btnPurchaseCredits.isEnabled = true
                         binding.btnPurchaseCredits.alpha = 1f
-                       // binding.btnPurchaseCredits.text = "Purchase Credits"
                     }
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Error fetching plans: ${resource.message}")
-                   // binding.btnPurchaseCredits.text = "Failed to load plans"
                     Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT).show()
                 }
             }

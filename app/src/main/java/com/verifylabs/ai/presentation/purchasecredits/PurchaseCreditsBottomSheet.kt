@@ -39,6 +39,11 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        setupFullScreenBottomSheet()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,10 +51,22 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         setupRecyclerView()
         loadOfferings()
 
-        (dialog as? BottomSheetDialog)?.apply {
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.skipCollapsed = true
-        }
+//        (dialog as? BottomSheetDialog)?.apply {
+//            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+//            behavior.skipCollapsed = true
+//        }
+//
+//        override fun onStart() {
+//            super.onStart()
+//            (dialog as? BottomSheetDialog)?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
+//                sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+//                sheet.setBackgroundColor(android.graphics.Color.TRANSPARENT) // <-- important
+//                BottomSheetBehavior.from(sheet).apply {
+//                    state = BottomSheetBehavior.STATE_EXPANDED
+//                    isDraggable = true
+//                    skipCollapsed = true
+//                }
+//        }
 
         binding.btnClose.setOnClickListener { dismiss() }
     }
@@ -151,5 +168,22 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         fun newInstance() = PurchaseCreditsBottomSheet()
+    }
+
+
+    // --------------------------
+    // Fullscreen Bottom Sheet
+    // --------------------------
+    private fun setupFullScreenBottomSheet() {
+        (dialog as? BottomSheetDialog)?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
+            sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            sheet.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+
+            BottomSheetBehavior.from(sheet).apply {
+                state = BottomSheetBehavior.STATE_EXPANDED
+                isDraggable = true
+                skipCollapsed = true
+            }
+        }
     }
 }

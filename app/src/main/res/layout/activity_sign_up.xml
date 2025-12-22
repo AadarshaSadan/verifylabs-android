@@ -9,7 +9,7 @@
     android:background="@color/app_background_before_login"
     tools:context=".presentation.auth.signup.SignUpActivity">
 
-    <!-- Action Bar with Back Button (Fixed, Non-Scrollable) -->
+    <!-- Action Bar with Back Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/create_account"
+                android:text="@string/letsgetstarted"
                 android:textSize="24sp"
                 android:textColor="@color/colorBlack"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -266,6 +266,72 @@
                     android:contentDescription="@string/confirm_password_input" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Checkbox for Terms & Privacy -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <CheckBox
+                    android:id="@+id/cbAgreeTerms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="true"
+                    android:paddingEnd="8dp"
+                    android:text="" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Prefix -->
+                    <TextView
+                        android:id="@+id/tvAgreePrefix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I agree to the "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp" />
+
+                    <!-- Terms -->
+                    <TextView
+                        android:id="@+id/tvTerms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Terms and \nConditions"
+                        android:textColor="@color/txtGreen"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <!-- Connector -->
+                    <TextView
+                        android:id="@+id/tvAnd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" and "
+                        android:textColor="@color/colorBlack"
+                        android:textSize="14sp" />
+                    <!-- Privacy -->
+                    <TextView
+                        android:id="@+id/tvPrivacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Privacy Policy"
+                        android:textColor="@color/txtGreen"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+            </LinearLayout>
             <!-- Create Account Button -->
             <LinearLayout
                 android:id="@+id/btnCreateAccount"
@@ -285,13 +351,16 @@
                     android:id="@+id/tvCreateAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/create_account"
+                    android:text="@string/create"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginStart="8dp"
                     android:layout_gravity="center_vertical" />
             </LinearLayout>
+
+
+
 
             <!-- Sign In Prompt -->
             <LinearLayout

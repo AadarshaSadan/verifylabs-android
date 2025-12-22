@@ -26,13 +26,14 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
 
 
     // Signup
-    suspend fun postSignUp(fullName: String, email: String, username: String, password: String,secretKey: String): Response<JsonObject> {
+    suspend fun postSignUp(fullName: String, email: String, username: String, password: String,secretKey: String,isVerified:Int): Response<JsonObject> {
         val jsonBody = JsonObject().apply {
             addProperty("name", fullName)
             addProperty("email", email)
             addProperty("username", username)
             addProperty("password", password)
             addProperty("secret_key", secretKey)
+            addProperty("is_verified", isVerified)
         }
         return apiService.postSignUp(jsonBody)
     }

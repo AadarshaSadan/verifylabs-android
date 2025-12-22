@@ -11,7 +11,7 @@
     <color name="app_background">#ffffff</color>
     <color name="app_background_2">#434341</color>
     <color name="app_background_3">#F2F2F6</color>
-    <color name="app_background_before_login">#EAF5EB</color>
+    <color name="app_background_before_login">#F8FAFC</color>
 
     <!-- Theme-dependent light colors -->
     <color name="colorBlack">#000000</color>
@@ -62,4 +62,23 @@
     <color name="color_about_us_drawable">#F2F2F6</color>
 
     <color name="color_share_screen_background">#80D0D0D0</color>
+
+    <!-- Sheet Background -->
+    <color name="sheet_background">#F4FDF5</color>
+    <!-- Main Icon Container -->
+    <color name="icon_container">#E8F5E9</color>
+    <!-- Primary Brand / Link -->
+    <color name="primary_brand">#00B140</color>
+    <!-- Header Text -->
+    <color name="header_text">#1A1C1E</color>
+    <!-- Secondary Text -->
+    <color name="secondary_text">#6F777B</color>
+    <!-- Info Card Background -->
+    <color name="info_card_bg">#66E8F5E9</color> <!-- 40% opacity -->
+    <!-- Info Card Border -->
+    <color name="info_card_border">#C8E6C9</color>
+    <!-- Primary Button -->
+    <color name="primary_button">#00B140</color>
+    <!-- Handle Bar -->
+    <color name="handle_bar">#1A1C1E1A</color> <!-- 10% opacity black -->
 </resources>

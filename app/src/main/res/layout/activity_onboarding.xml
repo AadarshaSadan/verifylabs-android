@@ -36,35 +36,24 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- Dots indicator aligned to start -->
+
         <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
             android:id="@+id/spring_dots_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dots_margin_start"
             app:dampingRatio="0.5"
             app:dotsColor="@color/colorBlack"
             app:dotsStrokeColor="@color/verifylabs_dots_indicator"
             app:dotsSize="@dimen/dots_size"
             app:dotsSpacing="@dimen/dots_spacing"
             app:dotsStrokeWidth="@dimen/dots_stroke_width"
+            app:stiffness="300"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:stiffness="300" />
-
-        <!-- Next Button aligned to end -->
-        <TextView
-            android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
-            android:padding="10dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/txtclick_blue"
-            android:textSize="@dimen/text_size_button"
-            android:text="@string/next_button"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintHorizontal_bias="0.5" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
