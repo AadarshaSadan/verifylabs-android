@@ -54,7 +54,7 @@
 
     <color name="verifylabs_logo_only_dashboard">#272B27</color>
     <color name="verifylabs_logo_green">#38B031</color>
-    <color name="verifylabs_dots_indicator">#9C9DA1</color>
+    <color name="verifylabs_dots_indicator">#181818</color>
 
     <color name="verifylabs_button_blue_color">#007CFF</color>
 
@@ -81,4 +81,7 @@
     <color name="primary_button">#00B140</color>
     <!-- Handle Bar -->
     <color name="handle_bar">#1A1C1E1A</color> <!-- 10% opacity black -->
+
+    <color name="bg_color_floating_nav">#F2F2F2</color>
+    <color name="border_color_floating_nav">#FFFFFF</color>
 </resources>

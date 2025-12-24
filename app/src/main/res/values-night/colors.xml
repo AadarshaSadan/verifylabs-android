@@ -45,7 +45,7 @@
 
     <!-- Status text -->
     <color name="statusTextLight">#FFFFFF</color>
-    <color name="statusTextDark">#000000</color>
+    <color name="statusTextDark">#ffffff</color>
     <color name="text_app_blue">#72326DDB</color>
     <color name="verifylabs_logo_only_dashboard">#EDF1EA</color>
     <color name="verifylabs_logo_green">#38B031</color>
@@ -76,5 +76,8 @@
     <color name="primary_button">#00C853</color>
     <!-- Handle Bar -->
     <color name="handle_bar">#1AFFFFFF</color> <!-- 10% opacity white -->
+
+    <color name="bg_color_floating_nav">#1B1D1B</color>
+    <color name="border_color_floating_nav">#2C332D</color>
 
 </resources>

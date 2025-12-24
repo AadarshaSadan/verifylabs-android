@@ -1,6 +1,7 @@
 [versions]
 agp = "8.8.0"
 converterGson = "3.0.0"
+coreKtxVersion = "1.12.0"
 dotsindicator = "5.1.0"
 firebaseAnalyticsKtx = "22.5.0"
 firebaseBom = "34.4.0"
@@ -15,7 +16,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.04.01"
 appcompat = "1.7.1"
 lottie = "6.1.0"
-material = "1.12.0"
+material = "1.13.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 purchases = "9.7.0"
@@ -27,6 +28,7 @@ hiltVersion = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 dotsindicator = { module = "com.tbuonomo:dotsindicator", version.ref = "dotsindicator" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebaseAnalyticsKtx" }

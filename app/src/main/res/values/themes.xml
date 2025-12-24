@@ -1,46 +1,44 @@
 <resources>
-    <style name="Theme.Verifylabs" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+    <!-- APP THEME -->
+    <style name="Theme.Verifylabs" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorAccent">@color/teal_200</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorSecondary">@color/teal_200</item>
         <item name="android:windowBackground">@color/app_background</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/app_background_before_login</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- dark icons for light background -->
+
+        <!-- Text colors -->
         <item name="android:textColor">@color/statusTextDark</item>
-        <item name="android:statusBarColor">@color/app_background</item>
     </style>
 
-    <style name="NavBarTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/app_background</item>
-        <item name="colorPrimaryDark">@color/app_background</item>
-        <item name="colorAccent">@color/app_background</item>
-        <item name="android:statusBarColor">@color/app_background</item>
-        <item name="bottomNavigationStyle">@style/CustomBottomNavigationView</item>
+    <!-- NAVIGATION BAR THEME -->
 
-    </style>
-
-
-
-    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="itemTextAppearanceActive">@style/BottomNavTextActive</item>
-        <item name="itemTextAppearanceInactive">@style/BottomNavTextInactive</item>
+    <style name="NavBarTheme" parent="ThemeOverlay.MaterialComponents">
         <item name="itemRippleColor">@null</item> <!-- removes ripple -->
     </style>
 
 
-    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">10sp</item> <!-- Bigger for active -->
-        <item name="android:textStyle">normal</item>
+    <!-- CUSTOM BOTTOM NAVIGATION VIEW -->
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/BottomNavText</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavText</item>
     </style>
 
-    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">10sp</item> <!-- Smaller for inactive -->
+    <style name="BottomNavText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
     </style>
 
+    <!-- CUSTOM TEXT INPUT -->
     <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="boxBackgroundMode">none</item>
         <item name="boxStrokeWidth">0dp</item>
         <item name="boxBackgroundColor">@android:color/transparent</item>
     </style>
 
+    <!-- FULLSCREEN BOTTOM SHEET DIALOG -->
     <style name="FullScreenBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/FullScreenDialogStyle</item>
     </style>
@@ -50,6 +48,5 @@
         <item name="behavior_hideable">true</item>
         <item name="behavior_peekHeight">0dp</item>
     </style>
-
 
 </resources>

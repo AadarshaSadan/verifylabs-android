@@ -1,132 +1,144 @@
 package com.verifylabs.ai.presentation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setPadding
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.ActivityMainBinding
-import com.verifylabs.ai.presentation.viewmodel.MainViewModel
-import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.presentation.audio.FragmentAudio
 import com.verifylabs.ai.presentation.home.HomeFragment
 import com.verifylabs.ai.presentation.media.MediaFragment
 import com.verifylabs.ai.presentation.settings.SettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private var binding: ActivityMainBinding? = null // Nullable to allow clearing in onDestroy
-    @Inject
-    lateinit var preferenceHelper: PreferenceHelper
-    private val viewModel: MainViewModel by viewModels()
 
-    companion object {
-        private const val TAG = "MainActivity"
-    }
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            enableEdgeToEdge()
-            binding = ActivityMainBinding.inflate(layoutInflater)
-            setContentView(binding?.root ?: return)
 
-            // Apply system window insets for edge-to-edge layout
-//            binding?.root?.let { rootView ->
-//                try {
-//                    ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
-//                        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//                        v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-//                        insets
-//                    }
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "Error setting window insets: ${e.message}", e)
-//                }
-//            } ?: Log.e(TAG, "Root view is null, cannot set window insets")
+        // 🔥 Enable edge-to-edge (SAFE AREA HANDLING)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        // 🔥 Apply system safe insets
+//        applySafeInsets()
 
+        // Load default fragment
+        replaceFragment(HomeFragment())
+        selectNavItem(binding.navHome)
 
-
-            clearSavedMedia()
-
-            // Load default fragment (Home)
+        // Bottom navigation clicks
+        binding.navHome.setOnClickListener {
+            selectNavItem(it)
             replaceFragment(HomeFragment())
+        }
 
-            // Setup bottom navigation with haptic feedback
-            binding?.bottomNavigationView?.itemRippleColor=null
-            binding?.bottomNavigationView?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            binding?.bottomNavigationView?.backgroundTintList = null
-            binding?.bottomNavigationView?.setOnItemSelectedListener { item ->
-                try {
-                    // 🔔 Trigger haptic feedback on nav click
-                    binding?.bottomNavigationView?.performHapticFeedback(
-                        android.view.HapticFeedbackConstants.KEYBOARD_TAP
-                    )
+        binding.navMedia.setOnClickListener {
+            selectNavItem(it)
+            replaceFragment(MediaFragment())
+        }
 
-                    when (item.itemId) {
-                        R.id.nav_home -> replaceFragment(HomeFragment())
-                        R.id.nav_media -> replaceFragment(MediaFragment())
-                        R.id.nav_settings -> replaceFragment(SettingsFragment())
-                        R.id.nav_audio -> replaceFragment(FragmentAudio())
-                        else -> {
-                            Log.w(TAG, "Unknown navigation item selected: ${item.itemId}")
-                            false
-                        }
-                    }
-                    true
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error handling navigation item: ${e.message}", e)
-                    false
-                }
-            } ?: Log.e(TAG, "Bottom navigation view is null")
+        binding.navAudio.setOnClickListener {
+            selectNavItem(it)
+            replaceFragment(FragmentAudio())
+        }
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in onCreate: ${e.message}", e)
-            Toast.makeText(this, "Initialization error occurred", Toast.LENGTH_SHORT).show()
-            finish() // Exit activity to prevent unstable state
+        binding.navHistory.setOnClickListener {
+            selectNavItem(it)
+            // replaceFragment(HistoryFragment())
+        }
+
+        binding.navSettings.setOnClickListener {
+            selectNavItem(it)
+            replaceFragment(SettingsFragment())
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // Clear binding to prevent memory leaks
-        binding = null
-        // Remove observers if needed
+    /**
+     * ✅ SAFE SPACE / SYSTEM INSETS HANDLING
+     */
+    private fun applySafeInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
+
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // Appbar top padding
+            binding.appbar.root.setPadding(systemBars.top)
+
+
+            // Bottom inset → Floating Bottom Nav
+            binding.floatingBottomNav.translationY = -systemBars.bottom.toFloat()
+
+            insets
+        }
     }
 
+    /**
+     * Bottom navigation selection coloring
+     */
+    private fun selectNavItem(selected: View) {
+
+        val buttons = listOf(
+            binding.navHome,
+            binding.navMedia,
+            binding.navAudio,
+            binding.navHistory,
+            binding.navSettings
+        )
+
+        val icons = listOf(
+            binding.iconHome,
+            binding.iconMedia,
+            binding.iconAudio,
+            binding.iconHistory,
+            binding.iconSettings
+        )
+
+        val texts = listOf(
+            binding.textHome,
+            binding.textMedia,
+            binding.textAudio,
+            binding.textHistory,
+            binding.textSettings
+        )
+
+        buttons.forEachIndexed { index, btn ->
+            if (btn == selected) {
+                icons[index].setColorFilter(
+                    ContextCompat.getColor(this, R.color.txtGreen)
+                )
+                texts[index].setTextColor(
+                    ContextCompat.getColor(this, R.color.txtGreen)
+                )
+            } else {
+                icons[index].setColorFilter(
+                    ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
+                )
+                texts[index].setTextColor(
+                    ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
+                )
+            }
+        }
+    }
+
+    /**
+     * Fragment replacement
+     */
     private fun replaceFragment(fragment: Fragment) {
-        try {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack(null) // Optional: Add to back stack for navigation
-                .commit()
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Error replacing fragment: ${e.message}", e)
-            // Optionally use commitAllowingStateLoss() if state loss is acceptable
-        } catch (e: Exception) {
-            Log.e(TAG, "Unexpected error replacing fragment: ${e.message}", e)
-        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .commit()
     }
-
-    fun showBottomNavigation(show: Boolean) {
-        binding?.bottomNavigationView?.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    private fun clearSavedMedia() {
-        try {
-            preferenceHelper.setSelectedMediaPath(null)
-            preferenceHelper.setSelectedMediaType(null)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error clearing saved media: ${e.message}", e)
-        }
-    }
-
-
 }

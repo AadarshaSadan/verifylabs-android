@@ -1,20 +1,43 @@
-<RelativeLayout
+<com.google.android.material.appbar.MaterialToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/app_background_before_login">
+    android:layout_height="56dp"
+    android:background="@null">
 
-    <ImageView
-        android:id="@+id/button_notification"
-        android:contentDescription="@string/todo"
-        android:padding="3dp"
-        android:layout_centerVertical="true"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/verifylabs_circle_square_icon"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="15dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
-</RelativeLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="5"
+                android:background="@drawable/bg_floating_nav">
+
+
+            <ImageView
+                android:id="@+id/button_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/verifylabs_circle_square_icon"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </FrameLayout>
+
+</com.google.android.material.appbar.MaterialToolbar>

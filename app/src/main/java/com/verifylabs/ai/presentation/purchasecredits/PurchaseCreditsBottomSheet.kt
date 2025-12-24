@@ -42,7 +42,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
     override fun onStart() {
         super.onStart()
 
-        setupFullScreenBottomSheet()
+        setupFullScreenBottomSheet() 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Fill color -->
+    <solid android:color="@color/bg_color_floating_nav" />
+
+
+
+
+<!-- Light background color #F2F2F2-->
+
+<!--    lightborder     #FFFFFF -->
+
+
+
+
+    <!-- Border stroke -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/border_color_floating_nav" />
+
+    <!-- Rounded corners -->
+    <corners android:radius="28dp" />
+</shape>
