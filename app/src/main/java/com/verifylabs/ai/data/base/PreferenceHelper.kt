@@ -102,4 +102,14 @@ interface PreferenceHelper {
     fun getSavedMediaFragmentState(): String?
 
 
+    /** Quick record duration in seconds (10s – 60s) */
+    fun setQuickRecordDuration(seconds: Int)
+    fun getQuickRecordDuration(): Int
+
+    /** History retention period in days (7d – 90d) */
+    fun setHistoryRetentionDays(days: Int)
+    fun getHistoryRetentionDays(): Int
+
+
+
 }

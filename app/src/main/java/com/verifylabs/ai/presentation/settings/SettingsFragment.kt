@@ -1,11 +1,13 @@
 package com.verifylabs.ai.presentation.settings
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +22,7 @@ import com.verifylabs.ai.presentation.onboarding.OnboardingActivity
 import com.verifylabs.ai.presentation.plan.PlanResponse
 import com.verifylabs.ai.presentation.purchasecredits.PurchaseCreditsBottomSheet
 import com.google.gson.Gson
+import com.verifylabs.ai.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Locale
@@ -48,6 +51,8 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+
+        (activity as? MainActivity)?.setAppBarVisibility(true)
         return binding.root
     }
 
@@ -56,6 +61,8 @@ class SettingsFragment : Fragment() {
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         planViewModel = ViewModelProvider(this)[PlanViewModel::class.java]
 
+
+        setupSeekBars()
         setupUi()
         setupObservers()
         setupClickListeners()
@@ -64,8 +71,8 @@ class SettingsFragment : Fragment() {
 
     private fun setupUi() {
         binding.etUsername.setText(preferenceHelper.getUserName() ?: "")
-        binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
-        binding.tvApiKey.text = "API KEY:${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
+//        binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
+//        binding.tvApiKey.text = "API KEY:${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
 
         // disable the purchase button until plans are loaded
         binding.btnPurchaseCredits.isEnabled = false
@@ -75,7 +82,74 @@ class SettingsFragment : Fragment() {
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
         binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
         binding.tvCreditsRemaining.visibility = View.VISIBLE
+
+
+        // ---------- QUICK RECORD DURATION ----------
+        val quickRecordSeconds =
+            preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
+
+        binding.seekBar.max = 60
+        binding.seekBar.progress = quickRecordSeconds
+        binding.textView3.text = "${quickRecordSeconds}s"
+
+        // ---------- HISTORY RETENTION ----------
+        val historyDays =
+            preferenceHelper.getHistoryRetentionDays().takeIf { it > 0 } ?: 90
+
+        binding.seekBar1.max = 90
+        binding.seekBar1.progress = historyDays
+        binding.textView5.text = "${historyDays}d"
     }
+
+
+    // --------------------------------------------------
+    // SEEK BAR LOGIC
+    // --------------------------------------------------
+    private fun setupSeekBars() {
+
+        // QUICK RECORD (10s – 60s)
+        binding.seekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
+                val safeValue = progress.coerceAtLeast(10)
+                binding.textView3.text = "${safeValue}s"
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                val value = seekBar?.progress?.coerceAtLeast(10) ?: 10
+                preferenceHelper.setQuickRecordDuration(value)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        // HISTORY RETENTION (7d – 90d)
+        binding.seekBar1.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
+                val safeValue = progress.coerceAtLeast(7)
+                binding.textView5.text = "${safeValue}d"
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                val value = seekBar?.progress?.coerceAtLeast(7) ?: 7
+                preferenceHelper.setHistoryRetentionDays(value)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
 
     private fun setupClickListeners() {
         binding.llCreditsInfo.setOnClickListener {
@@ -85,26 +159,42 @@ class SettingsFragment : Fragment() {
             )
         }
 
-        binding.btnTestSave.setOnClickListener {
-            val username = binding.etUsername.text.toString().trim()
-            val password = binding.etPassword.text.toString().trim()
-            if (username.isNotEmpty() && password.isNotEmpty()) {
-                loginViewModel.login(username, password)
-            } else {
-                Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
-            }
+
+        binding.cardManualCredentials.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.anim.slide_in_right,  // enter
+                    R.anim.fade_out,        // exit
+                    R.anim.fade_in,         // pop enter
+                    R.anim.slide_out_right  // pop exit
+                )
+                .replace(R.id.container, FragmentAccount())
+                .addToBackStack("FragmentAccount")
+                .commit()
         }
 
-        binding.llLogout.setOnClickListener {
-            preferenceHelper.setIsLoggedIn(false)
-            preferenceHelper.clear()
-            startActivity(
-                Intent(requireActivity(), OnboardingActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-            )
-            requireActivity().finish()
-        }
+
+
+//        binding.btnTestSave.setOnClickListener {
+//            val username = binding.etUsername.text.toString().trim()
+//            val password = binding.etPassword.text.toString().trim()
+//            if (username.isNotEmpty() && password.isNotEmpty()) {
+//                loginViewModel.login(username, password)
+//            } else {
+//                Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//        binding.llLogout.setOnClickListener {
+//            preferenceHelper.setIsLoggedIn(false)
+//            preferenceHelper.clear()
+//            startActivity(
+//                Intent(requireActivity(), OnboardingActivity::class.java).apply {
+//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                }
+//            )
+//            requireActivity().finish()
+//        }
 
         binding.btnPurchaseCredits.setOnClickListener {
             val tag = "PurchaseCreditsBottomSheet"
@@ -127,8 +217,8 @@ class SettingsFragment : Fragment() {
         loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.LOADING -> {
-                    binding.tvTestSave.text = "Saving..."
-                    binding.btnTestSave.isEnabled = false
+//                    binding.tvTestSave.text = "Saving..."
+//                    binding.btnTestSave.isEnabled = false
                 }
                 Status.SUCCESS -> {
                     resource.data?.let { dataJson ->
@@ -136,17 +226,17 @@ class SettingsFragment : Fragment() {
                         preferenceHelper.setApiKey(response.apiKey)
                         preferenceHelper.setIsLoggedIn(true)
                         preferenceHelper.setCreditReamaining(response.credits)
-                        binding.tvApiKey.text = "API KEY: ${response.apiKey.take(6)}....."
-                        binding.tvTestSave.text = "Saved"
-                        binding.btnTestSave.isEnabled = true
+//                        binding.tvApiKey.text = "API KEY: ${response.apiKey.take(6)}....."
+//                        binding.tvTestSave.text = "Saved"
+//                        binding.btnTestSave.isEnabled = true
                         val storeCredits = preferenceHelper.getCreditRemaining()
                         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
                         binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
                     }
                 }
                 Status.ERROR -> {
-                    binding.tvTestSave.text = "Error! Try Again"
-                    binding.btnTestSave.isEnabled = true
+//                    binding.tvTestSave.text = "Error! Try Again"
+//                    binding.btnTestSave.isEnabled = true
                     Toast.makeText(requireContext(), resource.message ?: "Login failed", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -180,5 +270,13 @@ class SettingsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        // Show bottom nav again
+        (activity as? MainActivity)?.setAppBarVisibility(true)
+        (activity as? MainActivity)?.setBottomNavVisibility(true)
     }
 }

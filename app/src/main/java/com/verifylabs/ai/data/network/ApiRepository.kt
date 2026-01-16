@@ -110,5 +110,14 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
     }
 
 
+    suspend fun getWpUserInfo(secretKey: String, username: String): Response<JsonObject> {
+        val jsonBody = JsonObject().apply {
+            addProperty("secret_key", secretKey)
+            addProperty("username", username)
+        }
+        return apiService.getWpUserInfo(jsonBody)
+    }
+
+
 
 }

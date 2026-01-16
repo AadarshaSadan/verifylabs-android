@@ -16,6 +16,8 @@ class Constants {
         const val SELECTED_MEDIA_PATH = "selected_media_path"
         const val SELECTED_MEDIA_TYPE = "selected_media_type"
         const val SAVED_MEDIA_FRAGMENT_STATE = "saved_media_fragment_state"
+        const val KEY_QUICK_RECORD_DURATION = "quick_record_duration"
+        const val KEY_HISTORY_RETENTION_DAYS = "history_retention_days"
 
 
     }

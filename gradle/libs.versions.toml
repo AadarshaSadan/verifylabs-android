@@ -25,6 +25,7 @@ retrofit = "2.9.0"
 gson = "2.11.0"
 kspVersion = "2.0.0-1.0.23"
 hiltVersion = "2.51.1"
+seekbarCompat = "0.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -59,6 +60,7 @@ purchases = { module = "com.revenuecat.purchases:purchases", version.ref = "purc
 purchases-v770 = { module = "com.revenuecat.purchases:purchases", version.ref = "purchasesVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+seekbar-compat = { module = "com.minimize.library:seekbar-compat", version.ref = "seekbarCompat" }
 
 
 

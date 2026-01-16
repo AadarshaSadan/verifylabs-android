@@ -8,7 +8,7 @@
         <item name="android:windowBackground">@color/app_background</item>
         <!-- Status bar -->
         <item name="android:statusBarColor">@color/app_background_before_login</item>
-        <item name="android:windowLightStatusBar">false</item> <!-- dark icons for light background -->
+        <item name="android:windowLightStatusBar">true</item> <!-- dark icons for light background -->
 
         <!-- Text colors -->
         <item name="android:textColor">@color/statusTextDark</item>
@@ -48,5 +48,22 @@
         <item name="behavior_hideable">true</item>
         <item name="behavior_peekHeight">0dp</item>
     </style>
+
+
+<!--    <style name="CustomTabTextStyle" parent="TextAppearance.MaterialComponents.Tab">-->
+<!--        <item name="android:textSize">12sp</item>  &lt;!&ndash; adjust size &ndash;&gt;-->
+<!--    </style>-->
+
+    <style name="TabTextSmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+
+    <style name="ShapeAppearanceOverlay.App.Corner10dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">5dp</item>
+    </style>
+
 
 </resources>

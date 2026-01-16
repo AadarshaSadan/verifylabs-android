@@ -48,4 +48,11 @@ interface ApiService {
     ): Response<JsonArray>
 
 
+    // WordPress user info
+    @POST("wp_userinfo")
+    suspend fun getWpUserInfo(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+
 }

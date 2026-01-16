@@ -79,5 +79,7 @@
 
     <color name="bg_color_floating_nav">#1B1D1B</color>
     <color name="border_color_floating_nav">#2C332D</color>
+    <color name="nav_overlay_color_pressed">#2E404140</color>
 
+    <color name="colorRecordingRed">#E6070D</color>
 </resources>

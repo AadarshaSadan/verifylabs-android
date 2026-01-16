@@ -3,6 +3,8 @@ package com.verifylabs.ai.data.base
 import android.content.Context
 import android.content.SharedPreferences
 import com.verifylabs.ai.core.util.Constants
+import com.verifylabs.ai.core.util.Constants.Companion.KEY_HISTORY_RETENTION_DAYS
+import com.verifylabs.ai.core.util.Constants.Companion.KEY_QUICK_RECORD_DURATION
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -117,5 +119,24 @@ class PreferencesHelperImpl @Inject constructor(
         return mPrefs.getBoolean(Constants.DARK_THEME, false)
     }
 
+    override fun setQuickRecordDuration(seconds: Int) {
+        mPrefs.edit()
+            .putInt(KEY_QUICK_RECORD_DURATION, seconds.coerceIn(10, 60))
+            .apply()
+    }
+
+    override fun getQuickRecordDuration(): Int {
+        return mPrefs.getInt(KEY_QUICK_RECORD_DURATION, 40) // default 40s
+    }
+
+    override fun setHistoryRetentionDays(days: Int) {
+        mPrefs.edit()
+            .putInt(KEY_HISTORY_RETENTION_DAYS, days.coerceIn(7, 90))
+            .apply()
+    }
+
+    override fun getHistoryRetentionDays(): Int {
+        return mPrefs.getInt(KEY_HISTORY_RETENTION_DAYS, 90) // default 90d
+    }
 
 }

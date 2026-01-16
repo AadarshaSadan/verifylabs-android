@@ -3,6 +3,7 @@ package com.verifylabs.ai.presentation
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.ActivityMainBinding
 import com.verifylabs.ai.presentation.audio.FragmentAudio
+import com.verifylabs.ai.presentation.history.HistoryFragment
 import com.verifylabs.ai.presentation.home.HomeFragment
 import com.verifylabs.ai.presentation.media.MediaFragment
 import com.verifylabs.ai.presentation.settings.SettingsFragment
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.navHistory.setOnClickListener {
             selectNavItem(it)
-            // replaceFragment(HistoryFragment())
+            replaceFragment(HistoryFragment())
         }
 
         binding.navSettings.setOnClickListener {
@@ -66,9 +68,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * ✅ SAFE SPACE / SYSTEM INSETS HANDLING
-     */
     private fun applySafeInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
 
@@ -116,13 +115,20 @@ class MainActivity : AppCompatActivity() {
 
         buttons.forEachIndexed { index, btn ->
             if (btn == selected) {
+                // Selected → set watercolor ripple background
+                btn.setBackgroundResource(R.drawable.nav_overlay)
+
                 icons[index].setColorFilter(
                     ContextCompat.getColor(this, R.color.txtGreen)
                 )
                 texts[index].setTextColor(
                     ContextCompat.getColor(this, R.color.txtGreen)
                 )
+
+
             } else {
+                btn.background = null
+
                 icons[index].setColorFilter(
                     ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
                 )
@@ -141,4 +147,44 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.container, fragment)
             .commit()
     }
+
+
+    // In MainActivity
+// In MainActivity
+    fun setBottomNavVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            // Show bottom nav
+            binding.floatingBottomNav.visibility = View.VISIBLE
+
+//            // Make container respect bottom nav
+//            val params = binding.container.layoutParams as ConstraintLayout.LayoutParams
+//            params.bottomToBottom = binding.floatingBottomNav.id
+//            binding.container.layoutParams = params
+
+        } else {
+            // Hide bottom nav
+            binding.floatingBottomNav.visibility = View.GONE
+
+//            // Make container full screen
+//            val params = binding.container.layoutParams as ConstraintLayout.LayoutParams
+//            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+//            binding.container.layoutParams = params
+        }
+    }
+
+
+    // In MainActivity
+    fun setAppBarVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            binding.appbar.root.visibility = View.VISIBLE
+        } else {
+            binding.appbar.root.visibility = View.GONE
+        }
+    }
+
+
+
+
+
+
 }
