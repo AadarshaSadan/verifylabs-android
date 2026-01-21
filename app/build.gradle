@@ -108,6 +108,14 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+
     //fornightmode
     implementation libs.androidx.appcompat
 
@@ -126,6 +134,8 @@ dependencies {
     implementation(libs.firebase.analytics.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.google.firebase.analytics.ktx)
+
+    implementation(libs.android.image.cropper)
 
 
 

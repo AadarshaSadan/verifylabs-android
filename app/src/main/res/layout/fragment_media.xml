@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/media_scroll"
@@ -9,281 +10,416 @@
     android:background="@color/app_background"
     tools:context=".presentation.media.MediaFragment">
 
+    <!-- Select Media Button -->
     <LinearLayout
-        android:id="@+id/media_root"
-        android:layout_width="match_parent"
+        android:id="@+id/btnSelectMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/drawable_verify_background_green"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/bg_plus_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:text="Select Media File"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Media Preview Frame -->
+    <FrameLayout
+        android:id="@+id/mediaPreviewFrame"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/btnSelectMedia"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:id="@+id/imageViewMedia2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@drawable/drawable_image_chooser"
+            android:visibility="visible" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageViewMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:elevation="10dp"
+            android:background="#E0E0E0"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            android:layout_gravity="center" />
+
+        <VideoView
+            android:id="@+id/videoViewMedia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/imageOverlay"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:alpha="0.7"
+            android:scaleType="fitCenter"
+            android:visibility="visible" />
+    </FrameLayout>
+
+    <!-- Stats Row – compact & uniform -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/statsLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="24dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mediaPreviewFrame">
 
-        <!-- Select Media Button -->
+        <!-- Quality Card -->
         <LinearLayout
-            android:id="@+id/btnSelectMedia"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:orientation="horizontal"
+            android:id="@+id/cardQuality"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_stats_card"
             android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:background="@drawable/drawable_verify_background_green"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginBottom="10dp">
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/cardType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_add_image"
-                android:layout_gravity="center_vertical" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Media Files"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical" />
-        </LinearLayout>
-
-        <!-- Media Preview with Overlay -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="220dp">
-
-            <!-- Image Preview -->
-            <ImageView
-                android:id="@+id/imageViewMedia"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:background="@drawable/drawable_image_chooser"
-                android:visibility="visible" />
-
-            <!-- Video Preview -->
-            <VideoView
-                android:id="@+id/videoViewMedia"
-                android:layout_width="match_parent"
-                android:layout_gravity="center"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
-
-            <!-- Audio Preview (simple icon) -->
-            <LinearLayout
-                android:id="@+id/audioContainer"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:layout_marginBottom="6dp">
 
-                <ImageView
-                    android:id="@+id/audioIcon"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_media" />
+                <ProgressBar
+                    android:id="@+id/qualityProgressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/circular_progress_drawable" />
 
                 <TextView
-                    android:id="@+id/audioFileName"
+                    android:id="@+id/tvQualityValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Audio File"
-                    android:textColor="@android:color/black"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <!-- Overlay Image (tick / X / warning) -->
-            <ImageView
-                android:id="@+id/imageOverlay"
-                android:layout_width="123dp"
-                android:layout_height="132dp"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:alpha="0.7"
-                android:scaleType="fitCenter"
-                android:visibility="visible" />
-
-        </FrameLayout>
-
-        <!-- Status Message -->
-
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            android:id="@+id/layoutInfoStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:padding="5dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/txtIdentifixation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="16sp"
-                        android:textColor="#ffffff"
-                        android:paddingTop="6dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="6dp" />
-
-                    <ImageView
-                        android:id="@+id/imgIdentification"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="16dp" />
-                </LinearLayout>
-            </RelativeLayout>
+                    android:layout_gravity="center"
+                    android:text="100"
+                    android:textColor="#FF9800"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
 
             <TextView
-                android:id="@+id/textStatusMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:visibility="visible"
-                android:textSize="16sp"
-                android:textColor="@color/colorBlack"
-                android:layout_marginTop="8dp"
-                android:gravity="center" />
-
-        </LinearLayout>
-
-
-        <!-- No credit Message -->
-
-        <LinearLayout
-            android:id="@+id/layoutNoCreditStatus"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/drawable_verify_background_orange"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="start"
-                        android:src="@drawable/ic_no_credits"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/txtNoCredit"
-                        android:layout_width="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_height="wrap_content"
-                        android:text="Insufficient credits. Please upgrade or buy More."
-                        android:textSize="16sp"
-                        android:textColor="#ffffff"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="6dp" />
-
-                </LinearLayout>
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <!-- Verify / Done Button -->
-        <LinearLayout
-            android:id="@+id/btnAction"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/drawable_verify_background_gray_less_radius"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:id="@+id/iconAction"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_folder_add"
-                android:layout_marginStart="12dp"
-                android:layout_gravity="center_vertical" />
-
-            <TextView
-                android:id="@+id/textAction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Verify Media"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_gravity="center_vertical" />
-
-
+                android:text="Quality"
+                android:textColor="#757575"
+                android:textSize="11sp" />
         </LinearLayout>
 
-    </LinearLayout>
+        <!-- Type Card -->
+        <LinearLayout
+            android:id="@+id/cardType"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_stats_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/cardSize"
+            app:layout_constraintStart_toEndOf="@id/cardQuality"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="6dp"
+                android:src="@android:drawable/ic_menu_gallery"
+                app:tint="#2196F3" />
 
-    <!-- Help Message -->
+            <TextView
+                android:id="@+id/tvTypeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IMAGE"
+                android:textColor="#212121"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Type"
+                android:textColor="#757575"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Size Card -->
+        <LinearLayout
+            android:id="@+id/cardSize"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_stats_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/cardResolution"
+            app:layout_constraintStart_toEndOf="@id/cardType"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tvSizeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="266"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KB"
+                android:textColor="#000000"
+                android:textSize="13sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Size"
+                android:textColor="#757575"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Resolution Card -->
+        <LinearLayout
+            android:id="@+id/cardResolution"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_stats_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cardSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HD"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvResolutionValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1242×1201"
+                android:textColor="#212121"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Resolution"
+                android:textColor="#757575"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Status Message -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutInfoStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/mediaPreviewFrame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/txtIdentifixation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:padding="6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imgIdentification"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:id="@+id/imgIdentification"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp"/>
+
+        <TextView
+            android:id="@+id/textStatusMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/colorBlack"
+            android:gravity="center"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/txtIdentifixation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- No Credit Message -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutNoCreditStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/drawable_verify_background_orange"
+        app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/icNoCredits"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_no_credits"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/txtNoCredit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Insufficient credits. Please upgrade or buy More."
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:layout_marginStart="15dp"
+            app:layout_constraintStart_toEndOf="@id/icNoCredits"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/icNoCredits"
+            app:layout_constraintBottom_toBottomOf="@id/icNoCredits"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Verify Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAction"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:background="@drawable/bg_btn_verify"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="✔ Verify Media"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/llCreditsInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutNoCreditStatus"
+        app:layout_constraintVertical_bias="0.085" />
+
+    <!-- Credits Info -->
     <LinearLayout
-        android:layout_alignParentBottom="true"
-        android:id="@+id/layoutHelp"
+        android:id="@+id/llCreditsInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="5dp"
-        android:visibility="visible">
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_remaining_credits_dashboard"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ProgressBar
+            android:id="@+id/progressCredits"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyle" />
 
         <TextView
-            android:id="@+id/txtHelp"
+            android:id="@+id/tvCreditsRemaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="5dp"
-            android:text="@string/if_you_want_to_test_an_audio_file_share"
-            android:textSize="11sp"
-            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:text="@string/credits_remaining_0"
             android:textColor="@color/colorBlack"
-            android:textStyle="normal"
-            app:drawableStartCompat="@drawable/ic_audio" />
-
-        <TextView
-            android:id="@+id/txtHelp2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/the_file_into_the_verifylabs_extension_instead"
-            android:textSize="11sp"
-            android:textAlignment="center"
-            android:drawablePadding="5dp"
-            android:textColor="@color/colorBlack"
-            android:textStyle="normal"
-            app:drawableEndCompat="@drawable/ic_share" />
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_remaining_credit_card" />
     </LinearLayout>
-</RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

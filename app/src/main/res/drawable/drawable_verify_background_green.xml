@@ -3,8 +3,8 @@
     android:color="#80FFFFFF"> <!-- Semi-transparent white for ripple -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="10dp"/>
-            <solid android:color="@color/verifylabs_logo_green"/>
+            <corners android:radius="5dp"/>
+            <solid android:color="@color/verifylabs_button_blue_color"/>
         </shape>
     </item>
 </ripple>

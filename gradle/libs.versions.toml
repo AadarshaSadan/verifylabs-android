@@ -1,5 +1,6 @@
 [versions]
 agp = "8.8.0"
+androidImageCropper = "4.5.0"
 converterGson = "3.0.0"
 coreKtxVersion = "1.12.0"
 dotsindicator = "5.1.0"
@@ -26,8 +27,11 @@ gson = "2.11.0"
 kspVersion = "2.0.0-1.0.23"
 hiltVersion = "2.51.1"
 seekbarCompat = "0.3.0"
+roomVersion = "2.6.1"
+lifecycleVersion = "2.7.0"
 
 [libraries]
+android-image-cropper = { module = "com.github.CanHub:Android-Image-Cropper", version.ref = "androidImageCropper" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
@@ -61,6 +65,14 @@ purchases-v770 = { module = "com.revenuecat.purchases:purchases", version.ref = 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 seekbar-compat = { module = "com.minimize.library:seekbar-compat", version.ref = "seekbarCompat" }
+
+# Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+
+# Lifecycle
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleVersion" }
 
 
 

@@ -50,7 +50,7 @@
     <string name="about_legal_"><![CDATA[About & Legal]]></string>
     <string name="_2025_verifylabs_n_nall_rights_reserved">© 2025 VerifyLabs. \n\nAll rights reserved.</string>
     <string name="credits_remaining">Credits Remaining: %1$s</string>
-    <string name="credits_remaining_0">Credits Remaining: 0</string>
+    <string name="credits_remaining_0">Credits Remaining: 2500</string>
     <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
     <string name="done">Done</string>
     <string name="start_recording">start_recording\n\n</string>
