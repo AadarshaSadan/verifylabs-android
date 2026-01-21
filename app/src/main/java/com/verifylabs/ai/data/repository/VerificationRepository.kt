@@ -21,6 +21,8 @@ class VerificationRepository @Inject constructor(private val dao: VerificationDa
         return dao.deleteOlderThan(cutoffTime)
     }
 
+    suspend fun deleteById(id: Long): Int = dao.deleteById(id)
+
     suspend fun purgeAll(): Int = dao.deleteAll()
 
     suspend fun getTotalSizeKb(): Long = dao.getTotalSizeKb() ?: 0L

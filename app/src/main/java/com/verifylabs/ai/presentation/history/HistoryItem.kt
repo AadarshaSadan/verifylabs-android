@@ -6,5 +6,6 @@ data class HistoryItem(
     val type: String,   // "Image", "Video", "Audio"
     val date: String,
     val aiScore: Int,
-    val mode: String     // "Human" or "Machine"
+    val mode: String,     // "Human" or "Machine"
+    val mediaUri: String? = null
 )

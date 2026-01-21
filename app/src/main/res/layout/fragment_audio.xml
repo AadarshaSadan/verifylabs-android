@@ -10,10 +10,13 @@
     tools:context=".presentation.audio.FragmentAudio">
 
     <!-- Top small circle -->
+
     <View
         android:id="@+id/micPulsebtn"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/circle_mic_gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -149,6 +152,28 @@
             android:gravity="center"
             android:layout_marginTop="8dp" />
     </LinearLayout>
+
+    <!-- Audio Analysis Chart -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAudioAnalysis"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.verifylabs.ai.presentation.audio.AudioAnalysisChart
+            android:id="@+id/audioAnalysisChart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+
+    </androidx.cardview.widget.CardView>
 
     <!-- Credits Bar (Always visible) -->
     <LinearLayout

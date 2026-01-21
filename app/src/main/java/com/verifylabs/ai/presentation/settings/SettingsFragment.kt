@@ -1,7 +1,5 @@
 package com.verifylabs.ai.presentation.settings
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,31 +9,35 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.verifylabs.ai.R
 import com.verifylabs.ai.core.util.Constants
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
+import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentSettingsBinding
+import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.auth.login.ApiResponseLogin
 import com.verifylabs.ai.presentation.auth.login.LoginViewModel
-import com.verifylabs.ai.presentation.onboarding.OnboardingActivity
 import com.verifylabs.ai.presentation.plan.PlanResponse
 import com.verifylabs.ai.presentation.purchasecredits.PurchaseCreditsBottomSheet
-import com.google.gson.Gson
-import com.verifylabs.ai.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
-    @Inject
-    lateinit var preferenceHelper: PreferenceHelper
+    @Inject lateinit var preferenceHelper: PreferenceHelper
+
+    @Inject lateinit var verificationRepository: VerificationRepository
 
     private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding!!
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var planViewModel: PlanViewModel
@@ -46,9 +48,9 @@ class SettingsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
@@ -61,7 +63,6 @@ class SettingsFragment : Fragment() {
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         planViewModel = ViewModelProvider(this)[PlanViewModel::class.java]
 
-
         setupSeekBars()
         setupUi()
         setupObservers()
@@ -71,8 +72,9 @@ class SettingsFragment : Fragment() {
 
     private fun setupUi() {
         binding.etUsername.setText(preferenceHelper.getUserName() ?: "")
-//        binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
-//        binding.tvApiKey.text = "API KEY:${preferenceHelper.getApiKey()?.take(6) ?: ""}....."
+        //        binding.etPassword.setText(preferenceHelper.getPassword() ?: "")
+        //        binding.tvApiKey.text = "API KEY:${preferenceHelper.getApiKey()?.take(6) ?:
+        // ""}....."
 
         // disable the purchase button until plans are loaded
         binding.btnPurchaseCredits.isEnabled = false
@@ -83,24 +85,20 @@ class SettingsFragment : Fragment() {
         binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
         binding.tvCreditsRemaining.visibility = View.VISIBLE
 
-
         // ---------- QUICK RECORD DURATION ----------
-        val quickRecordSeconds =
-            preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
+        val quickRecordSeconds = preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
 
         binding.seekBar.max = 60
         binding.seekBar.progress = quickRecordSeconds
         binding.textView3.text = "${quickRecordSeconds}s"
 
         // ---------- HISTORY RETENTION ----------
-        val historyDays =
-            preferenceHelper.getHistoryRetentionDays().takeIf { it > 0 } ?: 90
+        val historyDays = preferenceHelper.getHistoryRetentionDays().takeIf { it > 0 } ?: 90
 
         binding.seekBar1.max = 90
         binding.seekBar1.progress = historyDays
         binding.textView5.text = "${historyDays}d"
     }
-
 
     // --------------------------------------------------
     // SEEK BAR LOGIC
@@ -108,93 +106,94 @@ class SettingsFragment : Fragment() {
     private fun setupSeekBars() {
 
         // QUICK RECORD (10s – 60s)
-        binding.seekBar.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        binding.seekBar.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
 
-            override fun onProgressChanged(
-                seekBar: SeekBar?,
-                progress: Int,
-                fromUser: Boolean
-            ) {
-                val safeValue = progress.coerceAtLeast(10)
-                binding.textView3.text = "${safeValue}s"
-            }
+                    override fun onProgressChanged(
+                            seekBar: SeekBar?,
+                            progress: Int,
+                            fromUser: Boolean
+                    ) {
+                        val safeValue = progress.coerceAtLeast(10)
+                        binding.textView3.text = "${safeValue}s"
+                    }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                val value = seekBar?.progress?.coerceAtLeast(10) ?: 10
-                preferenceHelper.setQuickRecordDuration(value)
-            }
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        val value = seekBar?.progress?.coerceAtLeast(10) ?: 10
+                        preferenceHelper.setQuickRecordDuration(value)
+                    }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        })
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                }
+        )
 
         // HISTORY RETENTION (7d – 90d)
-        binding.seekBar1.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        binding.seekBar1.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
 
-            override fun onProgressChanged(
-                seekBar: SeekBar?,
-                progress: Int,
-                fromUser: Boolean
-            ) {
-                val safeValue = progress.coerceAtLeast(7)
-                binding.textView5.text = "${safeValue}d"
-            }
+                    override fun onProgressChanged(
+                            seekBar: SeekBar?,
+                            progress: Int,
+                            fromUser: Boolean
+                    ) {
+                        val safeValue = progress.coerceAtLeast(7)
+                        binding.textView5.text = "${safeValue}d"
+                    }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                val value = seekBar?.progress?.coerceAtLeast(7) ?: 7
-                preferenceHelper.setHistoryRetentionDays(value)
-            }
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        val value = seekBar?.progress?.coerceAtLeast(7) ?: 7
+                        preferenceHelper.setHistoryRetentionDays(value)
+                    }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        })
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                }
+        )
     }
-
 
     private fun setupClickListeners() {
         binding.llCreditsInfo.setOnClickListener {
             loginViewModel.checkCredits(
-                preferenceHelper.getUserName() ?: "",
-                preferenceHelper.getApiKey() ?: ""
+                    preferenceHelper.getUserName() ?: "",
+                    preferenceHelper.getApiKey() ?: ""
             )
         }
 
-
         binding.cardManualCredentials.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                    R.anim.slide_in_right,  // enter
-                    R.anim.fade_out,        // exit
-                    R.anim.fade_in,         // pop enter
-                    R.anim.slide_out_right  // pop exit
-                )
-                .replace(R.id.container, FragmentAccount())
-                .addToBackStack("FragmentAccount")
-                .commit()
+            parentFragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.slide_in_right, // enter
+                            R.anim.fade_out, // exit
+                            R.anim.fade_in, // pop enter
+                            R.anim.slide_out_right // pop exit
+                    )
+                    .replace(R.id.container, FragmentAccount())
+                    .addToBackStack("FragmentAccount")
+                    .commit()
         }
 
-
-
-//        binding.btnTestSave.setOnClickListener {
-//            val username = binding.etUsername.text.toString().trim()
-//            val password = binding.etPassword.text.toString().trim()
-//            if (username.isNotEmpty() && password.isNotEmpty()) {
-//                loginViewModel.login(username, password)
-//            } else {
-//                Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        binding.llLogout.setOnClickListener {
-//            preferenceHelper.setIsLoggedIn(false)
-//            preferenceHelper.clear()
-//            startActivity(
-//                Intent(requireActivity(), OnboardingActivity::class.java).apply {
-//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                }
-//            )
-//            requireActivity().finish()
-//        }
+        //        binding.btnTestSave.setOnClickListener {
+        //            val username = binding.etUsername.text.toString().trim()
+        //            val password = binding.etPassword.text.toString().trim()
+        //            if (username.isNotEmpty() && password.isNotEmpty()) {
+        //                loginViewModel.login(username, password)
+        //            } else {
+        //                Toast.makeText(requireContext(), "Please enter username and password",
+        // Toast.LENGTH_SHORT).show()
+        //            }
+        //        }
+        //
+        //        binding.llLogout.setOnClickListener {
+        //            preferenceHelper.setIsLoggedIn(false)
+        //            preferenceHelper.clear()
+        //            startActivity(
+        //                Intent(requireActivity(), OnboardingActivity::class.java).apply {
+        //                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+        // Intent.FLAG_ACTIVITY_CLEAR_TASK
+        //                }
+        //            )
+        //            requireActivity().finish()
+        //        }
 
         binding.btnPurchaseCredits.setOnClickListener {
             val tag = "PurchaseCreditsBottomSheet"
@@ -211,33 +210,65 @@ class SettingsFragment : Fragment() {
             val bottomSheet = AboutUsBottomSheet()
             bottomSheet.show(parentFragmentManager, "AboutUsBottomSheet")
         }
+
+        // Purge All History
+        binding.llDeleteAccount.setOnClickListener {
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Delete All History?")
+                    .setMessage(
+                            "This will permanently delete all verification history. This cannot be undone."
+                    )
+                    .setPositiveButton("Delete") { _, _ ->
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            val deleted = verificationRepository.purgeAll()
+                            Toast.makeText(
+                                            requireContext(),
+                                            "Deleted $deleted items",
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            updateStorageSize()
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+        }
     }
 
     private fun setupObservers() {
         loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.LOADING -> {
-//                    binding.tvTestSave.text = "Saving..."
-//                    binding.btnTestSave.isEnabled = false
+                    //                    binding.tvTestSave.text = "Saving..."
+                    //                    binding.btnTestSave.isEnabled = false
                 }
                 Status.SUCCESS -> {
                     resource.data?.let { dataJson ->
-                        val response = Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
+                        val response =
+                                Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
                         preferenceHelper.setApiKey(response.apiKey)
                         preferenceHelper.setIsLoggedIn(true)
                         preferenceHelper.setCreditReamaining(response.credits)
-//                        binding.tvApiKey.text = "API KEY: ${response.apiKey.take(6)}....."
-//                        binding.tvTestSave.text = "Saved"
-//                        binding.btnTestSave.isEnabled = true
+                        //                        binding.tvApiKey.text = "API KEY:
+                        // ${response.apiKey.take(6)}....."
+                        //                        binding.tvTestSave.text = "Saved"
+                        //                        binding.btnTestSave.isEnabled = true
                         val storeCredits = preferenceHelper.getCreditRemaining()
-                        val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-                        binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                        val formattedCredits =
+                                NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+                        binding.tvCreditsRemaining.text =
+                                getString(R.string.credits_remaining, formattedCredits)
                     }
                 }
                 Status.ERROR -> {
-//                    binding.tvTestSave.text = "Error! Try Again"
-//                    binding.btnTestSave.isEnabled = true
-                    Toast.makeText(requireContext(), resource.message ?: "Login failed", Toast.LENGTH_SHORT).show()
+                    //                    binding.tvTestSave.text = "Error! Try Again"
+                    //                    binding.btnTestSave.isEnabled = true
+                    Toast.makeText(
+                                    requireContext(),
+                                    resource.message ?: "Login failed",
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show()
                 }
             }
         }
@@ -261,7 +292,8 @@ class SettingsFragment : Fragment() {
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Error fetching plans: ${resource.message}")
-                    Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT)
+                            .show()
                 }
             }
         }
@@ -272,11 +304,36 @@ class SettingsFragment : Fragment() {
         _binding = null
     }
 
+    private fun updateStorageSize() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val sizeKb = verificationRepository.getTotalSizeKb()
+            binding.tvStorageSize?.text = "$sizeKb KB"
+            Log.d(TAG, "Total history storage: $sizeKb KB")
+        }
+    }
+
+    private fun cleanupOldHistory() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val days = preferenceHelper.getHistoryRetentionDays()
+            if (days > 0) {
+                val deleted = verificationRepository.deleteOlderThan(days)
+                if (deleted > 0) {
+                    Log.d(TAG, "Cleaned up $deleted old history items (older than $days days)")
+                }
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()
         // Show bottom nav again
         (activity as? MainActivity)?.setAppBarVisibility(true)
         (activity as? MainActivity)?.setBottomNavVisibility(true)
+
+        // Clean up old history based on retention setting
+        cleanupOldHistory()
+
+        // Update storage size display
+        updateStorageSize()
     }
 }

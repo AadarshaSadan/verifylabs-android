@@ -459,6 +459,7 @@
 
                     <!-- END TEXT -->
                     <TextView
+                        android:id="@+id/tvStorageSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="908 KB"

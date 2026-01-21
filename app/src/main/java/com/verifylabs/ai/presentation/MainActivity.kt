@@ -34,9 +34,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔥 Apply system safe insets
-//        applySafeInsets()
-
         // Load default fragment
         replaceFragment(HomeFragment())
         selectNavItem(binding.navHome)
@@ -65,22 +62,6 @@ class MainActivity : AppCompatActivity() {
         binding.navSettings.setOnClickListener {
             selectNavItem(it)
             replaceFragment(SettingsFragment())
-        }
-    }
-
-    private fun applySafeInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
-
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            // Appbar top padding
-            binding.appbar.root.setPadding(systemBars.top)
-
-
-            // Bottom inset → Floating Bottom Nav
-            binding.floatingBottomNav.translationY = -systemBars.bottom.toFloat()
-
-            insets
         }
     }
 
@@ -148,32 +129,14 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-
-    // In MainActivity
-// In MainActivity
     fun setBottomNavVisibility(isVisible: Boolean) {
         if (isVisible) {
-            // Show bottom nav
             binding.floatingBottomNav.visibility = View.VISIBLE
-
-//            // Make container respect bottom nav
-//            val params = binding.container.layoutParams as ConstraintLayout.LayoutParams
-//            params.bottomToBottom = binding.floatingBottomNav.id
-//            binding.container.layoutParams = params
-
         } else {
-            // Hide bottom nav
             binding.floatingBottomNav.visibility = View.GONE
-
-//            // Make container full screen
-//            val params = binding.container.layoutParams as ConstraintLayout.LayoutParams
-//            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
-//            binding.container.layoutParams = params
         }
     }
 
-
-    // In MainActivity
     fun setAppBarVisibility(isVisible: Boolean) {
         if (isVisible) {
             binding.appbar.root.visibility = View.VISIBLE
@@ -182,9 +145,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
-
-
-
+    fun navigateToTab(index: Int) {
+        val navButtons = listOf(
+            binding.navHome,
+            binding.navMedia,
+            binding.navAudio,
+            binding.navHistory,
+            binding.navSettings
+        )
+        if (index in navButtons.indices) {
+            navButtons[index].performClick()
+        }
+    }
 }

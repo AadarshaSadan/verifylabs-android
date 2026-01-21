@@ -20,10 +20,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.verifylabs.ai.R
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
+import com.verifylabs.ai.data.database.VerificationEntity
 import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentMediaBinding
 import com.verifylabs.ai.presentation.viewmodel.MediaViewModel
@@ -570,6 +572,7 @@ class MediaFragment : Fragment() {
         val bottomSheet = CropBottomSheetFragment.newInstance(uri)
         bottomSheet.onImageResult = { resultUri, quality ->
             selectedMediaUri = resultUri
+            currentQualityPercent = quality // Store quality for database save
             binding.btnAction.visibility = View.VISIBLE
             binding.imageViewMedia2.visibility = View.GONE
             binding.imageViewMedia.visibility = View.VISIBLE

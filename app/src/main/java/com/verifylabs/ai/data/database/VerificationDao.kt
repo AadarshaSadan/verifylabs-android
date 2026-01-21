@@ -21,6 +21,9 @@ interface VerificationDao {
     @Query("DELETE FROM verification_history WHERE timestamp < :cutoffTime")
     suspend fun deleteOlderThan(cutoffTime: Long): Int
 
+    @Query("DELETE FROM verification_history WHERE id = :id")
+    suspend fun deleteById(id: Long): Int
+
     @Query("DELETE FROM verification_history") suspend fun deleteAll(): Int
 
     @Query("SELECT SUM(fileSizeKb) FROM verification_history") suspend fun getTotalSizeKb(): Long?

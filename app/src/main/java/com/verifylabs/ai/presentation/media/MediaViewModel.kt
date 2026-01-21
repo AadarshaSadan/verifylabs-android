@@ -32,7 +32,7 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
     fun uploadMedia(filePath: String, mediaType: MediaType) {
         _uploadResponse.postValue(Resource.loading(null))
         loading.postValue(true)
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             try {
                 val response = repository.uploadMedia(filePath, mediaType)
                 _uploadResponse.postValue(Resource.success(response.body()))

@@ -23,5 +23,6 @@ data class VerificationEntity(
 
         // Metadata
         val timestamp: Long, // When verified
-        val username: String // Who verified it
+        val username: String, // Who verified it
+        val temporalScoresJson: String? = null // Serialized List<Double> for trend graph
 )

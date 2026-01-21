@@ -27,16 +27,23 @@ class HistoryAdapter(
         holder.date.text = item.date
         holder.aiScore.text = "${item.aiScore}%"
 
-        // Load local drawable using Glide
-        val drawableRes = when (item.type) {
-            "Image" -> R.drawable.verifylabs_logo      // replace with your local drawable
-            "Video" -> R.drawable.ic_mic      // replace with your local drawable
-            "Audio" -> R.drawable.ic_audio      // replace with your local drawable
+        // Load thumbnail using Glide
+        val placeholderRes = when (item.type) {
+            "Image" -> R.drawable.verifylabs_logo
+            "Video" -> android.R.drawable.ic_menu_slideshow
+            "Audio" -> R.drawable.ic_audio
             else -> R.drawable.ic_mic
         }
 
-        Glide.with(holder.itemView.context)
-            .load(drawableRes)
+        val request = if (item.type == "Audio" || item.mediaUri == null) {
+            Glide.with(holder.itemView.context).load(placeholderRes)
+        } else {
+            Glide.with(holder.itemView.context).load(item.mediaUri)
+        }
+        
+        request
+            .placeholder(placeholderRes)
+            .error(placeholderRes)
             .centerCrop()
             .into(holder.thumbnail)
 
