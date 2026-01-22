@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.verifylabs.ai.R
@@ -55,6 +57,12 @@ class SignUpActivity : AppCompatActivity() {
             )
             insets
         }
+
+        // Ensure status bar icons are correct based on theme (backward compatible)
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         signUpViewModel = ViewModelProvider(this)[SignUpViewModel::class.java]
 

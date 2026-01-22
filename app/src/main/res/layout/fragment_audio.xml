@@ -1,217 +1,221 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@color/app_background"
-    android:padding="16dp"
     tools:context=".presentation.audio.FragmentAudio">
 
-    <!-- Top small circle -->
-
-    <View
-        android:id="@+id/micPulsebtn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/circle_mic_gray"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/mic_timer"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/q3_icons"
-        app:tint="@android:color/white"
-        app:layout_constraintTop_toTopOf="@id/micPulsebtn"
-        app:layout_constraintBottom_toBottomOf="@id/micPulsebtn"
-        app:layout_constraintStart_toStartOf="@id/micPulsebtn"
-        app:layout_constraintEnd_toEndOf="@id/micPulsebtn" />
-
-    <!-- Pulsating Circle -->
-    <View
-        android:id="@+id/micPulse"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:background="@drawable/mic_circle_bg"
-        app:layout_constraintTop_toBottomOf="@id/micPulsebtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
-
-    <!-- Mic Button -->
-    <ImageView
-        android:id="@+id/micButton"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:src="@drawable/ic_mic"
-        android:contentDescription="@string/start_recording"
-        app:tint="@android:color/white"
-        app:layout_constraintTop_toTopOf="@id/micPulse"
-        app:layout_constraintBottom_toBottomOf="@id/micPulse"
-        app:layout_constraintStart_toStartOf="@id/micPulse"
-        app:layout_constraintEnd_toEndOf="@id/micPulse" />
-
-    <!-- Timer -->
-    <TextView
-        android:id="@+id/txtTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00:00"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="@color/colorBlack"
-        app:layout_constraintTop_toBottomOf="@id/micPulse"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp" />
-
-    <!-- Status -->
-    <TextView
-        android:id="@+id/txtStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
-        android:textColor="@color/colorBlack"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/txtTimer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp" />
-
-    <!-- No Credit Banner -->
-    <LinearLayout
-        android:id="@+id/layoutNoCreditStatus"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/drawable_verify_background_btn_failed_likely_red"
-        android:padding="12dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/txtStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
+        android:padding="16dp">
+
+        <!-- Top small circle -->
+        <View
+            android:id="@+id/micPulsebtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/circle_mic_gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_cloud_cross"
-            app:tint="@android:color/white" />
+            android:id="@+id/mic_timer"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/q3_icons"
+            app:tint="@android:color/white"
+            app:layout_constraintTop_toTopOf="@id/micPulsebtn"
+            app:layout_constraintBottom_toBottomOf="@id/micPulsebtn"
+            app:layout_constraintStart_toStartOf="@id/micPulsebtn"
+            app:layout_constraintEnd_toEndOf="@id/micPulsebtn" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No credits remaining"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+        <!-- Pulsating Circle -->
+        <View
+            android:id="@+id/micPulse"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:background="@drawable/mic_circle_bg"
+            app:layout_constraintTop_toBottomOf="@id/micPulsebtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp" />
 
-    <!-- Verification Result (Hidden until done) -->
-    <LinearLayout
-        android:id="@+id/layoutInfoStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/layoutNoCreditStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
+        <!-- Mic Button -->
         <ImageView
-            android:id="@+id/imageOverlay"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="fitCenter" />
+            android:id="@+id/micButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_mic"
+            android:contentDescription="@string/start_recording"
+            app:tint="@android:color/white"
+            app:layout_constraintTop_toTopOf="@id/micPulse"
+            app:layout_constraintBottom_toBottomOf="@id/micPulse"
+            app:layout_constraintStart_toStartOf="@id/micPulse"
+            app:layout_constraintEnd_toEndOf="@id/micPulse" />
 
+        <!-- Timer -->
         <TextView
-            android:id="@+id/txtIdentifixation"
+            android:id="@+id/txtTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Result"
-            android:textSize="18sp"
+            android:text="00:00:00"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:padding="8dp"
-            android:layout_marginTop="12dp" />
+            android:textColor="@color/colorBlack"
+            app:layout_constraintTop_toBottomOf="@id/micPulse"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" />
 
+        <!-- Status -->
         <TextView
-            android:id="@+id/textStatusMessage"
+            android:id="@+id/txtStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
-
-    <!-- Audio Analysis Chart -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardAudioAnalysis"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
-        <com.verifylabs.ai.presentation.audio.AudioAnalysisChart
-            android:id="@+id/audioAnalysisChart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-
-
-    </androidx.cardview.widget.CardView>
-
-    <!-- Credits Bar (Always visible) -->
-    <LinearLayout
-        android:id="@+id/llCreditsInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp">
-
-        <ProgressBar
-            android:id="@+id/progressCredits"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="gone"
-            style="?android:attr/progressBarStyleSmall" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_remaining_credit_card"
-            android:layout_marginEnd="6dp" />
-
-        <TextView
-            android:id="@+id/tvCreditsRemaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Credits Remaining: 0"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
-            android:textSize="13sp"
-            android:gravity="center_vertical" />
-    </LinearLayout>
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/txtTimer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- No Credit Banner -->
+        <LinearLayout
+            android:id="@+id/layoutNoCreditStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/drawable_verify_background_btn_failed_likely_red"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/txtStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_cloud_cross"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No credits remaining"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Verification Result (Hidden until done) -->
+        <LinearLayout
+            android:id="@+id/layoutInfoStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/layoutNoCreditStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/imageOverlay"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/txtIdentifixation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Result"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:id="@+id/textStatusMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Audio Analysis Chart -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardAudioAnalysis"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp">
+
+            <com.verifylabs.ai.presentation.audio.AudioAnalysisChart
+                android:id="@+id/audioAnalysisChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Credits Bar (Always visible) -->
+        <LinearLayout
+            android:id="@+id/llCreditsInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardAudioAnalysis"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
+
+            <ProgressBar
+                android:id="@+id/progressCredits"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="gone"
+                style="?android:attr/progressBarStyleSmall" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_remaining_credit_card"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/tvCreditsRemaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Credits Remaining: 0"
+                android:textColor="@color/colorBlack"
+                android:textSize="13sp"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

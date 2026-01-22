@@ -33,10 +33,6 @@ class SplashActivity : AppCompatActivity() {
 
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val isLightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_NO
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.isAppearanceLightStatusBars = isLightMode
-        window.statusBarColor = getColor(R.color.app_background_before_login)
 
         // Apply window insets safely
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->

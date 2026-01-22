@@ -33,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 enum class ScanButtonState {
@@ -375,152 +376,172 @@ class MediaFragment : Fragment() {
             }
         }
 
-        viewModel.getVerifyResponse().observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.LOADING -> {
-                    // Keep SCANNING
-                }
-                Status.SUCCESS -> {
-                    val response =
-                            Gson().fromJson(
-                                            resource.data.toString(),
-                                            VerificationResponse::class.java
-                                    )
-
-                    binding.layoutInfoStatus.visibility = View.VISIBLE
-                    binding.textStatusMessage.visibility = View.VISIBLE
-                    binding.imageOverlay.visibility = View.VISIBLE
-
-                    if (response.error != null) {
-                        updateStatus("Verification error: ${response.error}", true)
-                        binding.textStatusMessage.text = response.bandDescription ?: ""
-                        binding.txtIdentifixation.text = response.error
-                        setButtonState(ScanButtonState.FAILED)
-                        return@observe
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.verifyResponseFlow.collect { resource ->
+                when (resource.status) {
+                    Status.LOADING -> {
+                        // Keep SCANNING
                     }
+                    Status.SUCCESS -> {
+                        val response =
+                                Gson().fromJson(
+                                                resource.data.toString(),
+                                                VerificationResponse::class.java
+                                        )
 
-                    binding.textStatusMessage.text = response.bandDescription ?: ""
-                    binding.txtIdentifixation.text = getBandResult(response.band)
+                        binding.layoutInfoStatus.visibility = View.VISIBLE
+                        binding.textStatusMessage.visibility = View.VISIBLE
+                        binding.imageOverlay.visibility = View.VISIBLE
 
-                    when (response.band) {
-                        1, 2 -> {
-                            binding.imageOverlay.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable
-                                                    .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
-                                    )
-                            )
-                            binding.txtIdentifixation.background =
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.drawable_verify_background_green
-                                    )
-                            binding.imgIdentification.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable
-                                                    .verifylabs_smile_icon_light_grey_rgb_1__traced_
-                                    )
-                            )
-                        }
-                        3 -> {
-                            binding.imageOverlay.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.ic_gray_area
-                                    )
-                            )
-                            binding.txtIdentifixation.background =
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable
-                                                    .drawable_verify_background_btn_failed_likely_gray
-                                    )
-                            binding.imgIdentification.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.ic_question_circle
-                                    )
-                            )
-                        }
-                        4, 5 -> {
-                            binding.imageOverlay.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.ic_red_cross_tranparent
-                                    )
-                            )
-                            binding.txtIdentifixation.background =
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable
-                                                    .drawable_verify_background_btn_failed_likely_red_without_radius
-                                    )
-                            binding.imgIdentification.setImageDrawable(
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable
-                                                    .verifylabs_robot_icon_light_grey_rgb_1__traced_
-                                    )
-                            )
-                        }
-                    }
+                        if (response.error != null) {
+                            updateStatus("Verification error: ${response.error}", true)
+                            binding.textStatusMessage.text = response.bandDescription ?: ""
+                            binding.txtIdentifixation.text = response.error
+                            setButtonState(ScanButtonState.FAILED)
+                        } else {
+                            binding.textStatusMessage.text = response.bandDescription ?: ""
+                            binding.txtIdentifixation.text = getBandResult(response.band)
 
-                    setButtonState(ScanButtonState.DONE)
+                            when (response.band) {
+                                1, 2 -> {
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
+                                            )
+                                    )
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.drawable_verify_background_green
+                                            )
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
+                                }
+                                3 -> {
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_gray_area
+                                            )
+                                    )
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .drawable_verify_background_btn_failed_likely_gray
+                                            )
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_question_circle
+                                            )
+                                    )
+                                }
+                                4, 5 -> {
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_red_cross_tranparent
+                                            )
+                                    )
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .drawable_verify_background_btn_failed_likely_red_without_radius
+                                            )
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
+                                }
+                            }
 
-                    // Save verification result to database
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        try {
-                            val entity =
-                                    VerificationEntity(
-                                            mediaType =
-                                                    if (mediaType == MediaType.IMAGE) "Image"
-                                                    else "Video",
-                                            mediaUri = selectedMediaUri?.toString(),
-                                            mediaThumbnail =
-                                                    if (mediaType == MediaType.IMAGE)
-                                                            selectedMediaUri?.toString()
-                                                    else null,
-                                            band = response.band,
-                                            bandName = response.bandName,
-                                            bandDescription = response.bandDescription,
-                                            aiScore = response.score,
-                                            fileSizeKb =
-                                                    selectedMediaUri?.let { getFileSizeKb(it) },
-                                            resolution =
-                                                    when (mediaType) {
-                                                        MediaType.IMAGE ->
-                                                                selectedMediaUri?.let {
-                                                                    getImageResolution(it)
-                                                                }
-                                                        MediaType.VIDEO ->
-                                                                selectedMediaUri?.let {
-                                                                    getVideoResolution(it)
-                                                                }
-                                                        else -> null
+                            setButtonState(ScanButtonState.DONE)
+
+                            // Save verification result to database
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                try {
+                                    val entity = VerificationEntity(
+                                                    mediaType =
+                                                            if (mediaType == MediaType.IMAGE) "Image"
+                                                            else "Video",
+                                                    mediaUri = selectedMediaUri?.let { uri ->
+                                                        // Save to internal storage for persistence
+                                                        val savedPath = com.verifylabs.ai.core.util.HistoryFileManager.saveMedia(
+                                                            requireContext(), 
+                                                            uri, 
+                                                            if (mediaType == MediaType.IMAGE) "image" else "video"
+                                                        )
+                                                        // Return file URI string if saved, else original URI
+                                                        if (savedPath != null) Uri.fromFile(File(savedPath)).toString()
+                                                        else uri.toString()
                                                     },
-                                            quality = currentQualityPercent,
-                                            timestamp = System.currentTimeMillis(),
-                                            username = preferenceHelper.getUserName() ?: ""
-                                    )
-                            verificationRepository.saveVerification(entity)
-                            Log.d(TAG, "Verification saved to database with ID: ${entity.id}")
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Failed to save verification to database", e)
+                                                    mediaThumbnail =
+                                                            if (mediaType == MediaType.IMAGE)
+                                                                    selectedMediaUri?.toString()
+                                                            else null,
+                                                    band = response.band,
+                                                    bandName = response.bandName,
+                                                    bandDescription = response.bandDescription,
+                                                    aiScore = response.score,
+                                                    fileSizeKb =
+                                                            selectedMediaUri?.let { getFileSizeKb(it) },
+                                                    resolution =
+                                                            when (mediaType) {
+                                                                MediaType.IMAGE ->
+                                                                        selectedMediaUri?.let {
+                                                                            getImageResolution(it)
+                                                                        }
+                                                                MediaType.VIDEO ->
+                                                                        selectedMediaUri?.let {
+                                                                            getVideoResolution(it)
+                                                                        }
+                                                                else -> null
+                                                            },
+                                                    quality = currentQualityPercent,
+                                                    timestamp = System.currentTimeMillis(),
+                                                    username = preferenceHelper.getUserName() ?: ""
+                                            )
+                                    verificationRepository.saveVerification(entity)
+                                    Log.d(TAG, "Verification saved to database with ID: ${entity.id}")
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Failed to save verification to database", e)
+                                }
+                            }
                         }
                     }
+                    Status.ERROR -> {
+                        Toast.makeText(
+                                        requireContext(),
+                                        resource.message ?: "Verification failed",
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        updateStatus("Verification failed: ${resource.message}", true)
+                        setButtonState(ScanButtonState.FAILED)
+                    }
                 }
-                Status.ERROR -> {
-                    Toast.makeText(
-                                    requireContext(),
-                                    resource.message ?: "Verification failed",
-                                    Toast.LENGTH_SHORT
-                            )
-                            .show()
-                    updateStatus("Verification failed: ${resource.message}", true)
-                    setButtonState(ScanButtonState.FAILED)
-                }
+            }
+        }
+        
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.creditConsumedFlow.collect {
+                val currentCredits = preferenceHelper.getCreditRemaining()
+                val newCredits = (currentCredits - 1).coerceAtLeast(0)
+                preferenceHelper.setCreditReamaining(newCredits)
+                binding.tvCreditsRemaining.text = "Credits Remaining: $newCredits"
+                Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
     }

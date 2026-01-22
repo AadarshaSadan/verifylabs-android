@@ -9,7 +9,12 @@ import android.widget.MediaController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.setPadding
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -27,6 +32,9 @@ import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShareReceiverActivity : AppCompatActivity() {
@@ -65,12 +73,19 @@ class ShareReceiverActivity : AppCompatActivity() {
     // ---------------------------
     private fun setupWindowAppearance() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val isLightMode = resources.configuration.uiMode and
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
-                android.content.res.Configuration.UI_MODE_NIGHT_NO
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.isAppearanceLightStatusBars = isLightMode
-        window.statusBarColor = getColor(R.color.app_background_before_login)
+        
+        // Handle system bars insets (status bar padding)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            insets
+        }
+
+        // Ensure status bar icons are correct based on theme (backward compatible)
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
     }
 
     // ---------------------------
@@ -247,31 +262,43 @@ class ShareReceiverActivity : AppCompatActivity() {
             }
         }
 
-        mediaViewModel.getVerifyResponse().observe(this) { resource ->
-            when (resource.status) {
-                Status.LOADING -> {
-                    binding.textStatusMessage.text = "Verifying..."
-                    binding.lottieAnimationView.visibility = android.view.View.VISIBLE
-                }
-                Status.SUCCESS -> {
-                    val response = Gson().fromJson(resource.data.toString(), VerificationResponse::class.java)
-
-                    if(response.error != null) {
-                        binding.layoutInfoStatus.visibility = android.view.View.VISIBLE
-                        binding.textStatusMessage.text = "An error occurred during verification."
-                        binding.txtIdentifixation.text = "${response.error}"
-                        binding.lottieAnimationView.visibility = android.view.View.GONE
-                        binding.btnDone.visibility = View.VISIBLE
-                        return@observe
+        lifecycleScope.launch {
+            mediaViewModel.verifyResponseFlow.collect { resource ->
+                when (resource.status) {
+                    Status.LOADING -> {
+                        binding.textStatusMessage.text = "Verifying..."
+                        binding.lottieAnimationView.visibility = android.view.View.VISIBLE
                     }
+                    Status.SUCCESS -> {
+                        val response = Gson().fromJson(resource.data.toString(), VerificationResponse::class.java)
 
-                    binding.lottieAnimationView.visibility = android.view.View.GONE
-                    displayVerificationResult(response)
+                        if(response.error != null) {
+                            binding.layoutInfoStatus.visibility = android.view.View.VISIBLE
+                            binding.textStatusMessage.text = "An error occurred during verification."
+                            binding.txtIdentifixation.text = "${response.error}"
+                            binding.lottieAnimationView.visibility = android.view.View.GONE
+                            binding.btnDone.visibility = View.VISIBLE
+                        } else {
+                            binding.lottieAnimationView.visibility = android.view.View.GONE
+                            displayVerificationResult(response)
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.textStatusMessage.text = "Verification failed: ${resource.message}"
+                        binding.lottieAnimationView.visibility = android.view.View.GONE
+                    }
                 }
-                Status.ERROR -> {
-                    binding.textStatusMessage.text = "Verification failed: ${resource.message}"
-                    binding.lottieAnimationView.visibility = android.view.View.GONE
-                }
+            }
+        }
+
+        lifecycleScope.launch {
+            mediaViewModel.creditConsumedFlow.collect {
+                val currentCredits = preferenceHelper.getCreditRemaining()
+                val newCredits = (currentCredits - 1).coerceAtLeast(0)
+                preferenceHelper.setCreditReamaining(newCredits)
+                val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(newCredits)
+                binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                Log.d(TAG, "Credit consumed from share. New balance: $newCredits")
             }
         }
     }

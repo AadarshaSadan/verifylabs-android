@@ -26,9 +26,9 @@
         app:tabIndicatorHeight="30dp"
         app:tabMode="fixed"
         app:tabRippleColor="@android:color/transparent"
-        app:tabSelectedTextColor="@android:color/black"
+        app:tabSelectedTextColor="@color/colorBlack"
         app:tabTextAppearance="@style/TabTextSmall"
-        app:tabTextColor="@color/colorBlack">
+        app:tabTextColor="@color/secondary_text">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -88,7 +88,7 @@
                 android:id="@+id/empty_title"
                 android:text="No Items"
                 android:textSize="18sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/header_text"
                 android:layout_marginTop="8dp"/>
 
             <TextView
@@ -97,7 +97,7 @@
                 android:id="@+id/empty_subtitle"
                 android:text="Try selecting a different filter"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/secondary_text"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 

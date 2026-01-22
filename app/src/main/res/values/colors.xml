@@ -8,10 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="app_background">#ffffff</color>
+    <color name="app_background">#FFFFFF</color>
     <color name="app_background_2">#434341</color>
     <color name="app_background_3">#F2F2F6</color>
-    <color name="app_background_before_login">#F8FAFC</color>
+    <color name="app_background_before_login">#F2F2F7</color>
 
     <!-- Theme-dependent light colors -->
     <color name="colorBlack">#000000</color>
@@ -88,4 +88,12 @@
     <color name="nav_overlay_color_pressed">#2EDADADA</color>
 
     <color name="colorRecordingRed">#E6070D</color>
+    
+    <!-- Missing colors causing build failure -->
+    <color name="credits_box_bg">#F1F5F9</color>
+    <color name="result_card_green_bg">#DCFCE7</color>
+    <color name="result_text_green">#166534</color>
+    <color name="reset_btn_bg">#F1F5F9</color>
+    <color name="vl_green">#38B031</color>
+    <color name="account_card_bg">#FFFFFF</color>
 </resources>

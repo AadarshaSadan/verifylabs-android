@@ -29,5 +29,7 @@
     <dimen name="padding_large">10dp</dimen>
     <dimen name="text_size_small">11sp</dimen>
     <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="bottom_nav_margin">16dp</dimen>
+    <dimen name="card_corner_radius_16dp">16dp</dimen>
 
 </resources>

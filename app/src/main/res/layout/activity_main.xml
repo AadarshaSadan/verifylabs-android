@@ -6,8 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/app_background_before_login"
+    android:background="@color/app_background"
     tools:context=".presentation.MainActivity">
 
     <!-- AppBar -->
@@ -35,7 +34,7 @@
         android:layout_height="56dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/bottom_nav_margin"
         app:cardCornerRadius="28dp"
         app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -62,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="@drawable/nav_overlay"
                 android:gravity="center"
                 android:clickable="true"
                 android:padding="6dp"
@@ -91,7 +89,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="@drawable/nav_overlay"
                 android:gravity="center"
                 android:padding="6dp"
                 android:clickable="true"

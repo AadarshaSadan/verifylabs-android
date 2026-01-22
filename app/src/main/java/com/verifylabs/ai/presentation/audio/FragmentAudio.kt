@@ -35,6 +35,7 @@ import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -70,7 +71,7 @@ class FragmentAudio : Fragment() {
     private val allChunkFiles = mutableListOf<File>()
     private val segmentationHandler = Handler(Looper.getMainLooper())
     private var currentChunkStartTime = 0L
-    
+
     // Silence Detection
     private var silenceDurationMs = 0L
     private val SILENCE_THRESHOLD = 500 // Arbitrary amplitude threshold
@@ -78,30 +79,33 @@ class FragmentAudio : Fragment() {
     private val LONG_RECORD_MAX_SILENCE = 30000L // 30 seconds for long record sessions
     private val MAX_RECORD_DURATION = 600000L // 600 seconds total limit
     private val silenceCheckHandler = Handler(Looper.getMainLooper())
-    private val silenceCheckRunnable = object : Runnable {
-        override fun run() {
-            if (isRecording) {
-                val amplitude = recorder?.maxAmplitude ?: 0
-                if (amplitude < SILENCE_THRESHOLD) {
-                    silenceDurationMs += 500
-                } else {
-                    silenceDurationMs = 0
-                }
-                
-                val maxAllowedSilence = if (isQuickRecording) QUICK_RECORD_MAX_SILENCE else LONG_RECORD_MAX_SILENCE
-                val elapsedTotal = System.currentTimeMillis() - startTime
-                
-                if (silenceDurationMs >= maxAllowedSilence) {
-                    handleSilenceFailure()
-                } else if (elapsedTotal >= MAX_RECORD_DURATION) {
-                    Log.d(TAG, "Max record duration (600s) reached.")
-                    stopRecording()
-                } else {
-                    silenceCheckHandler.postDelayed(this, 500)
+    private val silenceCheckRunnable =
+            object : Runnable {
+                override fun run() {
+                    if (isRecording) {
+                        val amplitude = recorder?.maxAmplitude ?: 0
+                        if (amplitude < SILENCE_THRESHOLD) {
+                            silenceDurationMs += 500
+                        } else {
+                            silenceDurationMs = 0
+                        }
+
+                        val maxAllowedSilence =
+                                if (isQuickRecording) QUICK_RECORD_MAX_SILENCE
+                                else LONG_RECORD_MAX_SILENCE
+                        val elapsedTotal = System.currentTimeMillis() - startTime
+
+                        if (silenceDurationMs >= maxAllowedSilence) {
+                            handleSilenceFailure()
+                        } else if (elapsedTotal >= MAX_RECORD_DURATION) {
+                            Log.d(TAG, "Max record duration (600s) reached.")
+                            stopRecording()
+                        } else {
+                            silenceCheckHandler.postDelayed(this, 500)
+                        }
+                    }
                 }
             }
-        }
-    }
 
     private val handler = Handler(Looper.getMainLooper())
     private val timerRunnable =
@@ -164,9 +168,13 @@ class FragmentAudio : Fragment() {
         }
 
         binding.micPulsebtn.setOnClickListener {
-            Log.d(TAG, "Quick mic button clicked | isRecording: $isRecording, isQuickRecording: $isQuickRecording")
+            Log.d(
+                    TAG,
+                    "Quick mic button clicked | isRecording: $isRecording, isQuickRecording: $isQuickRecording"
+            )
             if (isRecording && !isQuickRecording) {
-                Toast.makeText(requireContext(), "Manual recording in progress", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Manual recording in progress", Toast.LENGTH_SHORT)
+                        .show()
                 return@setOnClickListener
             }
             if (isQuickRecording) {
@@ -217,41 +225,60 @@ class FragmentAudio : Fragment() {
     private fun startQuickRecording() {
         val durationSeconds = preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
         Log.d(TAG, "startQuickRecording() - Duration: ${durationSeconds}s")
-        
+
         isQuickRecording = true
         startRecording()
-        
+
         // Visual feedback for quick record button
         binding.micTimer.setImageResource(R.drawable.ic_audio)
-        
+
         // Scale animation
         binding.micPulsebtn.startAnimation(
-            ScaleAnimation(1f, 1.2f, 1f, 1.2f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
-                duration = 600
-                repeatCount = Animation.INFINITE
-                repeatMode = Animation.REVERSE
-            }
+                ScaleAnimation(
+                                1f,
+                                1.2f,
+                                1f,
+                                1.2f,
+                                Animation.RELATIVE_TO_SELF,
+                                0.5f,
+                                Animation.RELATIVE_TO_SELF,
+                                0.5f
+                        )
+                        .apply {
+                            duration = 600
+                            repeatCount = Animation.INFINITE
+                            repeatMode = Animation.REVERSE
+                        }
         )
 
         // Color blinking animation (Red and White)
-        quickMicBlinkAnimator = android.animation.ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 600
-            repeatCount = android.animation.ValueAnimator.INFINITE
-            repeatMode = android.animation.ValueAnimator.REVERSE
-            addUpdateListener { animator ->
-                val fraction = animator.animatedValue as Float
-                val color = android.graphics.Color.argb(
-                    255,
-                    (255 * fraction + 252 * (1 - fraction)).toInt(), // Red channel (252 is close to white-ish red in some themes, but let's go pure red vs white)
-                    (255 * (1 - fraction)).toInt(), // Green
-                    (255 * (1 - fraction)).toInt()  // Blue
-                )
-                // Color transition from White (255,255,255) to Red (255,0,0)
-                binding.micPulsebtn.background.colorFilter = android.graphics.PorterDuffColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
-            }
-            start()
-        }
-        
+        quickMicBlinkAnimator =
+                android.animation.ValueAnimator.ofFloat(0f, 1f).apply {
+                    duration = 600
+                    repeatCount = android.animation.ValueAnimator.INFINITE
+                    repeatMode = android.animation.ValueAnimator.REVERSE
+                    addUpdateListener { animator ->
+                        val fraction = animator.animatedValue as Float
+                        val color =
+                                android.graphics.Color.argb(
+                                        255,
+                                        (255 * fraction + 252 * (1 - fraction))
+                                                .toInt(), // Red channel (252 is close to white-ish
+                                        // red in some themes, but let's go pure
+                                        // red vs white)
+                                        (255 * (1 - fraction)).toInt(), // Green
+                                        (255 * (1 - fraction)).toInt() // Blue
+                                )
+                        // Color transition from White (255,255,255) to Red (255,0,0)
+                        binding.micPulsebtn.background.colorFilter =
+                                android.graphics.PorterDuffColorFilter(
+                                        color,
+                                        android.graphics.PorterDuff.Mode.SRC_IN
+                                )
+                    }
+                    start()
+                }
+
         quickRecordStopHandler.postDelayed(quickRecordStopRunnable, durationSeconds * 1000L)
     }
 
@@ -378,9 +405,10 @@ class FragmentAudio : Fragment() {
 
             Log.d(TAG, "Recording started")
             binding.micButton.setImageResource(R.drawable.ic_audio)
-            binding.txtStatus.text = if (isQuickRecording) "Quick Recording..." else "Long Recording..."
+            binding.txtStatus.text =
+                    if (isQuickRecording) "Quick Recording..." else "Long Recording..."
             isRecording = true
-            
+
             if (allChunkFiles.size == 1) { // First chunk
                 startTime = System.currentTimeMillis()
                 handler.post(timerRunnable)
@@ -388,12 +416,11 @@ class FragmentAudio : Fragment() {
                 silenceDurationMs = 0
                 silenceCheckHandler.postDelayed(silenceCheckRunnable, 500)
             }
-            
+
             if (isLongRecording) {
                 currentChunkStartTime = System.currentTimeMillis()
                 segmentationHandler.postDelayed({ rotateChunk() }, 10000) // Rotate every 10s
             }
-            
         } catch (e: IOException) {
             Log.e(TAG, "Recording failed", e)
             binding.txtStatus.text = "Recording failed"
@@ -403,13 +430,12 @@ class FragmentAudio : Fragment() {
 
     private fun rotateChunk() {
         if (!isLongRecording || !isRecording) return
-        
-        Log.d(TAG, "Rotating recording chunk...")
+
+        val segmentDuration = System.currentTimeMillis() - currentChunkStartTime
+        Log.d(TAG, "Rotating recording chunk. Duration: ${segmentDuration}ms")
+
         val oldFile = currentRecordedFile
-        
-        // Check if the current chunk was silent
-        val isChunkSilent = silenceDurationMs >= 10000L // If silence duration spans this entire 10s chunk
-        
+
         // Stop current and start new immediately
         try {
             recorder?.stop()
@@ -417,20 +443,24 @@ class FragmentAudio : Fragment() {
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping chunk", e)
         }
-        
+
         if (oldFile != null) {
-            if (isChunkSilent && isLongRecording) {
-                Log.d(TAG, "Chunk is silent. Skipping verification for this segment.")
-                // Add a dummy score or 0.0 to temporal scores to maintain alignment if needed, 
-                // but requirements say "silent segments will be ignored".
-                // Let's add 0.0 to indicate no AI activity found/safe.
+            // Security Check (iOS Parity): Minimum 5 seconds for quality verification
+            if (segmentDuration < 5000) {
+                Log.w(TAG, "Chunk too short ($segmentDuration ms). Skipping verification.")
+                allChunkFiles.remove(oldFile)
+                oldFile.delete()
+            } else if (silenceDurationMs >= 10000L && isLongRecording
+            ) { // Silence Detection (Android Optimization)
+                Log.d(TAG, "Chunk is silent. Skipping verification to save credits.")
                 temporalScores.add(0.0)
                 binding.audioAnalysisChart.setChronologicalScores(temporalScores)
             } else {
-                uploadAudio(oldFile) // Verify the chunk in bg
+                uploadAudio(oldFile) // Parallel verification start
             }
         }
-        
+
+        currentChunkStartTime = System.currentTimeMillis()
         startRecording() // Start next chunk
     }
 
@@ -438,7 +468,8 @@ class FragmentAudio : Fragment() {
         Log.w(TAG, "Silence threshold reached. Stopping recording.")
         stopRecording()
         binding.txtStatus.text = "Failure: Long silence detected"
-        Toast.makeText(requireContext(), "Recording stopped due to silence", Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), "Recording stopped due to silence", Toast.LENGTH_LONG)
+                .show()
     }
 
     private fun stopRecording() {
@@ -447,14 +478,14 @@ class FragmentAudio : Fragment() {
         try {
             segmentationHandler.removeCallbacksAndMessages(null)
             silenceCheckHandler.removeCallbacks(silenceCheckRunnable)
-            
+
             recorder?.stop()
             recorder?.release()
             recorder = null
             isRecording = false
             handler.removeCallbacks(timerRunnable)
             quickRecordStopHandler.removeCallbacks(quickRecordStopRunnable)
-            
+
             binding.micButton.setImageResource(R.drawable.ic_mic)
             stopPulseAnimation()
 
@@ -467,11 +498,24 @@ class FragmentAudio : Fragment() {
             }
 
             val file = currentRecordedFile
+            val segmentDuration = System.currentTimeMillis() - currentChunkStartTime
             if (file != null && file.exists()) {
-                Log.d(TAG, "Final chunk ready: ${file.length()} bytes")
-                uploadAudio(file)
+                if (segmentDuration < 5000 && allChunkFiles.size > 1) {
+                    Log.w(
+                            TAG,
+                            "Final chunk too short ($segmentDuration ms). Skipping verification."
+                    )
+                    allChunkFiles.remove(file)
+                    file.delete()
+                } else {
+                    Log.d(
+                            TAG,
+                            "Final chunk ready: ${file.length()} bytes, Duration: ${segmentDuration}ms"
+                    )
+                    uploadAudio(file)
+                }
             }
-            
+
             if (isLongRecording) {
                 // Post-process: Merge all chunks into one for history
                 isLongRecording = false
@@ -524,98 +568,119 @@ class FragmentAudio : Fragment() {
             }
         }
 
-        viewModel.getVerifyResponse().observe(viewLifecycleOwner) { resource ->
-            Log.d(TAG, "Verify response: ${resource.status}, data: ${resource.data}")
+        // Parallel Verification Results Handling (iOS Parity)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.verifyResponseFlow.collect { resource ->
+                Log.d(TAG, "Verify response collected: ${resource.status}")
 
-            when (resource.status) {
-                Status.LOADING -> {
-                    Log.d(TAG, "Verify: LOADING")
-                    binding.txtStatus.text = "Verifying audio..."
-                }
-                Status.SUCCESS -> {
-                    Log.d(TAG, "Verify: SUCCESS")
-                    val response =
-                            Gson().fromJson(
-                                            resource.data.toString(),
-                                            VerificationResponse::class.java
-                                     )
+                when (resource.status) {
+                    Status.LOADING -> {
+                        Log.d(TAG, "Verify: LOADING")
+                        // binding.txtStatus.text = "Verifying audio..."
+                    }
+                    Status.SUCCESS -> {
+                        Log.d(TAG, "Verify: SUCCESS")
+                        val response =
+                                Gson().fromJson(
+                                                resource.data.toString(),
+                                                VerificationResponse::class.java
+                                         )
 
-                    Log.d(TAG, "Band: ${response.band}, Score: ${response.score}")
-                    
-                    if (isLongRecording || temporalScores.isNotEmpty()) {
-                        // Periodic update for long recording
-                        temporalScores.add(response.score)
-                        binding.cardAudioAnalysis.visibility = View.VISIBLE
-                        binding.audioAnalysisChart.setChronologicalScores(temporalScores)
+                        Log.d(TAG, "Band: ${response.band}, Score: ${response.score}")
                         
-                        // If it's the final stop of a long recording OR a quick record result
-                        if (!isRecording && !isLongRecording) {
-                            finalizeAndSaveHistory(response)
+                        // Thread-safe update to temporal scores
+                        synchronized(temporalScores) {
+                            if (isLongRecording || temporalScores.isNotEmpty()) {
+                                temporalScores.add(response.score)
+                                binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.audioAnalysisChart.setChronologicalScores(ArrayList(temporalScores))
+                                
+                                if (!isRecording && !isLongRecording) {
+                                    finalizeAndSaveHistory(response)
+                                }
+                            } else {
+                                binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.audioAnalysisChart.setScore(response.score)
+                                finalizeAndSaveHistory(response)
+                            }
                         }
-                    } else {
-                        // Standard single verification (Quick Record or fallback)
-                        binding.cardAudioAnalysis.visibility = View.VISIBLE
-                        binding.audioAnalysisChart.setScore(response.score)
-                        finalizeAndSaveHistory(response)
-                    }
 
-                    // Reset mic button UI is handled in finalizeAndSaveHistory 
-                    // or immediately if it was just a chunk
-                    if (isRecording) {
-                         // Still recording next chunk, keep UI as is
-                    } else {
-                         resetMicButton()
+                        if (!isRecording) {
+                             resetMicButton()
+                        }
+                    }
+                    Status.ERROR -> {
+                        Log.e(TAG, "Verify FAILED: ${resource.message}")
+                        binding.txtStatus.text = "Failed: ${resource.message}"
+                        resetMicButton()
                     }
                 }
-                Status.ERROR -> {
-                    Log.e(TAG, "Verify FAILED: ${resource.message}")
-                    binding.txtStatus.text = "Failed: ${resource.message}"
-                    resetMicButton()
-                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.creditConsumedFlow.collect {
+                val currentCredits = preferenceHelper.getCreditRemaining()
+                val newCredits = (currentCredits - 1).coerceAtLeast(0)
+                preferenceHelper.setCreditReamaining(newCredits)
+                binding.tvCreditsRemaining.text = "Credits Remaining: $newCredits"
+                Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
     }
 
     private fun finalizeAndSaveHistory(response: VerificationResponse) {
-        val finalScore = if (temporalScores.isNotEmpty()) temporalScores.average() else response.score
+        val finalScore =
+                if (temporalScores.isNotEmpty()) temporalScores.average() else response.score
         val result = getBandResult(response.band)
         binding.txtStatus.text = "Done: $result"
 
         viewLifecycleOwner.lifecycleScope.launch(exceptionHandler) {
             try {
                 val context = context ?: return@launch
-                val permanentFile = File(context.filesDir, "audio_final_${System.currentTimeMillis()}.mp4")
                 
-                if (allChunkFiles.size > 1) {
-                    val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
-                    if (mergedFile.exists()) {
-                        mergedFile.copyTo(permanentFile, overwrite = true)
-                    } else {
-                        currentRecordedFile?.copyTo(permanentFile, overwrite = true)
-                    }
+                // Use HistoryFileManager to save persistently
+                val sourceFile = if (allChunkFiles.size > 1) {
+                     val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
+                     if (mergedFile.exists()) mergedFile else currentRecordedFile
                 } else {
-                    currentRecordedFile?.copyTo(permanentFile, overwrite = true)
+                     currentRecordedFile
                 }
 
-                val entity = VerificationEntity(
-                    mediaType = "Audio",
-                    mediaUri = permanentFile.absolutePath,
-                    mediaThumbnail = null,
-                    band = response.band,
-                    bandName = response.bandName,
-                    bandDescription = response.bandDescription,
-                    aiScore = finalScore,
-                    fileSizeKb = permanentFile.length() / 1024,
-                    resolution = null,
-                    quality = null,
-                    timestamp = System.currentTimeMillis(),
-                    username = preferenceHelper.getUserName() ?: "",
-                    temporalScoresJson = if (temporalScores.isNotEmpty()) Gson().toJson(temporalScores) else null
-                )
+                val savedPath = sourceFile?.let { file ->
+                    com.verifylabs.ai.core.util.HistoryFileManager.saveMedia(
+                        context, 
+                        android.net.Uri.fromFile(file), 
+                        "audio"
+                    )
+                }
+
+                val finalUriString = savedPath?.let { android.net.Uri.fromFile(File(it)).toString() }
+                                     ?: sourceFile?.absolutePath // Fallback
+
+                val entity =
+                        VerificationEntity(
+                                mediaType = "Audio",
+                                mediaUri = finalUriString,
+                                mediaThumbnail = null,
+                                band = response.band,
+                                bandName = response.bandName,
+                                bandDescription = response.bandDescription,
+                                aiScore = finalScore,
+                                fileSizeKb = (sourceFile?.length() ?: 0) / 1024,
+                                resolution = null,
+                                quality = null,
+                                timestamp = System.currentTimeMillis(),
+                                username = preferenceHelper.getUserName() ?: "",
+                                temporalScoresJson =
+                                        if (temporalScores.isNotEmpty())
+                                                Gson().toJson(temporalScores)
+                                        else null
+                        )
                 verificationRepository.saveVerification(entity)
                 Log.d(TAG, "Full session saved to history with ID: ${entity.id}")
-                
-                // Cleanup 
+
+                // Cleanup
                 allChunkFiles.forEach { it.delete() }
                 File(context.externalCacheDir, "merged_audio.mp4").delete()
             } catch (e: Exception) {
@@ -626,14 +691,16 @@ class FragmentAudio : Fragment() {
 
     private fun mergeAndSaveChunks() {
         Log.d(TAG, "Merging ${allChunkFiles.size} chunks...")
-        // For simplicity and to avoid complex MediaMuxer logic with AAC bitstreams in a short time, 
+        // For simplicity and to avoid complex MediaMuxer logic with AAC bitstreams in a short time,
         // we can use a high-level approach or just notify completion.
-        // Actually, merging MP4 containers requires parsing. 
+        // Actually, merging MP4 containers requires parsing.
         // A safer way for history is to just keep the first/last or combine bytes if raw AAC.
-        // Let's implement a basic byte concatenation which works for some MPEG-4 ADTS/AAC structures but is risky.
-        // Better: Just use the last chunk or inform that we'd need a muxer library for perfect merge.
+        // Let's implement a basic byte concatenation which works for some MPEG-4 ADTS/AAC
+        // structures but is risky.
+        // Better: Just use the last chunk or inform that we'd need a muxer library for perfect
+        // merge.
         // PROPER WAY: Use MediaMuxer to extract tracks and append.
-        
+
         lifecycleScope.launch(exceptionHandler) {
             try {
                 val context = context ?: return@launch
@@ -662,9 +729,9 @@ class FragmentAudio : Fragment() {
         Log.d(TAG, "resetMicButton()")
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
-        binding.micButton.setOnClickListener { 
+        binding.micButton.setOnClickListener {
             binding.cardAudioAnalysis.visibility = View.GONE
-            requestRecordPermission() 
+            requestRecordPermission()
         }
     }
 
@@ -709,17 +776,17 @@ class FragmentAudio : Fragment() {
     // ========== CLEANUP ==========
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView() - Cleaning up")
-        
+
         if (isRecording) {
             stopRecording()
         }
-        
+
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
         segmentationHandler.removeCallbacksAndMessages(null)
         silenceCheckHandler.removeCallbacksAndMessages(null)
         quickRecordStopHandler.removeCallbacksAndMessages(null)
-        
+
         quickMicBlinkAnimator?.cancel()
         recorder?.release()
         recorder = null

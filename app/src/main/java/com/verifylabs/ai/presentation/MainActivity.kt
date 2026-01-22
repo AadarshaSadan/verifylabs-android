@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -33,6 +34,28 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Handle system bars insets (edge-to-edge support)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            
+            // Apply top inset to the AppBar to keep it below status bar
+            // Use setPadding to avoid shrinking content (since it's now wrap_content)
+            binding.appbar.root.setPadding(0, systemBars.top, 0, 0)
+            
+            // Apply bottom inset to the Floating Bottom Nav layout margin
+            val params = binding.floatingBottomNav.layoutParams as ConstraintLayout.LayoutParams
+            params.bottomMargin = systemBars.bottom + resources.getDimensionPixelSize(R.dimen.bottom_nav_margin)
+            binding.floatingBottomNav.layoutParams = params
+            
+            insets
+        }
+
+        // Ensure status bar icons are correct based on theme (backward compatible)
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         // Load default fragment
         replaceFragment(HomeFragment())

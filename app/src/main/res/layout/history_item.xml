@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp">
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="4dp"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:id="@+id/history_item_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_gradient"
+        android:layout_weight="1"
         android:orientation="horizontal"
-
-        android:padding="16dp">
-
+        android:padding="16dp"
+        android:layout_marginEnd="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/item_thumbnail"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/verifylabs_logo"
             android:clipToOutline="true"
-            android:elevation="0.1dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Corner10dp" />
-
-
-
 
         <!-- Text Details -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -43,23 +40,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Human made"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/item_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="24/12/2025, 7:24 pm"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="12sp" />
+                android:textColor="#8E8E93"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <!-- AI Score -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -67,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="22%"
-                android:textColor="#4CAF50"
+                android:textColor="#34C759"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -75,9 +73,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="AI Score"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="12sp" />
+                android:textColor="#8E8E93"
+                android:textSize="10sp" />
         </LinearLayout>
-
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_cheveron_right"
+        app:tint="#8E8E93" />
+
+</LinearLayout>

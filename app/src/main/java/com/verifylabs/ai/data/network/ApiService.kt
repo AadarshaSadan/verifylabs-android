@@ -54,5 +54,22 @@ interface ApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    // Credit consumption
+    @GET("usecredit")
+    suspend fun consumeCredit(
+        @Query("api_key") apiKey: String
+    ): Response<ResponseBody>
+
+    // Update User Profile
+    @POST("update_user")
+    suspend fun updateUser(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    // Delete User
+    @POST("delete_user")
+    suspend fun deleteUser(
+        @Body body: JsonObject
+    ): Response<JsonObject>
 
 }

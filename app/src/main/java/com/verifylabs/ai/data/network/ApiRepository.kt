@@ -44,9 +44,15 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
 
 
     suspend fun uploadMedia(filePath: String, mediaType: MediaType): Response<JsonObject> {
-        val file = File(filePath)
+        val cleanPath = if (filePath.startsWith("file:")) {
+            android.net.Uri.parse(filePath).path ?: filePath
+        } else {
+            filePath
+        }
+        val file = File(cleanPath)
+        
         if (!file.exists() || !file.canRead()) {
-            throw IllegalArgumentException("Invalid or unreadable file: $filePath")
+            throw IllegalArgumentException("Invalid or unreadable file: $cleanPath")
         }
 
         val timestamp = System.currentTimeMillis() / 1000
@@ -119,5 +125,25 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
     }
 
 
+    suspend fun consumeCredit(apiKey: String) = apiService.consumeCredit(apiKey)
 
+    suspend fun updateUser(secretKey: String, apiKey: String, name: String? = null, email: String? = null, password: String? = null): Response<JsonObject> {
+        val body = JsonObject().apply {
+            addProperty("secret_key", secretKey)
+            addProperty("api_key", apiKey)
+            name?.let { addProperty("name", it) }
+            email?.let { addProperty("email", it) }
+            password?.let { addProperty("password", it) }
+        }
+        return apiService.updateUser(body)
+    }
+
+    suspend fun deleteUser(secretKey: String, username: String, password: String): Response<JsonObject> {
+        val body = JsonObject().apply {
+            addProperty("secret_key", secretKey)
+            addProperty("username", username)
+            addProperty("password", password)
+        }
+        return apiService.deleteUser(body)
+    }
 }
