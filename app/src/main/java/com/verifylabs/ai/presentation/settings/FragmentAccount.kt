@@ -88,11 +88,11 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                         val fullName = json.get("name")?.asString ?: ""
                         val email = json.get("email")?.asString ?: ""
 
-                        binding.etFullNameValue.setText(fullName)
-                        binding.etEmailValue.setText(email)
-
                         originalFullName = fullName
                         originalEmail = email
+
+                        binding.etFullNameValue.setText(fullName)
+                        binding.etEmailValue.setText(email)
                     }
                 }
                 Status.ERROR -> {

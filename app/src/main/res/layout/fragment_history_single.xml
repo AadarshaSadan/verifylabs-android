@@ -1,313 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/app_background"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <!-- Custom Toolbar for Parity -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="56dp"
+        android:background="@color/app_background">
 
-        <!-- Custom Toolbar for Parity -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Verification Details"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/header_text"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Media Section -->
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Media"
+            android:text="Verification Details"
             android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/header_text"
-            android:layout_marginBottom="12dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/mediaPreviewContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#1A808080">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="200dp">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:maxHeight="300dp"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Corner12dp" />
-
-                <VideoView
-                    android:id="@+id/videoView"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_gravity="center"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/btnPlayVideo"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center"
-                    android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/colorWhite"
-                    android:alpha="0.8"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/imageOverlay"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:alpha="0.7"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone" />
-
-                <!-- Audio Section -->
-                <LinearLayout
-                    android:id="@+id/audioPlayerLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/ivAudioIcon"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/ic_mic"
-                        app:tint="@color/verifylabs_logo_green"
-                        android:layout_marginBottom="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvAudioLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Quick record audio"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="16dp" />
-
-                    <ImageButton
-                        android:id="@+id/btnPlayPauseAudio"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@android:drawable/ic_media_play"
-                        app:tint="@color/verifylabs_logo_green"
-                        android:scaleType="fitCenter" />
-
-                    <SeekBar
-                        android:id="@+id/audioSeekBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:progressTint="@color/verifylabs_logo_green"
-                        android:thumbTint="@color/verifylabs_logo_green" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-                        
-                        <TextView
-                            android:id="@+id/tvCurrentTime"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0:00"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="10sp" />
-                        
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-
-                        <TextView
-                            android:id="@+id/tvTotalTime"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0:00"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvMediaPlaceholder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Media not available"
-                    android:textColor="@color/secondary_text"
-                    android:visibility="gone" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Original Result Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Original Result"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:textColor="@color/header_text"
-            android:layout_marginBottom="12dp" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@android:color/transparent">
-
-            <LinearLayout
-                android:id="@+id/layoutResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="20dp">
-
-                <ImageView
-                    android:id="@+id/imgIcon"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
-
-                <TextView
-                    android:id="@+id/tvBandName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Human made"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/header_text" />
-
-                <TextView
-                    android:id="@+id/tvDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="There's a high probability that this was created by a human and has not been altered by AI."
-                    android:textSize="13sp"
-                    android:textColor="@color/secondary_text"
-                    android:gravity="center"
-                    android:paddingHorizontal="20dp" />
-
-                <TextView
-                    android:id="@+id/tvVerifiedDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Verified on 22 Jan 2026 at 9:36 PM"
-                    android:textSize="11sp"
-                    android:textColor="@color/secondary_text" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Re-verification Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Re-verification"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:textColor="@color/header_text"
-            android:layout_marginBottom="12dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVerifyAgain"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="Verify Again"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:icon="@drawable/ic_restore"
-            app:iconGravity="textStart"
-            app:cornerRadius="12dp"
-            android:backgroundTint="@color/verifylabs_logo_green"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tvReverificationError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textColor="#FF3B30"
-            android:textSize="12sp"
-            android:visibility="gone"
-            android:layout_marginBottom="16dp" />
-
-        <!-- New Result Section (Initially Hidden) -->
         <LinearLayout
-            android:id="@+id/layoutNewResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_marginBottom="24dp">
+            android:padding="20dp">
+
+            <!-- Media Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Media"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/header_text"
+                android:layout_marginBottom="12dp" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardNewResult"
+                android:id="@+id/mediaPreviewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#1A808080">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="200dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="300dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Corner12dp" />
+
+                    <VideoView
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/btnPlayVideo"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_media_play"
+                        app:tint="@color/colorWhite"
+                        android:alpha="0.8"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imageOverlay"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:alpha="0.7"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone" />
+
+                    <!-- Audio Section -->
+                    <LinearLayout
+                        android:id="@+id/audioPlayerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/ivAudioIcon"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:src="@drawable/ic_mic"
+                            app:tint="@color/verifylabs_logo_green"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvAudioLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Quick record audio"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="13sp"
+                            android:layout_marginBottom="16dp" />
+
+                        <ImageButton
+                            android:id="@+id/btnPlayPauseAudio"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_media_play"
+                            app:tint="@color/verifylabs_logo_green"
+                            android:scaleType="fitCenter" />
+
+                        <SeekBar
+                            android:id="@+id/audioSeekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:progressTint="@color/verifylabs_logo_green"
+                            android:thumbTint="@color/verifylabs_logo_green" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="16dp">
+                            
+                            <TextView
+                                android:id="@+id/tvCurrentTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0:00"
+                                android:textColor="@color/secondary_text"
+                                android:textSize="10sp" />
+                            
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="1" />
+
+                            <TextView
+                                android:id="@+id/tvTotalTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0:00"
+                                android:textColor="@color/secondary_text"
+                                android:textSize="10sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvMediaPlaceholder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Media not available"
+                        android:textColor="@color/secondary_text"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Original Result Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Original Result"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/header_text"
+                android:layout_marginBottom="12dp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@android:color/transparent">
 
                 <LinearLayout
-                    android:id="@+id/layoutNewResultInner"
+                    android:id="@+id/layoutResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -315,213 +224,312 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:id="@+id/imgNewIcon"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:id="@+id/imgIcon"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
                         android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
 
                     <TextView
-                        android:id="@+id/tvNewBandName"
+                        android:id="@+id/tvBandName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Human made"
-                        android:textSize="18sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/header_text" />
 
                     <TextView
-                        android:id="@+id/tvNewDescription"
+                        android:id="@+id/tvDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Description here"
-                        android:textSize="12sp"
+                        android:layout_marginTop="16dp"
+                        android:text="There's a high probability that this was created by a human and has not been altered by AI."
+                        android:textSize="13sp"
                         android:textColor="@color/secondary_text"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:paddingHorizontal="20dp" />
 
                     <TextView
-                        android:id="@+id/tvComparison"
+                        android:id="@+id/tvVerifiedDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Same result as original"
-                        android:textSize="12sp"
+                        android:layout_marginTop="16dp"
+                        android:text="Verified on 22 Jan 2026 at 9:36 PM"
+                        android:textSize="11sp"
                         android:textColor="@color/secondary_text" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Re-verification Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Re-verification"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/header_text"
+                android:layout_marginBottom="12dp" />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSaveNew"
+                android:id="@+id/btnVerifyAgain"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:layout_marginTop="16dp"
-                android:text="Save as New History Entry"
+                android:text="Verify Again"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:cornerRadius="12dp"
-                android:backgroundTint="#007AFF"
-                android:textColor="@color/white"
                 app:icon="@drawable/ic_restore"
                 app:iconGravity="textStart"
-                app:iconTint="@color/white" />
-        </LinearLayout>
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/verifylabs_logo_green"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Loading State (Initially Hidden) -->
-        <LinearLayout
-            android:id="@+id/layoutReverifying"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="24dp"
-            android:visibility="gone"
-            android:layout_marginBottom="24dp"
-            android:background="#1A808080">
-            
-            <ProgressBar
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:indeterminateTint="@color/verifylabs_logo_green" />
-            
             <TextView
-                android:id="@+id/tvReverificationStatus"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvReverificationError"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Uploading and verifying..."
-                android:textColor="@color/secondary_text"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:textAlignment="center"
+                android:textColor="#FF3B30"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Details Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Details"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:textColor="@color/header_text"
-            android:layout_marginBottom="12dp" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/app_background_3">
-
+            <!-- New Result Section (Initially Hidden) -->
             <LinearLayout
+                android:id="@+id/layoutNewResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:visibility="gone"
+                android:layout_marginBottom="24dp">
 
-                <!-- Type -->
-                <LinearLayout
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardNewResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Media Type"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp" />
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:id="@+id/tvTypeValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Image"
-                        android:textColor="@color/header_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent">
 
-                <!-- Resolution -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/layoutNewResultInner"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Resolution"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp" />
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:id="@+id/tvResolutionValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="--"
-                        android:textColor="@color/header_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="20dp">
 
-                <!-- Size -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Filename"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp" />
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:id="@+id/tvSizeValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="--"
-                        android:textColor="@color/header_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/imgNewIcon"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
 
-                <!-- Robot Type -->
-                <LinearLayout
+                        <TextView
+                            android:id="@+id/tvNewBandName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Human made"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/header_text" />
+
+                        <TextView
+                            android:id="@+id/tvNewDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Description here"
+                            android:textSize="12sp"
+                            android:textColor="@color/secondary_text"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tvComparison"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Same result as original"
+                            android:textSize="12sp"
+                            android:textColor="@color/secondary_text" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveNew"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Robot Type"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp" />
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:id="@+id/tvRobotValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="--"
-                        android:textColor="@color/header_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:layout_height="54dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Save as New History Entry"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="12dp"
+                    android:backgroundTint="#007AFF"
+                    android:textColor="@color/white"
+                    app:icon="@drawable/ic_restore"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/white" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+            <!-- Loading State (Initially Hidden) -->
+            <LinearLayout
+                android:id="@+id/layoutReverifying"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp"
+                android:visibility="gone"
+                android:layout_marginBottom="24dp"
+                android:background="#1A808080">
+                
+                <ProgressBar
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:indeterminateTint="@color/verifylabs_logo_green" />
+                
+                <TextView
+                    android:id="@+id/tvReverificationStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Uploading and verifying..."
+                    android:textColor="@color/secondary_text"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Details Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Details"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/header_text"
+                android:layout_marginBottom="12dp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/app_background_3">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Type -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Media Type"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp" />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+                        <TextView
+                            android:id="@+id/tvTypeValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Image"
+                            android:textColor="@color/header_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Resolution -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Resolution"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp" />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+                        <TextView
+                            android:id="@+id/tvResolutionValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textColor="@color/header_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Size -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Filename"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp" />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+                        <TextView
+                            android:id="@+id/tvSizeValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textColor="@color/header_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Robot Type -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Robot Type"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp" />
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+                        <TextView
+                            android:id="@+id/tvRobotValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textColor="@color/header_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

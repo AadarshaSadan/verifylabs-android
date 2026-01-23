@@ -93,6 +93,8 @@ class HistorySingleFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHistorySingleBinding.inflate(inflater, container, false)
+        // Force recompile for ViewBinding change
+        Log.d(TAG, "onCreateView: Inflated binding")
         return binding.root
     }
 
