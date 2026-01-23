@@ -37,9 +37,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:scaleType="fitXY"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/verifylabs_circle_square_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,35 +51,39 @@
         android:id="@+id/llCreditsInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_remaining_credits_dashboard"
+        android:layout_marginBottom="24dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/app_background"
+        android:backgroundTint="@color/app_background_3"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <ProgressBar
             android:id="@+id/progressCredits"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:visibility="gone"
+            android:indeterminateTint="@color/verifylabs_logo_green"
             style="?android:attr/progressBarStyle" />
 
         <TextView
             android:id="@+id/tvCreditsRemaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawablePadding="5dp"
-            android:gravity="center_horizontal"
-            android:padding="3dp"
+            android:drawablePadding="8dp"
+            android:gravity="center"
             android:text="@string/credits_remaining_0"
-            android:textColor="@color/colorBlack"
-            android:textSize="12sp"
-            app:drawableStartCompat="@drawable/ic_remaining_credit_card" />
+            android:textColor="@color/header_text"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/ic_remaining_credit_card"
+            app:drawableTint="@color/verifylabs_logo_green" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

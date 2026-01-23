@@ -42,14 +42,14 @@
                 android:text="Human made"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="@color/white" />
+                android:textColor="@color/header_text" />
 
             <TextView
                 android:id="@+id/item_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="24/12/2025, 7:24 pm"
-                android:textColor="#8E8E93"
+                android:textColor="@color/secondary_text"
                 android:textSize="13sp" />
         </LinearLayout>
 

@@ -89,4 +89,20 @@
     <color name="result_text_green">#4ADE80</color>
     <color name="reset_btn_bg">#1E293B</color>
     <color name="account_card_bg">#1C1C1E</color>
+    <color name="vl_green">#38B031</color>
+    <color name="vl_red">#E6070D</color>
+    
+    <!-- iOS System Colors - Dark Mode -->
+    <color name="system_blue">#0A84FF</color>
+    <color name="system_orange">#FF9F0A</color>
+    <color name="system_red">#FF453A</color>
+    <color name="system_green">#30D158</color>
+    <color name="system_gray">#8E8E93</color>
+    <color name="divider_color">#38383A</color>
+
+    <!-- Onboarding Colors (iOS Parity) -->
+    <color name="vl_onboarding_background">#272B27</color>
+    <color name="vl_onboarding_foreground">#AAB2AA</color>
+    <color name="vl_onboarding_red_card">#D32E23</color>
+    <color name="vl_onboarding_green_card">#5EAE45</color>
 </resources>

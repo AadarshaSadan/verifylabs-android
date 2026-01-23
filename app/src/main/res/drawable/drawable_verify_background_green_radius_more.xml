@@ -3,10 +3,11 @@
     android:color="@color/verifylabs_logo_green">
 
     <item>
-        <shape android:shape="rectangle">
-            <corners android:radius="20dp"/>
-            <solid android:color="@color/verifylabs_logo_green"/>
-        </shape>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="20dp"/>
+    <solid android:color="@color/vl_onboarding_green_card"/>
+</shape>
     </item>
 
 </ripple>

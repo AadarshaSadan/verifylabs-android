@@ -123,13 +123,11 @@ class LoginFragment : Fragment() {
                     else R.drawable.bg_text_input_green
                 )
 
-                // Update button background based on both fields
-                binding.btnGetStarted.setBackgroundResource(
-                    if (username.isNotEmpty() && password.isNotEmpty())
-                        R.drawable.drawable_verify_background_green_radius_more
-                    else
-                        R.drawable.drawable_verify_background_btn_failed_likely_gray
-                )
+                // Update button state (iOS Style)
+                val canProceed = username.isNotEmpty() && password.isNotEmpty()
+                binding.btnGetStarted.isEnabled = canProceed
+                binding.btnGetStarted.alpha = if (canProceed) 1.0f else 0.6f
+                binding.btnGetStarted.setBackgroundResource(R.drawable.bg_ios_green_button)
             }
         }
 
@@ -139,12 +137,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun validateInputs(username: String, password: String): Boolean {
-        if (username.isEmpty()) {
-            binding.etUsername.error = "Please enter username"
-            return false
-        }
-        if (password.isEmpty()) {
-            binding.etPassword.error = "Please enter password"
+        if (username.isEmpty() || password.isEmpty()) {
+            showErrorDialog("Error", "Please check your username and password.")
             return false
         }
         return true
@@ -174,12 +168,19 @@ class LoginFragment : Fragment() {
                     }
                 }
                 Status.ERROR -> {
-                    binding.tvSignIn.text= getString(R.string.sign_in_login)
-                    Toast.makeText(requireContext(), "Login Failed: ${resource.message}", Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, "setupObservers: Login Error: ${resource.message}")
+                    binding.tvSignIn.text = getString(R.string.sign_in_login)
+                    showErrorDialog("Error", resource.message ?: "Invalid credentials. Please check your username and password.")
                 }
             }
         }
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun navigateToMainActivity() {

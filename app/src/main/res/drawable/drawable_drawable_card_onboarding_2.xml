@@ -1,6 +1,4 @@
-<!-- res/drawable/rect_white_bg.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#E6070D" />
-
+    <solid android:color="@color/vl_onboarding_red_card" />
 </shape>

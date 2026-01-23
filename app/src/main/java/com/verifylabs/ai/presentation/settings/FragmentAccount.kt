@@ -13,29 +13,32 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import androidx.lifecycle.lifecycleScope
 import com.verifylabs.ai.R
 import com.verifylabs.ai.core.util.Constants
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
+import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentAccountBinding
 import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.onboarding.OnboardingActivity
 import com.verifylabs.ai.presentation.settings.viewmodel.ViewModelgetAccountInfo
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCallback {
 
-    @Inject
-    lateinit var preferenceHelper: PreferenceHelper
+    @Inject lateinit var preferenceHelper: PreferenceHelper
+
+    @Inject lateinit var verificationRepository: VerificationRepository
 
     private lateinit var viewModel: ViewModelgetAccountInfo
 
     private var _binding: FragmentAccountBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding!!
 
     private var originalFullName: String = ""
     private var originalEmail: String = ""
@@ -45,8 +48,9 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAccountBinding.inflate(inflater, container, false)
         initViewModel()
@@ -80,13 +84,13 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                     resource.data?.let { json ->
                         val username = preferenceHelper.getUserName() ?: ""
                         binding.tvUsernameValue.text = username
-                        
+
                         val fullName = json.get("name")?.asString ?: ""
                         val email = json.get("email")?.asString ?: ""
-                        
+
                         binding.etFullNameValue.setText(fullName)
                         binding.etEmailValue.setText(email)
-                        
+
                         originalFullName = fullName
                         originalEmail = email
                     }
@@ -108,9 +112,14 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                     binding.pbEmail.visibility = View.GONE
                     binding.tvFullNameNote.visibility = View.GONE
                     binding.tvEmailNote.visibility = View.GONE
-                    
-                    Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show()
-                    
+
+                    Toast.makeText(
+                                    requireContext(),
+                                    "Profile updated successfully",
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show()
+
                     // Update original values
                     originalFullName = binding.etFullNameValue.text.toString().trim()
                     originalEmail = binding.etEmailValue.text.toString().trim()
@@ -118,7 +127,12 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                 Status.ERROR -> {
                     binding.pbFullName.visibility = View.GONE
                     binding.pbEmail.visibility = View.GONE
-                    Toast.makeText(requireContext(), resource.message ?: "Update failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                                    requireContext(),
+                                    resource.message ?: "Update failed",
+                                    Toast.LENGTH_LONG
+                            )
+                            .show()
                 }
                 Status.LOADING -> {
                     // Loading handled by individual progress bars
@@ -130,11 +144,21 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
         viewModel.deleteAccountObserver.observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.SUCCESS -> {
-                    Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                                    requireContext(),
+                                    "Account deleted successfully",
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show()
                     logout()
                 }
                 Status.ERROR -> {
-                    Toast.makeText(requireContext(), resource.message ?: "Delete failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                                    requireContext(),
+                                    resource.message ?: "Delete failed",
+                                    Toast.LENGTH_LONG
+                            )
+                            .show()
                 }
                 Status.LOADING -> {
                     // Show loading
@@ -160,32 +184,59 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
 
     private fun setupTextWatchers() {
         // Full Name TextWatcher
-        binding.etFullNameValue.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val currentName = s.toString().trim()
-                if (currentName != originalFullName && currentName.isNotEmpty()) {
-                    binding.tvFullNameNote.visibility = View.VISIBLE
-                } else {
-                    binding.tvFullNameNote.visibility = View.GONE
+        binding.etFullNameValue.addTextChangedListener(
+                object : TextWatcher {
+                    override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                    ) {}
+                    override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                    ) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        val currentName = s.toString().trim()
+                        if (currentName != originalFullName && currentName.isNotEmpty()) {
+                            binding.tvFullNameNote.visibility = View.VISIBLE
+                        } else {
+                            binding.tvFullNameNote.visibility = View.GONE
+                        }
+                    }
                 }
-            }
-        })
+        )
 
         // Email TextWatcher
-        binding.etEmailValue.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val currentEmail = s.toString().trim()
-                if (currentEmail != originalEmail && currentEmail.isNotEmpty() && isValidEmail(currentEmail)) {
-                    binding.tvEmailNote.visibility = View.VISIBLE
-                } else {
-                    binding.tvEmailNote.visibility = View.GONE
+        binding.etEmailValue.addTextChangedListener(
+                object : TextWatcher {
+                    override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                    ) {}
+                    override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                    ) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        val currentEmail = s.toString().trim()
+                        if (currentEmail != originalEmail &&
+                                        currentEmail.isNotEmpty() &&
+                                        isValidEmail(currentEmail)
+                        ) {
+                            binding.tvEmailNote.visibility = View.VISIBLE
+                        } else {
+                            binding.tvEmailNote.visibility = View.GONE
+                        }
+                    }
                 }
-            }
-        })
+        )
     }
 
     private fun setupClickListeners() {
@@ -198,7 +249,7 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
             if (newName.isNotEmpty() && newName != originalFullName) {
                 binding.tvFullNameNote.visibility = View.GONE
                 binding.pbFullName.visibility = View.VISIBLE
-                
+
                 val secretKey = Constants.SECRET_KEY
                 val apiKey = preferenceHelper.getApiKey() ?: ""
                 viewModel.updateProfile(secretKey, apiKey, name = newName, email = null)
@@ -211,7 +262,7 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
             if (newEmail.isNotEmpty() && newEmail != originalEmail && isValidEmail(newEmail)) {
                 binding.tvEmailNote.visibility = View.GONE
                 binding.pbEmail.visibility = View.VISIBLE
-                
+
                 val secretKey = Constants.SECRET_KEY
                 val apiKey = preferenceHelper.getApiKey() ?: ""
                 viewModel.updateProfile(secretKey, apiKey, name = null, email = newEmail)
@@ -219,19 +270,13 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
         }
 
         // Change Password
-        binding.btnChangePassword.setOnClickListener {
-            showChangePasswordDialog()
-        }
+        binding.btnChangePassword.setOnClickListener { showChangePasswordDialog() }
 
         // Logout
-        binding.btnLogout.setOnClickListener {
-            showLogoutConfirmation()
-        }
+        binding.btnLogout.setOnClickListener { showLogoutConfirmation() }
 
         // Delete Account
-        binding.btnDeleteAccount.setOnClickListener {
-            showDeleteAccountConfirmation()
-        }
+        binding.btnDeleteAccount.setOnClickListener { showDeleteAccountConfirmation() }
     }
 
     private fun showChangePasswordDialog() {
@@ -244,7 +289,7 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
         val secretKey = Constants.SECRET_KEY
         val apiKey = preferenceHelper.getApiKey() ?: ""
         viewModel.changePassword(secretKey, apiKey, newPassword)
-        
+
         // Update locally
         preferenceHelper.setPassword(newPassword)
         Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
@@ -252,55 +297,60 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
 
     private fun showLogoutConfirmation() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Logout")
-            .setMessage("Are you sure you want to logout?")
-            .setPositiveButton("Logout") { dialog, _ ->
-                logout()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
-            }
-            .show()
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Logout") { dialog, _ ->
+                    logout()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+                .show()
     }
 
     private fun showDeleteAccountConfirmation() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_account, null)
+        val dialogView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_account, null)
         val etPassword = dialogView.findViewById<EditText>(R.id.etPasswordConfirm)
-        
+
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete Account")
-            .setMessage("This action cannot be undone. All your data will be permanently deleted.")
-            .setView(dialogView)
-            .setPositiveButton("Delete") { dialog, _ ->
-                val password = etPassword.text.toString()
-                val storedPassword = preferenceHelper.getPassword() ?: ""
-                
-                if (password != storedPassword) {
-                    Toast.makeText(requireContext(), "Incorrect password", Toast.LENGTH_SHORT).show()
-                } else {
-                    val secretKey = Constants.SECRET_KEY
-                    val username = preferenceHelper.getUserName() ?: ""
-                    viewModel.deleteAccount(secretKey, username, password)
-                    dialog.dismiss()
+                .setTitle("Delete Account")
+                .setMessage(
+                        "This action cannot be undone. All your data will be permanently deleted."
+                )
+                .setView(dialogView)
+                .setPositiveButton("Delete") { dialog, _ ->
+                    val password = etPassword.text.toString()
+                    val storedPassword = preferenceHelper.getPassword() ?: ""
+
+                    if (password != storedPassword) {
+                        Toast.makeText(requireContext(), "Incorrect password", Toast.LENGTH_SHORT)
+                                .show()
+                    } else {
+                        val secretKey = Constants.SECRET_KEY
+                        val username = preferenceHelper.getUserName() ?: ""
+                        viewModel.deleteAccount(secretKey, username, password)
+                        dialog.dismiss()
+                    }
                 }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
-            }
-            .show()
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+                .show()
     }
 
     private fun logout() {
-        preferenceHelper.setIsLoggedIn(false)
-        preferenceHelper.clear()
-        
-        startActivity(
-            Intent(requireActivity(), OnboardingActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-        )
-        requireActivity().finish()
+        // Purge history on logout (iOS parity)
+        viewLifecycleOwner.lifecycleScope.launch {
+            verificationRepository.purgeAll()
+
+            preferenceHelper.setIsLoggedIn(false)
+            preferenceHelper.clear()
+
+            startActivity(
+                    Intent(requireActivity(), OnboardingActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+            )
+            requireActivity().finish()
+        }
     }
 
     private fun isValidEmail(email: String): Boolean {

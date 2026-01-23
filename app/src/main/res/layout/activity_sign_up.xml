@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="@color/app_background_before_login"
+    android:background="@color/vl_onboarding_background"
     tools:context=".presentation.auth.signup.SignUpActivity">
 
     <!-- Action Bar with Back Button -->
@@ -64,30 +64,21 @@
             android:padding="24dp"
             android:gravity="center_horizontal">
 
-            <!-- App Logo -->
-            <androidx.cardview.widget.CardView
+            <ImageView
                 android:id="@+id/imgAppIcon"
                 android:layout_width="120dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:contentDescription="@string/app_icon"
-                android:elevation="2dp">
+                android:src="@drawable/verifylabs_logo"
+                android:contentDescription="@string/app_icon" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/verifylabs_logo"
-                    android:scaleType="fitXY" />
-            </androidx.cardview.widget.CardView>
-
-            <!-- Header Text -->
             <TextView
                 android:id="@+id/tvWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/letsgetstarted"
+                android:text="Let's Get Started!"
                 android:textSize="24sp"
                 android:textColor="@color/colorBlack"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -100,18 +91,52 @@
                 android:layout_marginTop="6dp"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
-                android:text="@string/join_verifylabs"
+                android:text="Create an account to VerifyLabs to get all features"
                 android:textColor="@color/verifylabs_dots_indicator"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:gravity="center" />
 
-            <!-- Full Name -->
+            <!-- Username (Required) -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilFullName"
+                android:id="@+id/tilFullUsername"
+                style="@style/CustomTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:hint="@string/enter_full_name"
+                android:hint="Username*"
                 app:startIconDrawable="@drawable/ic_user"
+                app:startIconTint="@null"
+                app:hintTextColor="@color/colorBlack"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFullUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textSize="16sp"
+                    android:hint="Username*"
+                    android:background="@drawable/bg_text_input"
+                    android:textColor="@color/colorBlack"
+                    android:paddingStart="48dp"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:clickable="true"
+                    android:enabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Full Name (Optional) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFullName"
+                style="@style/CustomTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:hint="Full Name*"
+                app:startIconDrawable="@drawable/ic_user_profile"
                 app:startIconTint="@null"
                 app:hintTextColor="@color/colorBlack"
                 app:hintEnabled="false">
@@ -122,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
                     android:textSize="16sp"
-                    android:hint="@string/enter_full_name"
+                    android:hint="Full Name*"
                     android:background="@drawable/bg_text_input"
                     android:textColor="@color/colorBlack"
                     android:paddingStart="48dp"
@@ -132,17 +157,17 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:enabled="true"
-                    android:contentDescription="@string/full_name_input" />
+                    android:enabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Email -->
+            <!-- Email (Optional) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilEmail"
+                style="@style/CustomTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:hint="@string/enter_email"
+                android:hint="Email address*"
                 app:startIconDrawable="@drawable/ic_email"
                 app:startIconTint="@null"
                 app:hintTextColor="@color/colorBlack"
@@ -154,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:textSize="16sp"
-                    android:hint="@string/enter_email"
+                    android:hint="Email address*"
                     android:background="@drawable/bg_text_input"
                     android:textColor="@color/colorBlack"
                     android:paddingStart="48dp"
@@ -164,49 +189,17 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:enabled="true"
-                    android:contentDescription="@string/email_input" />
+                    android:enabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Username -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilFullUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:hint="@string/choose_username"
-                app:startIconDrawable="@drawable/ic_user_profile"
-                app:startIconTint="@null"
-                app:hintTextColor="@color/colorBlack"
-                app:hintEnabled="false">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFullUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textSize="16sp"
-                    android:hint="@string/choose_username"
-                    android:background="@drawable/bg_text_input"
-                    android:textColor="@color/colorBlack"
-                    android:paddingStart="48dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:clickable="true"
-                    android:enabled="true"
-                    android:contentDescription="@string/username_input" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Password -->
+            <!-- Password (Required) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPassword"
+                style="@style/CustomTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:hint="@string/enter_password"
+                android:hint="Password*"
                 app:startIconDrawable="@drawable/ic_password_signup"
                 app:startIconTint="@null"
                 app:endIconMode="password_toggle"
@@ -219,7 +212,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:textSize="16sp"
-                    android:hint="@string/enter_password"
+                    android:hint="Password*"
                     android:background="@drawable/bg_text_input"
                     android:textColor="@color/colorBlack"
                     android:paddingStart="48dp"
@@ -229,17 +222,17 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:enabled="true"
-                    android:contentDescription="@string/password_input" />
+                    android:enabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Confirm Password -->
+            <!-- Confirm Password (Required) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilConfirmPassword"
+                style="@style/CustomTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:hint="@string/confirm_your_password"
+                android:hint="Confirm Password*"
                 app:startIconDrawable="@drawable/ic_password_signup"
                 app:startIconTint="@null"
                 app:endIconMode="password_toggle"
@@ -252,7 +245,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:textSize="16sp"
-                    android:hint="@string/confirm_your_password"
+                    android:hint="Confirm Password*"
                     android:background="@drawable/bg_text_input"
                     android:textColor="@color/colorBlack"
                     android:paddingStart="48dp"
@@ -262,9 +255,22 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:clickable="true"
-                    android:enabled="true"
-                    android:contentDescription="@string/confirm_password_input" />
+                    android:enabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password Mismatch Error Text -->
+            <TextView
+                android:id="@+id/tvPasswordError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="20dp"
+                android:text="Passwords don't match"
+                android:textColor="#FF3B30"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_red_cross_tranparent"
+                android:drawablePadding="4dp" />
 
             <!-- Checkbox for Terms & Privacy -->
             <LinearLayout
@@ -341,17 +347,16 @@
                 android:gravity="center"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:background="@drawable/drawable_verify_background_btn_failed_likely_gray"
+                android:background="@drawable/bg_ios_green_button"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_marginTop="30dp"
-                android:contentDescription="@string/create_account_button">
+                android:layout_marginTop="30dp">
 
                 <TextView
                     android:id="@+id/tvCreateAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/create"
+                    android:text="CREATE"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -362,9 +367,8 @@
 
 
 
-            <!-- Sign In Prompt -->
             <LinearLayout
-                android:id="@+id/btnSignInPrompt"
+                android:id="@+id/btnSignUpPrompt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -381,11 +385,11 @@
                     android:textColor="@color/colorBlack" />
 
                 <TextView
-                    android:layout_marginStart="5dp"
                     android:id="@+id/tvSignIn"
+                    android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sign_in"
+                    android:text="Login here"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/txtGreen"

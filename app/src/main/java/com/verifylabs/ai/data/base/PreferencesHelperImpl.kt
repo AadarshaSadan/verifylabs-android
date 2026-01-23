@@ -10,12 +10,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PreferencesHelperImpl @Inject constructor(
-    @ApplicationContext context: Context
-) : PreferenceHelper {
+class PreferencesHelperImpl @Inject constructor(@ApplicationContext context: Context) :
+        PreferenceHelper {
 
     private val mPrefs: SharedPreferences =
-        context.getSharedPreferences(Constants.APP_SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+            context.getSharedPreferences(Constants.APP_SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
     override fun setLanguage(language: String) {
         mPrefs.edit().putString(Constants.LANGUAGE, language).apply()
@@ -70,7 +69,7 @@ class PreferencesHelperImpl @Inject constructor(
     }
 
     override fun getCreditRemaining(): Int {
-      mPrefs.getInt(Constants.CREDIT_REMAINING, 0)
+        mPrefs.getInt(Constants.CREDIT_REMAINING, 0)
         return mPrefs.getInt(Constants.CREDIT_REMAINING, 0)
     }
 
@@ -106,7 +105,6 @@ class PreferencesHelperImpl @Inject constructor(
         return mPrefs.getString(Constants.SAVED_MEDIA_FRAGMENT_STATE, null)
     }
 
-
     override fun clear() {
         mPrefs.edit().clear().apply()
     }
@@ -120,23 +118,18 @@ class PreferencesHelperImpl @Inject constructor(
     }
 
     override fun setQuickRecordDuration(seconds: Int) {
-        mPrefs.edit()
-            .putInt(KEY_QUICK_RECORD_DURATION, seconds.coerceIn(10, 60))
-            .apply()
+        mPrefs.edit().putInt(KEY_QUICK_RECORD_DURATION, seconds.coerceIn(10, 60)).apply()
     }
 
     override fun getQuickRecordDuration(): Int {
-        return mPrefs.getInt(KEY_QUICK_RECORD_DURATION, 40) // default 40s
+        return mPrefs.getInt(KEY_QUICK_RECORD_DURATION, 20) // default 20s (iOS parity)
     }
 
     override fun setHistoryRetentionDays(days: Int) {
-        mPrefs.edit()
-            .putInt(KEY_HISTORY_RETENTION_DAYS, days.coerceIn(7, 90))
-            .apply()
+        mPrefs.edit().putInt(KEY_HISTORY_RETENTION_DAYS, days.coerceIn(7, 90)).apply()
     }
 
     override fun getHistoryRetentionDays(): Int {
-        return mPrefs.getInt(KEY_HISTORY_RETENTION_DAYS, 90) // default 90d
+        return mPrefs.getInt(KEY_HISTORY_RETENTION_DAYS, 30) // default 30d (iOS parity)
     }
-
 }

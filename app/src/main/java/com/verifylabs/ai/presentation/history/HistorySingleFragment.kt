@@ -237,16 +237,16 @@ class HistorySingleFragment : Fragment() {
         binding.tvNewBandName.text = bandName
         binding.tvNewDescription.text = bandDescription
 
-        val colorHex =
+        val colorRes =
                 when {
-                    score > 0.95 -> "#E6070D"
-                    score > 0.85 -> "#FF3B30"
-                    score > 0.65 -> "#8E8E93"
-                    score > 0.50 -> "#34C759"
-                    else -> "#38B031"
+                    score > 0.95 -> R.color.vl_red
+                    score > 0.85 -> R.color.system_red
+                    score > 0.65 -> R.color.system_gray
+                    score > 0.50 -> R.color.system_green
+                    else -> R.color.vl_green
                 }
 
-        val baseColor = android.graphics.Color.parseColor(colorHex)
+        val baseColor = androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
         val backgroundColor =
                 androidx.core.graphics.ColorUtils.setAlphaComponent(baseColor, (0.1 * 255).toInt())
         val strokeColor =
@@ -483,16 +483,16 @@ class HistorySingleFragment : Fragment() {
         binding.tvBandName.text = bandName
         binding.tvDescription.text = bandDescription
 
-        val colorHex =
+        val colorRes =
                 when {
-                    score > 0.95 -> "#E6070D"
-                    score > 0.85 -> "#FF3B30"
-                    score > 0.65 -> "#8E8E93"
-                    score > 0.50 -> "#34C759"
-                    else -> "#38B031"
+                    score > 0.95 -> R.color.vl_red
+                    score > 0.85 -> R.color.system_red
+                    score > 0.65 -> R.color.system_gray
+                    score > 0.50 -> R.color.system_green
+                    else -> R.color.vl_green
                 }
 
-        val baseColor = android.graphics.Color.parseColor(colorHex)
+        val baseColor = androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
         val backgroundColor =
                 androidx.core.graphics.ColorUtils.setAlphaComponent(baseColor, (0.1 * 255).toInt())
         val strokeColor =
@@ -501,7 +501,7 @@ class HistorySingleFragment : Fragment() {
         val resultDrawable =
                 android.graphics.drawable.GradientDrawable().apply {
                     setColor(backgroundColor)
-                    setStroke(2, strokeColor)
+                    setStroke((1 * resources.displayMetrics.density).toInt(), strokeColor)
                     cornerRadius = 16 * resources.displayMetrics.density
                 }
 

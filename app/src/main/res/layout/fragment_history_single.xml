@@ -411,7 +411,7 @@
             android:layout_marginBottom="40dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1A808080">
+            app:cardBackgroundColor="@color/app_background_3">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -430,7 +430,7 @@
                         android:layout_height="wrap_content"
                         android:text="Media Type"
                         android:textColor="@color/secondary_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp" />
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -441,14 +441,9 @@
                         android:layout_height="wrap_content"
                         android:text="Image"
                         android:textColor="@color/header_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#33808080"
-                    android:layout_marginBottom="12dp" />
 
                 <!-- Resolution -->
                 <LinearLayout
@@ -461,7 +456,7 @@
                         android:layout_height="wrap_content"
                         android:text="Resolution"
                         android:textColor="@color/secondary_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp" />
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -472,14 +467,9 @@
                         android:layout_height="wrap_content"
                         android:text="--"
                         android:textColor="@color/header_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#33808080"
-                    android:layout_marginBottom="12dp" />
 
                 <!-- Size -->
                 <LinearLayout
@@ -492,7 +482,7 @@
                         android:layout_height="wrap_content"
                         android:text="Filename"
                         android:textColor="@color/secondary_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp" />
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -503,14 +493,9 @@
                         android:layout_height="wrap_content"
                         android:text="--"
                         android:textColor="@color/header_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#33808080"
-                    android:layout_marginBottom="12dp" />
 
                 <!-- Robot Type -->
                 <LinearLayout
@@ -522,7 +507,7 @@
                         android:layout_height="wrap_content"
                         android:text="Robot Type"
                         android:textColor="@color/secondary_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp" />
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -533,7 +518,8 @@
                         android:layout_height="wrap_content"
                         android:text="--"
                         android:textColor="@color/header_text"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -6,98 +6,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/app_background_3"
+    android:background="@color/app_background"
     android:fitsSystemWindows="true"
     tools:context=".presentation.settings.FragmentAccount">
     <!-- Top Bar -->
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp">
+        android:layout_height="56dp"
+        android:background="@color/app_background">
 
-
-        <androidx.cardview.widget.CardView
+        <ImageView
             android:id="@+id/btnBack"
-            android:layout_marginStart="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="8dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/system_blue"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="5"
-                android:background="@drawable/bg_floating_nav">
-
-                <ImageView
-                    android:id="@+id/button_notification"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_back"/>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/tvTitleAccount"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="Account"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
-            android:gravity="center"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <!-- Profile Info -->
             <TextView
                 android:id="@+id/tvProfileInfoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Profile information"
-                android:textColor="@color/vl_green"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:text="PROFILE INFORMATION"
+                android:textColor="#6E6E73"
+                android:textSize="13sp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/account_card_bg"
                 android:layout_marginBottom="24dp">
 
                 <LinearLayout
                     android:orientation="vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
+                    android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -105,13 +82,12 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:src="@drawable/ic_user"
                             app:tint="@color/vl_green" />
 
@@ -127,7 +103,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Username"
-                                android:textColor="@color/secondary_text"
+                                android:textColor="#8E8E93"
                                 android:textSize="12sp"/>
 
                             <TextView
@@ -135,7 +111,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="17sp"
                                 android:textColor="@color/colorBlack"/>
                         </LinearLayout>
 
@@ -145,7 +121,7 @@
                             android:layout_height="wrap_content"
                             android:text="Cannot be changed"
                             android:textSize="12sp"
-                            android:textColor="@color/secondary_text"/>
+                            android:textColor="#8E8E93"/>
                     </LinearLayout>
 
                     <View
@@ -158,13 +134,13 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp"
+                        android:paddingVertical="4dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_full_name"
                             app:tint="@color/vl_green" />
 
@@ -188,7 +164,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="17sp"
                                 android:textColor="@color/colorBlack"
                                 android:background="@null"
                                 android:padding="0dp"
@@ -202,8 +178,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Save"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
+                            android:textSize="12sp"
                             android:textColor="@color/vl_green"
                             android:visibility="gone"/>
                         
@@ -225,13 +200,13 @@
                     <LinearLayout
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp"
+                        android:paddingVertical="4dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_email"
                             app:tint="@color/vl_green"/>
 
@@ -255,7 +230,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="17sp"
                                 android:textColor="@color/colorBlack"
                                 android:background="@null"
                                 android:padding="0dp"
@@ -269,8 +244,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Save"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
+                            android:textSize="12sp"
                             android:textColor="@color/vl_green"
                             android:visibility="gone"/>
                             
@@ -289,18 +263,17 @@
                 android:id="@+id/tvSecurityTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Security"
-                android:textColor="#3B82F6"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:text="SECURITY"
+                android:textColor="#6E6E73"
+                android:textSize="13sp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/account_card_bg"
                 android:layout_marginBottom="24dp">
 
                 <LinearLayout
@@ -313,17 +286,17 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:src="@drawable/ic_change_password"
-                        app:tint="#3B82F6"/>
+                        app:tint="@color/system_blue"/>
 
                     <TextView
                         android:id="@+id/tvChangePassword"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Change password"
-                        android:textSize="16sp"
+                        android:textSize="17sp"
                         android:textColor="@color/colorBlack"
                         android:layout_marginStart="12dp"/>
                 </LinearLayout>
@@ -334,18 +307,17 @@
                 android:id="@+id/tvAccountActionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Account actions"
-                android:textColor="#F59E0B"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:text="ACCOUNT ACTIONS"
+                android:textColor="#6E6E73"
+                android:textSize="13sp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/account_card_bg"
                 android:layout_marginBottom="24dp">
 
                 <LinearLayout
@@ -358,17 +330,17 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:src="@drawable/ic_logout"
-                        app:tint="#F59E0B" />
+                        app:tint="@color/system_orange" />
 
                     <TextView
                         android:id="@+id/tvLogout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Logout"
-                        android:textSize="16sp"
+                        android:textSize="17sp"
                         android:textColor="@color/colorBlack"
                         android:layout_marginStart="12dp"/>
                 </LinearLayout>
@@ -379,18 +351,17 @@
                 android:id="@+id/tvDangerZoneTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Danger zone"
-                android:textColor="#EF4444"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:text="DANGER ZONE"
+                android:textColor="#6E6E73"
+                android:textSize="13sp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/account_card_bg">
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:id="@+id/btnDeleteAccount"
@@ -402,18 +373,18 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:src="@drawable/ic_delete"
-                        app:tint="#EF4444"/>
+                        app:tint="@color/system_red"/>
 
                     <TextView
                         android:id="@+id/tvDeleteAccount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Delete account"
-                        android:textSize="16sp"
-                        android:textColor="#EF4444"
+                        android:textSize="17sp"
+                        android:textColor="@color/system_red"
                         android:layout_marginStart="12dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

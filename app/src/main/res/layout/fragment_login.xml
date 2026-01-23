@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:overScrollMode="always"
-    android:background="@color/app_background_before_login"
+    android:background="@color/vl_onboarding_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -18,21 +18,14 @@
         android:gravity="center_horizontal">
 
         <!-- Top Icon / App Logo -->
-        <androidx.cardview.widget.CardView
+        <ImageView
             android:id="@+id/imgAppIcon"
             android:layout_marginTop="50dp"
             android:layout_width="120dp"
             android:layout_height="40dp"
-            android:elevation="2dp"
-            app:background="@drawable/verifylabs_logo"
+            android:src="@drawable/verifylabs_logo"
             android:contentDescription="@string/app_icon"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/verifylabs_logo" />
-        </androidx.cardview.widget.CardView>
+            android:layout_marginBottom="16dp" />
 
         <!-- Welcome Text -->
         <TextView
@@ -60,6 +53,7 @@
         <!-- Username -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilUsername"
+            style="@style/CustomTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
@@ -91,6 +85,7 @@
         <!-- Password -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
+            style="@style/CustomTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
@@ -126,7 +121,7 @@
             android:layout_height="48dp"
             android:orientation="horizontal"
             android:gravity="center"
-            android:background="@drawable/drawable_verify_background_btn_failed_likely_gray"
+            android:background="@drawable/bg_ios_green_button"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginTop="30dp">

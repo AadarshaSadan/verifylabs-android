@@ -50,16 +50,16 @@ class HistoryAdapter(private val onItemClick: (HistoryItem) -> Unit) :
 
                 // Match iOS Logic for color selection
                 val score = item.aiScore / 100.0
-                val baseColorHex =
+                val colorRes =
                         when {
-                                score > 0.95 -> "#E6070D" // VLRed
-                                score > 0.85 -> "#FF3B30" // System Red
-                                score > 0.65 -> "#8E8E93" // System Gray
-                                score > 0.50 -> "#34C759" // System Green
-                                else -> "#38B031" // VLGreen
+                                score > 0.95 -> R.color.vl_red
+                                score > 0.85 -> R.color.system_red
+                                score > 0.65 -> R.color.system_gray
+                                score > 0.50 -> R.color.system_green
+                                else -> R.color.vl_green
                         }
 
-                val baseColor = android.graphics.Color.parseColor(baseColorHex)
+                val baseColor = androidx.core.content.ContextCompat.getColor(holder.itemView.context, colorRes)
                 val startColor =
                         androidx.core.graphics.ColorUtils.setAlphaComponent(
                                 baseColor,
@@ -79,7 +79,7 @@ class HistoryAdapter(private val onItemClick: (HistoryItem) -> Unit) :
                                 )
                                 .apply {
                                         val radius =
-                                                16 *
+                                                12 *
                                                         holder.itemView
                                                                 .context
                                                                 .resources
@@ -91,8 +91,9 @@ class HistoryAdapter(private val onItemClick: (HistoryItem) -> Unit) :
                 holder.cardRoot.background = gradientDrawable
 
                 // Ensure text contrast matching iOS row
+                // iOS uses white for the result text and gray for the date
                 holder.title.setTextColor(android.graphics.Color.WHITE)
-                holder.date.setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+                holder.date.setTextColor(androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.system_gray))
                 holder.aiScore.setTextColor(baseColor)
 
                 holder.itemView.setOnClickListener { onItemClick(item) }

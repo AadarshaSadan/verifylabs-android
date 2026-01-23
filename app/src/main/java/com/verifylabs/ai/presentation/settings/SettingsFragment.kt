@@ -83,7 +83,6 @@ class SettingsFragment : Fragment() {
         val storeCredits = preferenceHelper.getCreditRemaining()
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
         binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
-        binding.tvCreditsRemaining.visibility = View.VISIBLE
 
         // ---------- QUICK RECORD DURATION ----------
         val quickRecordSeconds = preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
@@ -151,7 +150,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.llCreditsInfo.setOnClickListener {
+        binding.llCreditsContainer.setOnClickListener {
+            showCreditsLoading(true)
             loginViewModel.checkCredits(
                     preferenceHelper.getUserName() ?: "",
                     preferenceHelper.getApiKey() ?: ""
@@ -238,31 +238,22 @@ class SettingsFragment : Fragment() {
     private fun setupObservers() {
         loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
-                Status.LOADING -> {
-                    //                    binding.tvTestSave.text = "Saving..."
-                    //                    binding.btnTestSave.isEnabled = false
-                }
                 Status.SUCCESS -> {
                     resource.data?.let { dataJson ->
                         val response =
                                 Gson().fromJson(dataJson.toString(), ApiResponseLogin::class.java)
                         preferenceHelper.setApiKey(response.apiKey)
                         preferenceHelper.setIsLoggedIn(true)
-                        preferenceHelper.setCreditReamaining(response.credits)
-                        //                        binding.tvApiKey.text = "API KEY:
-                        // ${response.apiKey.take(6)}....."
-                        //                        binding.tvTestSave.text = "Saved"
-                        //                        binding.btnTestSave.isEnabled = true
-                        val storeCredits = preferenceHelper.getCreditRemaining()
+                        val totalCredits = response.credits + response.creditsMonthly
+                        preferenceHelper.setCreditReamaining(totalCredits)
+
                         val formattedCredits =
-                                NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+                                NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
                         binding.tvCreditsRemaining.text =
                                 getString(R.string.credits_remaining, formattedCredits)
                     }
                 }
                 Status.ERROR -> {
-                    //                    binding.tvTestSave.text = "Error! Try Again"
-                    //                    binding.btnTestSave.isEnabled = true
                     Toast.makeText(
                                     requireContext(),
                                     resource.message ?: "Login failed",
@@ -270,7 +261,48 @@ class SettingsFragment : Fragment() {
                             )
                             .show()
                 }
+                else -> {}
             }
+        }
+
+        loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    showCreditsLoading(false)
+                    resource.data?.let { dataJson ->
+                        val credits = dataJson.get("credits")?.asInt ?: 0
+                        val creditsMonthly = dataJson.get("credits_monthly")?.asInt ?: 0
+                        val totalCredits = credits + creditsMonthly
+                        preferenceHelper.setCreditReamaining(totalCredits)
+                        val formattedCredits =
+                                NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+                        binding.tvCreditsRemaining.text =
+                                getString(R.string.credits_remaining, formattedCredits)
+                        Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT)
+                                .show()
+                    }
+                }
+                Status.ERROR -> {
+                    showCreditsLoading(false)
+                    Toast.makeText(
+                                    requireContext(),
+                                    resource.message ?: "Failed to refresh credits",
+                                    Toast.LENGTH_SHORT
+                            )
+                            .show()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun showCreditsLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.llCreditsBalance.visibility = View.GONE
+            binding.llCreditsLoading.visibility = View.VISIBLE
+        } else {
+            binding.llCreditsBalance.visibility = View.VISIBLE
+            binding.llCreditsLoading.visibility = View.GONE
         }
     }
 

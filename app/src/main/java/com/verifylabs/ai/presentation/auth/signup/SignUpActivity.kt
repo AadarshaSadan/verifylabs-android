@@ -113,7 +113,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.btnBack.setOnClickListener { finish() }
-        binding.btnSignInPrompt.setOnClickListener { finish() }
+        binding.btnSignUpPrompt.setOnClickListener { finish() }
     }
 
     // -------------------- TEXT WATCHERS (LIKE LOGIN) --------------------
@@ -138,28 +138,39 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun updateSignUpButtonState() {
 
-        val fullName = binding.etFullUsername.text.toString().trim()
+        val username = binding.etFullUsername.text.toString().trim()
+        val fullName = binding.etUsername.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
-        val username = binding.etUsername.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
+        val passwordsMatch = password == confirmPassword
+
         // Input background change
         binding.etFullUsername.setBackgroundResource(
+            if (username.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
+        )
+        binding.etUsername.setBackgroundResource(
             if (fullName.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
         )
         binding.etEmail.setBackgroundResource(
             if (email.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
         )
-        binding.etUsername.setBackgroundResource(
-            if (username.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
-        )
         binding.etPassword.setBackgroundResource(
             if (password.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
         )
-        binding.etConfirmPassword.setBackgroundResource(
-            if (confirmPassword.isEmpty()) R.drawable.bg_text_input else R.drawable.bg_text_input_green
-        )
+        
+        // Confirm Password validation logic (iOS Style)
+        if (confirmPassword.isEmpty()) {
+            binding.etConfirmPassword.setBackgroundResource(R.drawable.bg_text_input)
+            binding.tvPasswordError.visibility = android.view.View.GONE
+        } else if (!passwordsMatch) {
+            binding.etConfirmPassword.setBackgroundResource(R.drawable.bg_text_input_red)
+            binding.tvPasswordError.visibility = android.view.View.VISIBLE
+        } else {
+            binding.etConfirmPassword.setBackgroundResource(R.drawable.bg_text_input_green)
+            binding.tvPasswordError.visibility = android.view.View.GONE
+        }
 
         val enableButton =
             fullName.isNotEmpty() &&
@@ -172,12 +183,7 @@ class SignUpActivity : AppCompatActivity() {
                     binding.cbAgreeTerms.isChecked
 
         binding.btnCreateAccount.isEnabled = enableButton
-        binding.btnCreateAccount.setBackgroundResource(
-            if (enableButton)
-                R.drawable.drawable_verify_background_green_radius_more
-            else
-                R.drawable.drawable_verify_background_btn_failed_likely_gray
-        )
+        binding.btnCreateAccount.alpha = if (enableButton) 1.0f else 0.6f
     }
 
     // -------------------- VALIDATION --------------------
@@ -189,37 +195,20 @@ class SignUpActivity : AppCompatActivity() {
         password: String,
         confirmPassword: String
     ): Boolean {
-
-        if (fullName.isEmpty()) {
-            binding.etFullUsername.error = "Enter full name"
-            return false
-        }
-        if (email.isEmpty()) {
-            binding.etEmail.error = "Enter email"
+        if (fullName.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showErrorDialog("Error", "Please fill in all mandatory fields.")
             return false
         }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.etEmail.error = "Invalid email"
-            return false
-        }
-        if (username.isEmpty()) {
-            binding.etUsername.error = "Enter username"
-            return false
-        }
-        if (password.isEmpty()) {
-            binding.etPassword.error = "Enter password"
-            return false
-        }
-        if (confirmPassword.isEmpty()) {
-            binding.etConfirmPassword.error = "Confirm password"
+            showErrorDialog("Error", "Invalid email address.")
             return false
         }
         if (password != confirmPassword) {
-            binding.etConfirmPassword.error = "Passwords do not match"
+            showErrorDialog("Error", "Passwords do not match.")
             return false
         }
         if (!binding.cbAgreeTerms.isChecked) {
-            showToast("Please accept Terms & Privacy Policy")
+            showErrorDialog("Error", "Please accept Terms & Privacy Policy.")
             return false
         }
         return true
@@ -241,16 +230,8 @@ class SignUpActivity : AppCompatActivity() {
                             val response = Gson().fromJson(it.toString(), SignUpVerificationResponse::class.java)
                             Log.d(TAG, "setupObservers: Sign Up Response: ${response.toString()}")
 
-                            // Show success toast
-                            showToast("Sign up successful. Please verify your email before logging in.")
-
-                            // Get the email from the input field (or response if available)
-                            val email = binding.etEmail.text.toString().trim()
-
-                            // Open the bottom sheet with the email
-                            val bottomSheet = VerifyEmailBottomSheet.newInstance(email)
-                            bottomSheet.isCancelable = false
-                            bottomSheet.show(supportFragmentManager, "VerifyEmailBottomSheet")
+                            // Show success dialog (iOS Style)
+                            showSuccessDialog("Success", "Sign up successful. Please verify your email before logging in.")
 
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -261,7 +242,7 @@ class SignUpActivity : AppCompatActivity() {
 
                 Status.ERROR -> {
                     binding.tvCreateAccount.text = getString(R.string.create)
-                    showToast(resource.message ?: "Sign up failed")
+                    showErrorDialog("Error", resource.message ?: "Sign up failed. Please try again.")
                 }
             }
         }
@@ -285,6 +266,30 @@ class SignUpActivity : AppCompatActivity() {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
+    private fun showErrorDialog(title: String, message: String) {
+        androidx.appcompat.app.AlertDialog.Builder(this, R.style.CustomAlertDialog)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+    private fun showSuccessDialog(title: String, message: String) {
+        androidx.appcompat.app.AlertDialog.Builder(this, R.style.CustomAlertDialog)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                // Get the email from the input field
+                val email = binding.etEmail.text.toString().trim()
+                // Open the bottom sheet with the email
+                val bottomSheet = VerifyEmailBottomSheet.newInstance(email)
+                bottomSheet.isCancelable = false
+                bottomSheet.show(supportFragmentManager, "VerifyEmailBottomSheet")
+            }
+            .show()
+    }
+
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
@@ -294,7 +299,7 @@ class SignUpActivity : AppCompatActivity() {
         if (::binding.isInitialized) {
             binding.btnCreateAccount.setOnClickListener(null)
             binding.btnBack.setOnClickListener(null)
-            binding.btnSignInPrompt.setOnClickListener(null)
+            binding.btnSignUpPrompt.setOnClickListener(null)
         }
     }
 

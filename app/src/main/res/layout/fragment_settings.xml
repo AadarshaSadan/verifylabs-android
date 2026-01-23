@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:overScrollMode="always"
     android:fillViewport="true"
-    android:background="@color/app_background_3"
+    android:background="@color/app_background"
     android:padding="16dp"
     tools:context=".presentation.settings.SettingsFragment">
 
@@ -16,82 +16,80 @@
         android:orientation="vertical"
         android:dividerPadding="8dp">
 
-        <!-- Section 1: Manual Credentials -->
+        <!-- Section 1: Account -->
         <TextView
             android:id="@+id/tvManualCredentials"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="    Manual Credentials"
-            android:textSize="14sp"
-            android:textAllCaps="true"
-            android:textColor="#AAB2AA"
+            android:text="ACCOUNT"
+            android:textSize="13sp"
+            android:textColor="#6E6E73"
+            android:layout_marginStart="16dp"
             android:paddingBottom="8dp" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardManualCredentials"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="26dp"
+            android:layout_marginBottom="24dp"
             app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
-            android:background="@android:color/white">
+            app:cardElevation="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="12dp">
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:background="?android:attr/selectableItemBackground">
 
                 <!-- User Icon -->
                 <ImageView
                     android:id="@+id/ivUserIcon"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:src="@drawable/ic_user_profile"
+                    app:tint="@color/vl_green"
                     android:contentDescription="User"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <!-- Username Text -->
-
-
                 <TextView
                     android:id="@+id/etUsername"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:gravity="center_vertical"
-                    android:inputType="textPersonName"
                     android:text="misha"
                     android:textColor="@color/colorBlack"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/tvManageAccount_"
                     app:layout_constraintStart_toEndOf="@id/ivUserIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/ivNavigateAccount"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.25" />
+                    app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
                     android:id="@+id/tvManageAccount_"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:gravity="center_vertical"
-                    android:textColor="#AAB2AA"
-                    android:textSize="10dp"
+                    android:textColor="#8E8E93"
+                    android:textSize="13sp"
                     android:text="Manage your account"
                     app:layout_constraintStart_toEndOf="@+id/ivUserIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/etUsername" />
-
-                <!-- Manage Account -->
-
-
+                    app:layout_constraintEnd_toStartOf="@+id/ivNavigateAccount"
+                    app:layout_constraintTop_toBottomOf="@+id/etUsername"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
                 <!-- Chevron Icon -->
                 <ImageView
+                    android:id="@+id/ivNavigateAccount"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:contentDescription="Navigate"
                     android:src="@drawable/ic_cheveron_right"
+                    app:tint="#C4C4C6"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -110,432 +108,378 @@
             app:cardElevation="0dp"
             android:background="@android:color/white"/>
 
-        <!-- Section 3: Purchase Credits -->
+        <!-- Section 3: Credits -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardPurchaseCredits"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="26dp"
+            android:layout_marginBottom="24dp"
             app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
-            android:background="@android:color/white"
-            android:padding="12dp">
+            app:cardElevation="0dp">
 
-            <!-- Purchase Button -->
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-<!--            <Button-->
-<!--                android:id="@+id/btnPurchaseCredits"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_margin="10dp"-->
-<!--                android:backgroundTint="@android:color/holo_red_dark"-->
-<!--                android:text="Purchase Credits"-->
-<!--                android:textColor="@android:color/white"-->
-<!--                android:textStyle="bold"-->
-<!--                android:paddingVertical="12dp"/>-->
-
-                <LinearLayout
-                    android:id="@+id/btnPurchaseCredits"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:background="@drawable/drawable_verify_background_btn_failed_likely_red"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_margin="10dp">
-
-<!--                    <ImageView-->
-<!--                        android:layout_width="24dp"-->
-<!--                        android:layout_height="24dp"-->
-<!--                        android:src="@drawable/ic_credit_card"-->
-<!--                        android:layout_gravity="center_vertical" />-->
-
-                    <TextView
-                        android:id="@+id/tvPurchaseCredits"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Purchase Credits"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:layout_marginStart="8dp"
-                        android:layout_gravity="center_vertical" />
-                </LinearLayout>
-
-
-                <!-- Divider Line -->
-            <View
-                android:id="@+id/dividerCredits"
-                android:layout_below="@id/btnPurchaseCredits"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@android:color/darker_gray" />
-
-            <!-- Credits Info -->
             <LinearLayout
-                android:layout_below="@id/dividerCredits"
-                android:id="@+id/llCreditsInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="10dp"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:weightSum="4">
+                android:orientation="vertical"
+                android:padding="12dp">
 
-                <TextView
-                    android:id="@+id/tvCreditsRemaining"
-                    android:padding="3dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
+                <!-- Purchase Button -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnPurchaseCredits"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_ios_blue_button"
+                    android:text="Purchase credits"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/divider_color" />
+
+                <!-- Credits Balance Item -->
+                <LinearLayout
+                    android:id="@+id/llCreditsContainer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Credits Remaining: 100"
-                    android:drawableStart="@drawable/ic_credit_card"
-                    android:drawablePadding="5dp"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="12sp"
-                    android:gravity="center_vertical" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="4dp">
 
+                    <ImageView
+                        android:id="@+id/ivCreditsIcon"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_credit_card"
+                        app:tint="@color/vl_green" />
 
-                <TextView
-                    android:padding="3dp"
-                    android:id="@+id/tvCreditsUsed"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Refresh"
-                    android:textColor="@color/verifylabs_logo_green"
-                    android:gravity="end"
-                    android:textSize="12sp" />
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp">
+
+                        <LinearLayout
+                            android:id="@+id/llCreditsBalance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tvCreditsRemaining"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Credits remaining: 100"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tvRefreshCredits"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Refresh"
+                                android:textColor="@color/vl_green"
+                                android:textSize="14sp"
+                                android:padding="8dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llCreditsLoading"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Loading credits..."
+                                android:textColor="@color/secondary_text"
+                                android:textSize="14sp" />
+
+                            <ProgressBar
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:padding="4dp"
+                                android:indeterminateTint="@color/vl_green" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
             </LinearLayout>
-
-            </RelativeLayout>
-
         </androidx.cardview.widget.CardView>
 
-        <!-- Section 4: Account Management -->
+        <!-- Section 4: Preferences -->
         <TextView
-            android:id="@+id/tvAccountManagement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="    Preferences"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            android:textColor="#AAB2AA"
+            android:text="PREFERENCES"
+            android:textSize="13sp"
+            android:textColor="#6E6E73"
+            android:layout_marginStart="16dp"
             android:paddingBottom="8dp" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardAccountManagement"
+            android:id="@+id/cardPreferences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
-            android:background="@android:color/white">
+            app:cardElevation="0dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:padding="12dp">
 
-                <!-- Icon -->
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_quick_record"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <!-- Title -->
-                <TextView
-                    android:id="@+id/tvQuickRecord"
-                    android:layout_width="wrap_content"
+                <!-- Quick Record Duration -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Quick record duration"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="14sp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintStart_toEndOf="@id/imageView4"
-                    app:layout_constraintTop_toTopOf="@id/imageView4"
-                    app:layout_constraintBottom_toBottomOf="@id/imageView4" />
+                    android:orientation="vertical">
 
-
-                <!-- Horizontal SeekBar -->
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="40s"
-                        android:textColor="@color/colorRecordingRed"
-                        app:layout_constraintBottom_toBottomOf="@+id/seekBar"
-                        app:layout_constraintStart_toStartOf="@+id/imageView4"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView4"
-                        app:layout_constraintVertical_bias="1.0" />
-
-                    <SeekBar
-                        android:id="@+id/seekBar"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_marginTop="16dp"
-                        android:max="100"
-                        android:thumb="@drawable/custom_thumb_record_duration"
-                        android:progress="40"
-                        android:progressTint="@color/colorRecordingRed"
-                        android:progressBackgroundTint="@android:color/darker_gray"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.512"
-                        app:layout_constraintStart_toEndOf="@+id/textView3"
-                        app:layout_constraintTop_toBottomOf="@+id/tvQuickRecord" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_quick_record"
+                            app:tint="@color/colorRecordingRed" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Quick record duration"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp">
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="35dp"
+                            android:layout_height="wrap_content"
+                            android:text="40s"
+                            android:textColor="@color/colorRecordingRed"
+                            android:textSize="13sp" />
+                        <SeekBar
+                            android:id="@+id/seekBar"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="40"
+                            android:progressTint="@color/colorRecordingRed"
+                            android:thumbTint="@color/colorRecordingRed" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="60s"
+                            android:textColor="#8E8E93"
+                            android:textSize="13sp" />
+                    </LinearLayout>
 
                     <TextView
-                        android:id="@+id/textViewmaxDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="60s"
-                        android:textColor="@color/colorBlack"
-                        app:layout_constraintBottom_toBottomOf="@+id/seekBar"
-                        app:layout_constraintEnd_toEndOf="@+id/seekBar"
-                        app:layout_constraintStart_toEndOf="@+id/seekBar"
-                        app:layout_constraintTop_toTopOf="@+id/seekBar" />
+                        android:layout_marginTop="4dp"
+                        android:text="Duration for quick records button (min 10s, max 60s)"
+                        android:textColor="#8E8E93"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-
-
-                <TextView
-                    android:id="@+id/textViewdurationInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="12dp"
-                    android:textSize="10sp"
-                    android:textColor="@color/colorBlack"
-                    android:gravity="start"
-                    android:text="Durarion for quick records buttom (min 10s, max 60s)"
-                    app:layout_constraintTop_toBottomOf="@+id/dividerCredits1"
-                    tools:layout_editor_absoluteX="25dp" />
-
-
+                <!-- Divider -->
                 <View
-                    android:id="@+id/dividerCredits1"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="30dp"
+                    android:layout_height="0.5dp"
                     android:layout_marginTop="12dp"
-                    android:background="@color/colorWhiteGray"
-                    app:layout_constraintTop_toBottomOf="@+id/seekBar"
-                    tools:layout_editor_absoluteX="16dp" />
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/divider_color" />
 
-
-                <!-- Icon -->
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_history_retention"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewdurationInfo" />
-
-                <!-- Title -->
-                <TextView
-                    android:id="@+id/tvHistoryRetention"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="History retention period"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="14sp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintStart_toEndOf="@id/imageView5"
-                    app:layout_constraintTop_toTopOf="@id/imageView5"
-                    app:layout_constraintBottom_toBottomOf="@id/imageView5" />
-
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="90d"
-                    android:textColor="@color/txtGreen"
-                    app:layout_constraintBottom_toBottomOf="@+id/seekBar1"
-                    app:layout_constraintStart_toStartOf="@+id/imageView5"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView5"
-                    app:layout_constraintVertical_bias="1.0" />
-
-
-                    />
-
-                <SeekBar
-                    android:id="@+id/seekBar1"
+                <!-- History Retention -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="16dp"
-                    android:max="100"
-                    android:progress="30"
-                    android:progressTint="@color/txtGreen"
-                    android:thumb="@drawable/custom_thumb_record_duration"
-                    android:progressBackgroundTint="@android:color/darker_gray"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.512"
-                    app:layout_constraintStart_toEndOf="@+id/textView5"
-                    app:layout_constraintTop_toBottomOf="@+id/tvHistoryRetention" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textViewmaxDurationHistory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="90d"
-                    android:textColor="@color/colorBlack"
-                    app:layout_constraintBottom_toBottomOf="@+id/seekBar1"
-                    app:layout_constraintEnd_toEndOf="@+id/seekBar1"
-                    app:layout_constraintStart_toEndOf="@+id/seekBar1"
-                    app:layout_constraintTop_toTopOf="@+id/seekBar1" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_history_retention"
+                            app:tint="@color/vl_green" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="History retention period"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="15sp" />
+                    </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="8dp">
+                        <TextView
+                            android:id="@+id/textView5"
+                            android:layout_width="35dp"
+                            android:layout_height="wrap_content"
+                            android:text="90d"
+                            android:textColor="@color/vl_green"
+                            android:textSize="13sp" />
+                        <SeekBar
+                            android:id="@+id/seekBar1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="30"
+                            android:progressTint="@color/vl_green"
+                            android:thumbTint="@color/vl_green" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="90d"
+                            android:textColor="#8E8E93"
+                            android:textSize="13sp" />
+                    </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="How long to retain history records (min 7 days, max 90 days)"
+                        android:textColor="#8E8E93"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textViewdurationInfoHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="12dp"
-                    android:textSize="10sp"
-                    android:textColor="@color/colorBlack"
-                    android:gravity="start"
-                    android:text="How long to retain history records (min 7 days, max 90 days)"
-
-                     app:layout_constraintTop_toBottomOf="@+id/textViewmaxDurationHistory"
-                    tools:layout_editor_absoluteX="25dp" />
-
+                <!-- Divider -->
                 <View
-                    android:id="@+id/dividerLogouts"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"
-                    app:layout_constraintTop_toBottomOf="parent"
-                    tools:layout_editor_absoluteX="12dp" />
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/divider_color" />
 
-                <!-- Delete Account -->
+                <!-- Purge History -->
                 <LinearLayout
                     android:id="@+id/llDeleteAccount"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="10dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_purge_all_history"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="14dp"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewdurationInfoHistory"
-                    tools:layout_editor_absoluteX="12dp">
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_ios_red_item"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_marginStart="5dp"
-                        android:src="@drawable/ic_delete" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="8dp">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_delete"
+                            app:tint="@color/system_red" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Purge all history"
+                            android:textColor="@color/system_red"
+                            android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/tvStorageSize"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="908 KB"
+                            android:textColor="#8E8E93"
+                            android:textSize="13sp" />
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Purge all history"
-                        android:textColor="#FC3F38"
-                        android:textSize="14sp" />
-
-                    <!-- Spacer -->
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <!-- END TEXT -->
-                    <TextView
-                        android:id="@+id/tvStorageSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="908 KB"
-                        android:textSize="14sp"
-                        android:layout_marginEnd="5dp"
-                        android:textColor="#AAB2AA" />
+                        android:layout_marginStart="38dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Permanently delete all verification history and media files"
+                        android:textColor="#8E8E93"
+                        android:textSize="12sp" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textViewdurationInfoHistory2"
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="12dp"
-                    android:textSize="10sp"
-                    android:textColor="@color/colorBlack"
-                    android:gravity="start"
-                    android:text="Permanently delete all verification history and mediafiles."
-                    app:layout_constraintTop_toBottomOf="@+id/llDeleteAccount"
-                    tools:layout_editor_absoluteX="25dp" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-
-
-
-        <!-- About Card -->
+        <!-- Section 5: About -->
         <androidx.cardview.widget.CardView
-            android:layout_marginTop="20dp"
             android:id="@+id/aboutCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             app:cardCornerRadius="10dp"
-            android:padding="12dp"
-            app:cardElevation="0dp"
-            android:background="@android:color/white">
+            app:cardElevation="0dp">
 
-            <!-- About Us -->
             <LinearLayout
                 android:id="@+id/btnAboutus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:padding="16dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:padding="12dp"
-                android:focusable="true"
-                android:paddingVertical="8dp">
+                android:focusable="true">
 
                 <ImageView
-                    android:id="@+id/ivtvAbout"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/info_circle"
-                    android:contentDescription="About" />
+                    app:tint="@color/vl_green" />
 
                 <TextView
-                    android:id="@+id/tvabout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
+                    android:text="About &amp; legal"
                     android:textColor="@color/colorBlack"
-                    android:text="@string/about_legal"
-                    android:textSize="16sp" />
+                    android:textSize="17sp" />
 
-                <!-- Chevron Icon -->
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
                     android:src="@drawable/ic_cheveron_right"
-                    android:contentDescription="Navigate" />
-
+                    app:tint="#C4C4C6" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

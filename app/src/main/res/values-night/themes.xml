@@ -7,7 +7,7 @@
         <item name="android:windowBackground">@color/app_background</item>
         <!-- Status bar -->
         <item name="android:statusBarColor">@color/app_background</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/app_background</item>
         <item name="android:windowLightStatusBar">false</item> <!-- light icons for dark background -->
 
         <!-- Text colors -->

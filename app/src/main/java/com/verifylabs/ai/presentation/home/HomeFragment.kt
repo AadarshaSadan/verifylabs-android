@@ -85,18 +85,22 @@ class HomeFragment : Fragment() {
                     binding.tvCreditsRemaining.visibility = View.VISIBLE
                     val totalCredits = creditsMonthly + credits
                     preferenceHelper.setCreditReamaining(totalCredits)
-                     val storeCredits = preferenceHelper.getCreditRemaining()
-                     val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-                     binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                    
+                    val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+                    binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
                 }
                 Status.ERROR -> {
-                  //  binding.progressCredits.visibility = View.GONE
+                    binding.progressCredits.visibility = View.GONE
                     binding.tvCreditsRemaining.visibility = View.VISIBLE
-                  //  binding.tvCreditsRemaining.text = "Credits: Error"
+                    // Fallback to stored credits on error
+                    val storeCredits = preferenceHelper.getCreditRemaining()
+                    val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+                    binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
                 }
                  Status.LOADING -> {
-                    //binding.progressCredits.visibility = View.VISIBLE
-                    binding.tvCreditsRemaining.visibility = View.GONE
+                    binding.progressCredits.visibility = View.VISIBLE
+                    binding.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.tvCreditsRemaining.text = "Loading credits..."
                 }
             }
         }
