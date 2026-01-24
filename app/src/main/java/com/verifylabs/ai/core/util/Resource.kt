@@ -22,5 +22,6 @@ data class Resource<out T>(val status: Status, val data: T?, val message: String
 enum class Status(val statusCode: Int) {
     SUCCESS(0),
     ERROR(1),
-    LOADING(2);
+    LOADING(2),
+    INSUFFICIENT_CREDITS(3);
 }

@@ -244,6 +244,10 @@ class SignUpActivity : AppCompatActivity() {
                     binding.tvCreateAccount.text = getString(R.string.create)
                     showErrorDialog("Error", resource.message ?: "Sign up failed. Please try again.")
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    binding.tvCreateAccount.text = getString(R.string.create)
+                    showErrorDialog("Error", "Insufficient credits error during signup.")
+                }
             }
         }
     }

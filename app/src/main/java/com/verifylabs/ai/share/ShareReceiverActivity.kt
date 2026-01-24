@@ -141,6 +141,10 @@ class ShareReceiverActivity : AppCompatActivity() {
                     binding.progressCredits.visibility = View.VISIBLE
                     binding.tvCreditsRemaining.visibility = View.GONE
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    binding.progressCredits.visibility = View.GONE
+                    binding.tvCreditsRemaining.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -259,6 +263,11 @@ class ShareReceiverActivity : AppCompatActivity() {
                     binding.lottieAnimationView.visibility = android.view.View.GONE
                     binding.btnDone.visibility = View.VISIBLE
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                     binding.textStatusMessage.text = "Insufficient Credits for Upload"
+                     binding.lottieAnimationView.visibility = android.view.View.GONE
+                     binding.btnDone.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -286,6 +295,12 @@ class ShareReceiverActivity : AppCompatActivity() {
                     Status.ERROR -> {
                         binding.textStatusMessage.text = "Verification failed: ${resource.message}"
                         binding.lottieAnimationView.visibility = android.view.View.GONE
+                    }
+                    Status.INSUFFICIENT_CREDITS -> {
+                        binding.textStatusMessage.text = "Insufficient Credits"
+                        Toast.makeText(this@ShareReceiverActivity, "Please purchase more credits in the main app", Toast.LENGTH_LONG).show()
+                        binding.lottieAnimationView.visibility = android.view.View.GONE
+                        binding.btnDone.visibility = View.VISIBLE
                     }
                 }
             }

@@ -148,6 +148,9 @@ class HistorySingleFragment : Fragment() {
                         Status.LOADING -> {
                             binding.tvReverificationStatus.text = "Verifying..."
                         }
+                        Status.INSUFFICIENT_CREDITS -> {
+                            handleReverificationError("Insufficient credits")
+                        }
                     }
                 }
             }
@@ -320,7 +323,8 @@ class HistorySingleFragment : Fragment() {
                     return@launch
                 }
 
-                binding.tvTypeValue.text = entity.mediaType.uppercase()
+                // binding.tvTypeValue.text = entity.mediaType.uppercase() // Hidden per user request 
+                
                 when (entity.mediaType) {
                     "Image" -> {
                         binding.imageView.isVisible = true
@@ -396,12 +400,13 @@ class HistorySingleFragment : Fragment() {
                     }
                 }
 
-                binding.tvResolutionValue.text = entity.resolution ?: "--"
+                // Hidden per user request
+                // binding.tvResolutionValue.text = entity.resolution ?: "--"
                 val uriStr = entity.mediaUri ?: ""
-                binding.tvSizeValue.text =
-                        if (uriStr.contains("/")) uriStr.substringAfterLast("/")
-                        else if (uriStr.isNotEmpty()) uriStr else "--"
-                binding.tvRobotValue.text = entity.bandName
+                // binding.tvSizeValue.text =
+                //        if (uriStr.contains("/")) uriStr.substringAfterLast("/")
+                //        else if (uriStr.isNotEmpty()) uriStr else "--"
+                // binding.tvRobotValue.text = entity.bandName
 
                 updateResultDisplay(entity.aiScore, entity.bandName, entity.bandDescription)
 

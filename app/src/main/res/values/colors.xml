@@ -8,10 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="app_background">#F2F2F7</color>
+    <color name="app_background">#FFFFFF</color>
     <color name="app_background_2">#434341</color>
-    <color name="app_background_3">#F2F2F6</color>
-    <color name="app_background_before_login">#F2F2F7</color>
+    <color name="app_background_3">#F2F2F7</color>
+    <color name="app_background_before_login">#FFFFFF</color>
 
     <!-- Theme-dependent light colors -->
     <color name="colorBlack">#000000</color>
@@ -112,4 +112,7 @@
     <color name="vl_onboarding_green_card">#5EAE45</color>
     <color name="vl_background_light">#FFFFFF</color>
     <color name="vl_background_dark">#272B27</color>
+    
+    <!-- Report Dialog Colors -->
+    <color name="report_option_bg">#F2F2F7</color>
 </resources>

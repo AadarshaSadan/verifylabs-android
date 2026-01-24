@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Card Body (Orange) -->
+    <path
+        android:fillColor="#FFA500"
+        android:pathData="
+            M448,72H64C28.65,72 0,100.65 0,136v240c0,35.35 28.65,64 64,64h384c35.35,0 64,-28.65 64,-64V136C512,100.65 483.35,72 448,72z
+            M464,376c0,8.84 -7.16,16 -16,16H64c-8.84,0 -16,-7.16 -16,-16V224h416V376z
+            M464,176H48V136c0,-8.84 7.16,-16 16,-16h384c8.84,0 16,7.16 16,16V176z
+        "/>
+    
+    <!-- Warning Badge (Triangle with exclamation) -->
+    <path
+        android:fillColor="#FFA500"
+        android:pathData="
+            M256,432L256,432c-11.05,0 -20,-8.95 -20,-20v-20c0,-11.05 8.95,-20 20,-20h0c11.05,0 20,8.95 20,20v20C276,423.05 267.05,432 256,432z
+            M256,352L256,352c-11.05,0 -20,-8.95 -20,-20v-80c0,-11.05 8.95,-20 20,-20h0c11.05,0 20,8.95 20,20v80C276,343.05 267.05,352 256,352z
+        "/>
+        
+</vector>

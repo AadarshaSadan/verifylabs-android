@@ -27,15 +27,6 @@
         android:src="@drawable/ic_remaining_credit_card"
         app:tint="@color/vl_green" />
 
-    <ProgressBar
-        android:id="@+id/progressCredits"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:indeterminateTint="@color/vl_green"
-        android:visibility="gone" />
-
     <TextView
         android:id="@+id/tvCreditsRemaining"
         android:layout_width="wrap_content"
@@ -46,6 +37,15 @@
         android:textColor="@color/header_text"
         android:textSize="14sp"
         android:textStyle="normal" />
+
+    <ProgressBar
+        android:id="@+id/progressCredits"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:indeterminateTint="@color/vl_green"
+        android:visibility="gone" />
 
     <View
         android:layout_width="0dp"

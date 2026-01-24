@@ -36,11 +36,9 @@ object MediaQualityAnalyzer {
     suspend fun analyzeImage(context: Context, uri: Uri): QualityScore =
             withContext(Dispatchers.IO) {
                 try {
-                    val bitmap =
-                            android.provider.MediaStore.Images.Media.getBitmap(
-                                    context.contentResolver,
-                                    uri
-                            )
+                    val bitmap = context.contentResolver.openInputStream(uri)?.use { input ->
+                        android.graphics.BitmapFactory.decodeStream(input)
+                    } ?: throw Exception("Failed to open input stream")
 
                     // Downscale for analysis if too large (max 1024px) for performance
                     val maxDim = 1024

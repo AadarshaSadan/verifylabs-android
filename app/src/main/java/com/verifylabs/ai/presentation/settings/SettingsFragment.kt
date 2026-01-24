@@ -327,6 +327,9 @@ class SettingsFragment : Fragment() {
                     Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT)
                             .show()
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    // No-op for plans
+                }
             }
         }
     }

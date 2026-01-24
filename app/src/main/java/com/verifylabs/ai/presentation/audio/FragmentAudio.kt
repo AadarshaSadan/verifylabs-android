@@ -193,6 +193,9 @@ class FragmentAudio : Fragment() {
             GuidelinesDialogFragment.newInstance()
                     .show(parentFragmentManager, GuidelinesDialogFragment.TAG)
         }
+        // Underline the guidelines text
+        val guidelinesTv = binding.btnGuidelines.getChildAt(1) as? android.widget.TextView
+        guidelinesTv?.paintFlags = guidelinesTv?.paintFlags?.or(android.graphics.Paint.UNDERLINE_TEXT_FLAG) ?: 0
         
         // Initial Local Load
         loadLocalCredits()
@@ -318,7 +321,8 @@ class FragmentAudio : Fragment() {
 
         Log.d(TAG, "Valid credentials, calling checkCredits API")
         binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
-        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
         binding.layoutNoCreditStatus.visibility = View.GONE
         binding.llCreditsInfo.root.visibility = View.VISIBLE
 
@@ -338,6 +342,7 @@ class FragmentAudio : Fragment() {
     private fun observeCredits() {
         Log.d(TAG, "observeCredits() - Observing LiveData")
 
+
         viewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
             Log.d(TAG, "Credits response: ${resource.status}, data: ${resource.data}")
 
@@ -345,7 +350,8 @@ class FragmentAudio : Fragment() {
                 Status.LOADING -> {
                     Log.d(TAG, "Credits: LOADING")
                     binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
-                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
                     binding.layoutNoCreditStatus.visibility = View.GONE
                     binding.txtStatus.text = "Checking credits..."
                     binding.micButton.isEnabled = false
@@ -389,6 +395,11 @@ class FragmentAudio : Fragment() {
                     binding.micButton.isEnabled = false
                     binding.layoutNoCreditStatus.visibility = View.GONE
                     binding.txtStatus.text = "Failed to check credits"
+                }
+                Status.INSUFFICIENT_CREDITS -> {
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.micButton.isEnabled = false
                 }
             }
         }
@@ -586,6 +597,11 @@ class FragmentAudio : Fragment() {
                     binding.txtStatus.text = "Upload failed"
                     resetMicButton()
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
+                    binding.txtStatus.text = "Insufficient credits for upload"
+                    resetMicButton()
+                }
             }
         }
 
@@ -631,11 +647,20 @@ class FragmentAudio : Fragment() {
                         if (!isRecording) {
                             resetMicButton()
                         }
+                        
+                        // Auto-refresh credits
+                        checkCredits()
                     }
                     Status.ERROR -> {
                         Log.e(TAG, "Verify FAILED: ${resource.message}")
                         binding.txtStatus.text = "Failed: ${resource.message}"
                         resetMicButton()
+                    }
+                    Status.INSUFFICIENT_CREDITS -> {
+                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
+                         binding.txtStatus.text = "Insufficient Credits"
+                         Toast.makeText(requireContext(), "Top up your credits to continue verifying audio", Toast.LENGTH_LONG).show()
+                         resetMicButton()
                     }
                 }
             }

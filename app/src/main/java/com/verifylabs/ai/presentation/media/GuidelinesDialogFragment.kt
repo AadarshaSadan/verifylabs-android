@@ -18,7 +18,11 @@ class GuidelinesDialogFragment : DialogFragment() {
     ): View {
         _binding = DialogGuidelinesBinding.inflate(inflater, container, false)
         // Make background transparent for rounded corners
-        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        // Make background transparent for rounded corners with margins
+        val back = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
+        val margin = (24 * resources.displayMetrics.density).toInt()
+        val inset = android.graphics.drawable.InsetDrawable(back, margin)
+        dialog?.window?.setBackgroundDrawable(inset)
         return binding.root
     }
 

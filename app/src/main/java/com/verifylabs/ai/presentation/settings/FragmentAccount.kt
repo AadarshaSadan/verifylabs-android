@@ -101,6 +101,9 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                 Status.LOADING -> {
                     // Loading state
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    // No-op
+                }
             }
         }
 
@@ -137,6 +140,9 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                 Status.LOADING -> {
                     // Loading handled by individual progress bars
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    // No-op
+                }
             }
         }
 
@@ -162,6 +168,9 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
                 }
                 Status.LOADING -> {
                     // Show loading
+                }
+                Status.INSUFFICIENT_CREDITS -> {
+                    // No-op
                 }
             }
         }

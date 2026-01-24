@@ -79,12 +79,14 @@ class HomeFragment : Fragment() {
         
         // Show loading state
         binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
-        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
         
         loginViewModel.checkCredits(username, apiKey)
     }
 
     private fun observeViewModelData() {
+        // Observe credits response
         // Observe credits response
         loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { response ->
             when (response.status) {
@@ -111,8 +113,13 @@ class HomeFragment : Fragment() {
                  Status.LOADING -> {
                     // Handled in apiCheckCredits, but good to keep sync
                     binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
-                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
                 }
+                 Status.INSUFFICIENT_CREDITS -> {
+                     binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                 }
             }
         }
 

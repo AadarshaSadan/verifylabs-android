@@ -44,4 +44,18 @@ class InternetHelper(private val context: Context) {
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
+
+    suspend fun isInternetAvailable(): Boolean {
+        return try {
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val socket = java.net.Socket()
+                val socketAddress = java.net.InetSocketAddress("8.8.8.8", 53)
+                socket.connect(socketAddress, 1500)
+                socket.close()
+                true
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

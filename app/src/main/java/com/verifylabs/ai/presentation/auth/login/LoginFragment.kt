@@ -171,6 +171,10 @@ class LoginFragment : Fragment() {
                     binding.tvSignIn.text = getString(R.string.sign_in_login)
                     showErrorDialog("Error", resource.message ?: "Invalid credentials. Please check your username and password.")
                 }
+                Status.INSUFFICIENT_CREDITS -> {
+                    binding.tvSignIn.text = getString(R.string.sign_in_login)
+                    showErrorDialog("Error", "Insufficient credits.")
+                }
             }
         }
     }

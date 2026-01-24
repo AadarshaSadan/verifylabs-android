@@ -31,6 +31,12 @@ class ChangePasswordBottomSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        return dialog
+    }
+
     override fun onStart() {
         super.onStart()
         dialog?.let {
@@ -135,16 +141,20 @@ class ChangePasswordBottomSheet : BottomSheetDialogFragment() {
 
     private fun updateRequirement(textView: android.widget.TextView, isMet: Boolean) {
         if (isMet) {
-            textView.setTextColor(resources.getColor(R.color.vl_green, null))
+            textView.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.vl_green))
+            val drawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.ic_tick_icon)
+            drawable?.setTint(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.vl_green))
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_check_circle,
-                    0,
-                    0,
-                    0
+                    drawable,
+                    null,
+                    null,
+                    null
             )
         } else {
-            textView.setTextColor(resources.getColor(R.color.secondary_text, null))
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_circle, 0, 0, 0)
+            textView.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.secondary_text))
+            val drawable = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle)
+             drawable?.setTint(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.secondary_text))
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
         }
     }
 

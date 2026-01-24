@@ -91,8 +91,12 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
                     // Consume credit automatically (Parity with iOS)
                     consumeCredit(apiKey)
                 } else {
-                    _verifyResponse.emit(Resource.error(response.message(), null))
-                    onError("Verification failed: ${response.message()}")
+                    if (response.code() == 402) {
+                         _verifyResponse.emit(Resource(com.verifylabs.ai.core.util.Status.INSUFFICIENT_CREDITS, null, "Insufficient Credits"))
+                    } else {
+                        _verifyResponse.emit(Resource.error(response.message(), null))
+                        onError("Verification failed: ${response.message()}")
+                    }
                 }
             } catch (e: Exception) {
                 _verifyResponse.emit(Resource.error(e.message ?: "Unknown error", null))
