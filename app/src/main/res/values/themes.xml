@@ -81,7 +81,7 @@
     <!-- CUSTOM ALERT DIALOG (iOS Style) -->
     <style name="CustomAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:background">@color/vl_onboarding_background</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="shapeAppearanceOverlay">@style/CustomAlertShape</item>
     </style>
 

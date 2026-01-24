@@ -1,5 +1,6 @@
 package com.verifylabs.ai.presentation.media
 
+import com.verifylabs.ai.core.util.MediaQualityAnalyzer
 import InternetHelper
 import android.Manifest
 import android.content.Context
@@ -33,6 +34,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import java.text.NumberFormat
+import java.util.Locale
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -59,7 +62,7 @@ class MediaFragment : Fragment() {
     private var buttonState = ScanButtonState.VERIFY
     private var selectedMediaUri: Uri? = null
     private var mediaType = MediaType.IMAGE
-    private var currentQualityPercent: Int? = null
+    private var currentQualityScore: com.verifylabs.ai.core.util.QualityScore? = null
 
     private lateinit var internetHelper: InternetHelper
     private var isMonitoringActive = false
@@ -137,6 +140,12 @@ class MediaFragment : Fragment() {
 
         binding.imageViewMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
 
+        binding.cardQuality.setOnClickListener {
+             currentQualityScore?.let { score ->
+                showQualityTipsDialog(score.percentage)
+            }
+        }
+
         binding.btnAction.setOnClickListener {
             val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
             if (totalCredits <= 0) {
@@ -157,28 +166,88 @@ class MediaFragment : Fragment() {
                 }
             }
         }
+        
+        binding.btnCrop.setOnClickListener {
+             selectedMediaUri?.let { uri ->
+                 showCropBottomSheet(uri)
+             }
+        }
+
+        binding.btnReport.setOnClickListener {
+            val reportSheet = ReportBottomSheetFragment.newInstance()
+            reportSheet.onReportSelected = { reportType ->
+                 selectedMediaUri?.let { uri ->
+                    val path = if(uri.scheme == "file") uri.path else uri.toString()
+                    viewModel.reportResult(reportType, path ?: "")
+                 }
+            }
+            reportSheet.show(parentFragmentManager, ReportBottomSheetFragment.TAG)
+        }
+
+        binding.btnGuidelines.setOnClickListener {
+            GuidelinesDialogFragment.newInstance().show(parentFragmentManager, GuidelinesDialogFragment.TAG)
+        }
+        
+        // Initial Local Load
+        loadLocalCredits()
+        
+        // Click to Refresh
+        binding.llCreditsInfo.root.setOnClickListener {
+            val username = preferenceHelper.getUserName()
+             val apiKey = preferenceHelper.getApiKey()
+             if (!username.isNullOrEmpty() && !apiKey.isNullOrEmpty()) {
+                 binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+                 binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+                 viewModel.checkCredits(username, apiKey)
+             }
+        }
 
         observeViewModel()
         observeCredits()
+    }
+    
+    private fun loadLocalCredits() {
+        val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
+        val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.llCreditsInfo.progressCredits.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+        
+        binding.btnAction.isEnabled = totalCredits > 0
+        binding.btnAction.alpha = if (totalCredits > 0) 1f else 0.5f
     }
 
     private fun observeCredits() {
         viewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.SUCCESS -> {
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    
                     val creditsJson = resource.data
                     val credits = creditsJson?.get("credits")?.asInt ?: 0
-                    val monthlyCredits = creditsJson?.get("creditsMonthly")?.asInt ?: 0
+                    val monthlyCredits = creditsJson?.get("credits_monthly")?.asInt ?: 0
                     val totalCredits = credits + monthlyCredits
                     preferenceHelper.setCreditReamaining(totalCredits)
+                    
+                    val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+                    binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                    
                     binding.btnAction.isEnabled = totalCredits > 0
                     binding.btnAction.alpha = if (totalCredits > 0) 1f else 0.5f
                 }
                 Status.ERROR -> {
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    Toast.makeText(context, "Failed to refresh credits", Toast.LENGTH_SHORT).show()
+                    
                     binding.btnAction.isEnabled = false
                     binding.btnAction.alpha = 0.5f
                 }
-                else -> {}
+                Status.LOADING -> {
+                    binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+                }
             }
         }
     }
@@ -281,6 +350,8 @@ class MediaFragment : Fragment() {
                 binding.videoViewMedia.setMediaController(mediaController)
                 binding.videoViewMedia.setOnPreparedListener { mp ->
                     mp.isLooping = true
+                    // Silent autoplay for preview
+                    mp.setVolume(0f, 0f)
                     binding.videoViewMedia.start()
                 }
             }
@@ -290,9 +361,17 @@ class MediaFragment : Fragment() {
         }
         binding.imageOverlay.visibility = View.GONE
         binding.btnAction.visibility = View.VISIBLE
+        binding.btnCrop.visibility = if (mediaType == MediaType.IMAGE) View.VISIBLE else View.GONE
     }
 
     private fun startUpload() {
+        if (!internetHelper.checkInternetNow()) {
+            updateStatus("An error occurred during verification", true)
+            binding.statsLayout.visibility = View.GONE
+            setButtonState(ScanButtonState.FAILED)
+            return
+        }
+
         val uri =
                 selectedMediaUri
                         ?: run {
@@ -316,7 +395,7 @@ class MediaFragment : Fragment() {
         }
 
         setButtonState(ScanButtonState.SCANNING)
-        updateStatus("Uploading media...", false)
+        updateStatus("Please wait while we analyze your media", false)
         viewModel.uploadMedia(file.absolutePath, mediaType)
     }
 
@@ -380,8 +459,9 @@ class MediaFragment : Fragment() {
             viewModel.verifyResponseFlow.collect { resource ->
                 when (resource.status) {
                     Status.LOADING -> {
-                        // Keep SCANNING
-                    }
+                    // StartUpload handles SCANNING state, but we ensure stats are hidden
+                     binding.statsLayout.visibility = View.GONE
+                }
                     Status.SUCCESS -> {
                         val response =
                                 Gson().fromJson(
@@ -416,13 +496,16 @@ class MediaFragment : Fragment() {
                                                     requireContext(),
                                                     R.drawable.drawable_verify_background_green
                                             )
+                                    // Use VL Green Color
+                                    binding.txtIdentifixation.background?.setTint(ContextCompat.getColor(requireContext(), R.color.vl_green))
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                                    R.drawable.ic_smile_transparent
                                             )
                                     )
+                                    binding.btnReport.visibility = View.VISIBLE
                                 }
                                 3 -> {
                                     binding.imageOverlay.setImageDrawable(
@@ -457,13 +540,16 @@ class MediaFragment : Fragment() {
                                                     R.drawable
                                                             .drawable_verify_background_btn_failed_likely_red_without_radius
                                             )
+                                     // Use VL Red Color
+                                     binding.txtIdentifixation.background?.setTint(ContextCompat.getColor(requireContext(), R.color.vl_red))
+                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                                    R.drawable.ic_robot_transparent
                                             )
                                     )
+                                    binding.btnReport.visibility = View.VISIBLE
                                 }
                             }
 
@@ -509,7 +595,8 @@ class MediaFragment : Fragment() {
                                                                         }
                                                                 else -> null
                                                             },
-                                                    quality = currentQualityPercent,
+                                                    // Save Percentage
+                                                    quality = currentQualityScore?.percentage,
                                                     timestamp = System.currentTimeMillis(),
                                                     username = preferenceHelper.getUserName() ?: ""
                                             )
@@ -540,22 +627,50 @@ class MediaFragment : Fragment() {
                 val currentCredits = preferenceHelper.getCreditRemaining()
                 val newCredits = (currentCredits - 1).coerceAtLeast(0)
                 preferenceHelper.setCreditReamaining(newCredits)
-                binding.tvCreditsRemaining.text = "Credits Remaining: $newCredits"
+                binding.llCreditsInfo.tvCreditsRemaining.text = "Credits remaining: $newCredits"
                 Log.d(TAG, "Credit consumed. New balance: $newCredits")
+            }
+        }
+        
+        viewModel.reportResponse.observe(viewLifecycleOwner) { resource ->
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    Toast.makeText(context, "Report submitted successfully", Toast.LENGTH_SHORT).show()
+                }
+                Status.ERROR -> {
+                    Toast.makeText(context, resource.message ?: "Report failed", Toast.LENGTH_SHORT).show()
+                }
+                Status.LOADING -> { } // Optional loading
             }
         }
     }
 
     private fun setButtonState(state: ScanButtonState) {
         buttonState = state
-        binding.btnAction.visibility = View.VISIBLE
-        binding.btnAction.text =
-                when (state) {
-                    ScanButtonState.VERIFY -> "Verify Media"
-                    ScanButtonState.SCANNING -> "Scanning..."
-                    ScanButtonState.DONE -> "Done!"
-                    ScanButtonState.FAILED -> "FAILED!"
-                }
+        
+        // Button Logic:
+        // VERIFY: Visible
+        // SCANNING: Hidden (User requirement)
+        // DONE: Hidden (User requirement implied, or shows "Test Another" on top button) -> Wait, user says "Select Media button text changes to Test Another". Verify button usually hidden on Done?
+        // FAILED: Visible (Shows "Retry")
+        
+        when (state) {
+            ScanButtonState.VERIFY -> {
+                binding.btnAction.visibility = View.VISIBLE
+                binding.btnAction.text = "✔ Verify Media"
+            }
+            ScanButtonState.SCANNING -> {
+                binding.btnAction.visibility = View.GONE
+            }
+            ScanButtonState.DONE -> {
+                binding.btnAction.visibility = View.GONE
+                setSelectMediaButtonText(true)
+            }
+            ScanButtonState.FAILED -> {
+                binding.btnAction.visibility = View.VISIBLE
+                binding.btnAction.text = "Retry"
+            }
+        }
         initChangeBtnColor()
     }
 
@@ -573,12 +688,23 @@ class MediaFragment : Fragment() {
         binding.videoViewMedia.visibility = View.GONE
         binding.imageOverlay.visibility = View.GONE
         binding.layoutInfoStatus.visibility = View.GONE
+        binding.layoutInfoStatus.visibility = View.GONE
         binding.statsLayout.visibility = View.GONE
+        binding.btnCrop.visibility = View.GONE
+        binding.btnReport.visibility = View.GONE
         updateStatus("", false)
         selectedMediaUri = null
+        
+        setSelectMediaButtonText(false)
 
         // Reset button to initial state
         setButtonState(ScanButtonState.VERIFY)
+        binding.btnAction.visibility = View.GONE // Initially hidden until media selected
+    }
+    
+    private fun setSelectMediaButtonText(isTestAnother: Boolean) {
+        val tv = binding.btnSelectMedia.getChildAt(1) as? android.widget.TextView
+        tv?.text = if (isTestAnother) "Test Another" else "Select Media File"
     }
 
     private fun clearSavedMedia() {
@@ -591,9 +717,15 @@ class MediaFragment : Fragment() {
 
     private fun showCropBottomSheet(uri: Uri) {
         val bottomSheet = CropBottomSheetFragment.newInstance(uri)
-        bottomSheet.onImageResult = { resultUri, quality ->
+        bottomSheet.onImageResult = { resultUri, _ ->
             selectedMediaUri = resultUri
-            currentQualityPercent = quality // Store quality for database save
+            // Recalculate Logic
+            viewLifecycleOwner.lifecycleScope.launch {
+                 val score = MediaQualityAnalyzer.analyzeImage(requireContext(), resultUri)
+                 currentQualityScore = score
+                 updateMediaStatsForCurrentMedia(score)
+            }
+            
             binding.btnAction.visibility = View.VISIBLE
             binding.imageViewMedia2.visibility = View.GONE
             binding.imageViewMedia.visibility = View.VISIBLE
@@ -611,7 +743,9 @@ class MediaFragment : Fragment() {
                 binding.imageViewMedia.setImageURI(resultUri)
             }
 
-            updateMediaStatsForCurrentMedia(quality)
+
+
+            // updateMediaStatsForCurrentMedia(quality) called inside coroutine above
         }
         bottomSheet.show(parentFragmentManager, "CropBottomSheet")
     }
@@ -620,50 +754,67 @@ class MediaFragment : Fragment() {
     //              STATS UPDATE LOGIC (unchanged)
     // ────────────────────────────────────────────────
 
-    private fun updateMediaStatsForCurrentMedia(forcedQuality: Int? = null) {
+    // ────────────────────────────────────────────────
+    //              STATS UPDATE LOGIC
+    // ────────────────────────────────────────────────
+
+    private fun updateMediaStatsForCurrentMedia(forcedScore: com.verifylabs.ai.core.util.QualityScore? = null) {
         val uri = selectedMediaUri ?: return
 
-        val sizeKb = getFileSizeKb(uri)
-        val resolution =
-                when (mediaType) {
-                    MediaType.IMAGE -> getImageResolution(uri)
-                    MediaType.VIDEO -> getVideoResolution(uri) ?: "?"
-                    else -> "?"
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+             val score = forcedScore ?: if (mediaType == MediaType.IMAGE) {
+                 MediaQualityAnalyzer.analyzeImage(requireContext(), uri)
+             } else {
+                 MediaQualityAnalyzer.analyzeVideo(requireContext(), uri)
+             }
+             
+             if (forcedScore == null) currentQualityScore = score
 
-        updateMediaStats(
-                fileSizeKb = sizeKb,
-                resolution = resolution,
-                mediaTypeStr = if (mediaType == MediaType.VIDEO) "VIDEO" else "IMAGE",
-                qualityPercent = forcedQuality
-        )
+             val sizeKb = getFileSizeKb(uri)
+             val resolution =
+                    when (mediaType) {
+                        MediaType.IMAGE -> getImageResolution(uri)
+                        MediaType.VIDEO -> getVideoResolution(uri) ?: "?"
+                        else -> "?"
+                    }
+
+            updateMediaStats(
+                    fileSizeKb = sizeKb,
+                    resolution = resolution,
+                    mediaTypeStr = if (mediaType == MediaType.VIDEO) "VIDEO" else "IMAGE",
+                    qualityScore = score
+            )
+        }
     }
 
     private fun updateMediaStats(
             fileSizeKb: Long,
             resolution: String,
             mediaTypeStr: String,
-            qualityPercent: Int? = null
+            qualityScore: com.verifylabs.ai.core.util.QualityScore
     ) {
         binding.apply {
-            tvSizeValue.text = fileSizeKb.toString()
+            tvSizeValue.text = if (fileSizeKb > 1024) "${String.format("%.1f", fileSizeKb / 1024.0)} MB" else "$fileSizeKb KB"
             tvResolutionValue.text = resolution
 
             tvTypeValue?.text = mediaTypeStr
 
-            qualityPercent?.let { percent ->
-                qualityProgressBar.progress = percent
-                tvQualityValue.text = percent.toString()
+            val percent = qualityScore.percentage
+            qualityProgressBar.progress = percent
+            tvQualityValue.text = percent.toString()
 
-                val tintColor =
-                        when {
-                            percent >= 85 -> Color.parseColor("#4CAF50")
-                            percent >= 65 -> Color.parseColor("#FF9800")
-                            else -> Color.RED
-                        }
-                qualityProgressBar.progressTintList =
-                        android.content.res.ColorStateList.valueOf(tintColor)
-            }
+            val tintColor =
+                    when {
+                        percent >= 85 -> Color.parseColor("#4CAF50")
+                        percent >= 65 -> Color.parseColor("#FF9800")
+                        else -> Color.RED
+                    }
+            qualityProgressBar.progressTintList =
+                    android.content.res.ColorStateList.valueOf(tintColor)
+
+            // Quality Advice shown in Dialog on click now
+            // tvQualityAdvice.text = com.verifylabs.ai.core.util.MediaQualityAnalyzer.getQualityImprovementAdvice(percent)
+            tvQualityAdvice.visibility = View.GONE
 
             statsLayout.visibility = View.VISIBLE
         }
@@ -746,6 +897,35 @@ class MediaFragment : Fragment() {
         }
     }
 
+    private fun showQualityTipsDialog(score: Int) {
+        val advice = MediaQualityAnalyzer.getQualityImprovementAdvice(score)
+        
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_guidelines, null)
+        val dialogBinding = com.verifylabs.ai.databinding.DialogGuidelinesBinding.bind(dialogView)
+
+        // Reuse guidelines layout structure but change content for Tips
+        dialogBinding.tvTitle.text = "Media Quality Tips"
+        dialogBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorBlack)) // Title Black
+        dialogBinding.tvDescription.text = advice
+        
+        // Hide Guidelines specific sections
+        dialogBinding.tvImagesLabel.visibility = View.GONE
+        dialogBinding.tvImagesText.visibility = View.GONE
+        dialogBinding.tvVideosLabel.visibility = View.GONE
+        dialogBinding.tvVideosText.visibility = View.GONE
+        dialogBinding.tvAudioLabel.visibility = View.GONE
+        dialogBinding.tvAudioText.visibility = View.GONE
+        
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+            .setView(dialogView)
+            .create()
+            
+        dialogBinding.btnGotIt.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnClose.setOnClickListener { dialog.dismiss() }
+        
+        dialog.show()
+    }
+    
     override fun onPause() {
         super.onPause()
         binding.videoViewMedia.pause()

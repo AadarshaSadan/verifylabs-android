@@ -27,6 +27,7 @@ import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentAudioBinding
 import com.verifylabs.ai.presentation.media.MediaType
 import com.verifylabs.ai.presentation.media.VerificationResponse
+import com.verifylabs.ai.presentation.media.GuidelinesDialogFragment
 import com.verifylabs.ai.presentation.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -188,9 +189,29 @@ class FragmentAudio : Fragment() {
             }
         }
 
-        checkCredits()
+        binding.btnGuidelines.setOnClickListener {
+            GuidelinesDialogFragment.newInstance()
+                    .show(parentFragmentManager, GuidelinesDialogFragment.TAG)
+        }
+        
+        // Initial Local Load
+        loadLocalCredits()
+        
+        // Click to Refresh
+        binding.llCreditsInfo.root.setOnClickListener {
+             checkCredits()
+        }
+
         observeCredits()
         observeUploadAndVerify()
+    }
+    
+    private fun loadLocalCredits() {
+        val storeCredits = preferenceHelper.getCreditRemaining()
+        val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
+        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.llCreditsInfo.progressCredits.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
     }
 
     private fun requestRecordPermission() {
@@ -296,19 +317,19 @@ class FragmentAudio : Fragment() {
         }
 
         Log.d(TAG, "Valid credentials, calling checkCredits API")
-        binding.progressCredits.visibility = View.VISIBLE
-        binding.tvCreditsRemaining.visibility = View.GONE
+        binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
         binding.layoutNoCreditStatus.visibility = View.GONE
-        binding.llCreditsInfo.visibility = View.VISIBLE
+        binding.llCreditsInfo.root.visibility = View.VISIBLE
 
         viewModel.checkCredits(username, apiKey)
     }
 
     private fun showInvalidCredentials() {
         Log.d(TAG, "showInvalidCredentials()")
-        binding.progressCredits.visibility = View.GONE
-        binding.tvCreditsRemaining.visibility = View.VISIBLE
-        binding.tvCreditsRemaining.text = "Invalid credentials"
+        binding.llCreditsInfo.progressCredits.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.text = "Invalid credentials"
         binding.micButton.isEnabled = false
         binding.layoutNoCreditStatus.visibility = View.GONE
         Toast.makeText(requireContext(), "Please log in again.", Toast.LENGTH_LONG).show()
@@ -323,16 +344,16 @@ class FragmentAudio : Fragment() {
             when (resource.status) {
                 Status.LOADING -> {
                     Log.d(TAG, "Credits: LOADING")
-                    binding.progressCredits.visibility = View.VISIBLE
-                    binding.tvCreditsRemaining.visibility = View.GONE
+                    binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
                     binding.layoutNoCreditStatus.visibility = View.GONE
                     binding.txtStatus.text = "Checking credits..."
                     binding.micButton.isEnabled = false
                 }
                 Status.SUCCESS -> {
                     Log.d(TAG, "Credits: SUCCESS")
-                    binding.progressCredits.visibility = View.GONE
-                    binding.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
 
                     val json = resource.data as? JsonObject
                     val credits = json?.get("credits")?.asInt ?: 0
@@ -344,7 +365,7 @@ class FragmentAudio : Fragment() {
                     val storeCredits = preferenceHelper.getCreditRemaining()
                     val formattedCredits =
                             NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-                    binding.tvCreditsRemaining.text =
+                    binding.llCreditsInfo.tvCreditsRemaining.text =
                             getString(R.string.credits_remaining, formattedCredits)
 
                     binding.micButton.isEnabled = total > 0
@@ -362,9 +383,9 @@ class FragmentAudio : Fragment() {
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Credits: ERROR - ${resource.message}")
-                    binding.progressCredits.visibility = View.GONE
-                    binding.tvCreditsRemaining.visibility = View.VISIBLE
-                    binding.tvCreditsRemaining.text = "Credit check failed"
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.text = "Credit check failed"
                     binding.micButton.isEnabled = false
                     binding.layoutNoCreditStatus.visibility = View.GONE
                     binding.txtStatus.text = "Failed to check credits"
@@ -584,17 +605,19 @@ class FragmentAudio : Fragment() {
                                 Gson().fromJson(
                                                 resource.data.toString(),
                                                 VerificationResponse::class.java
-                                         )
+                                        )
 
                         Log.d(TAG, "Band: ${response.band}, Score: ${response.score}")
-                        
+
                         // Thread-safe update to temporal scores
                         synchronized(temporalScores) {
                             if (isLongRecording || temporalScores.isNotEmpty()) {
                                 temporalScores.add(response.score)
                                 binding.cardAudioAnalysis.visibility = View.VISIBLE
-                                binding.audioAnalysisChart.setChronologicalScores(ArrayList(temporalScores))
-                                
+                                binding.audioAnalysisChart.setChronologicalScores(
+                                        ArrayList(temporalScores)
+                                )
+
                                 if (!isRecording && !isLongRecording) {
                                     finalizeAndSaveHistory(response)
                                 }
@@ -606,7 +629,7 @@ class FragmentAudio : Fragment() {
                         }
 
                         if (!isRecording) {
-                             resetMicButton()
+                            resetMicButton()
                         }
                     }
                     Status.ERROR -> {
@@ -623,7 +646,7 @@ class FragmentAudio : Fragment() {
                 val currentCredits = preferenceHelper.getCreditRemaining()
                 val newCredits = (currentCredits - 1).coerceAtLeast(0)
                 preferenceHelper.setCreditReamaining(newCredits)
-                binding.tvCreditsRemaining.text = "Credits Remaining: $newCredits"
+                binding.llCreditsInfo.tvCreditsRemaining.text = "Credits Remaining: $newCredits"
                 Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
@@ -638,25 +661,28 @@ class FragmentAudio : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(exceptionHandler) {
             try {
                 val context = context ?: return@launch
-                
+
                 // Use HistoryFileManager to save persistently
-                val sourceFile = if (allChunkFiles.size > 1) {
-                     val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
-                     if (mergedFile.exists()) mergedFile else currentRecordedFile
-                } else {
-                     currentRecordedFile
-                }
+                val sourceFile =
+                        if (allChunkFiles.size > 1) {
+                            val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
+                            if (mergedFile.exists()) mergedFile else currentRecordedFile
+                        } else {
+                            currentRecordedFile
+                        }
 
-                val savedPath = sourceFile?.let { file ->
-                    com.verifylabs.ai.core.util.HistoryFileManager.saveMedia(
-                        context, 
-                        android.net.Uri.fromFile(file), 
-                        "audio"
-                    )
-                }
+                val savedPath =
+                        sourceFile?.let { file ->
+                            com.verifylabs.ai.core.util.HistoryFileManager.saveMedia(
+                                    context,
+                                    android.net.Uri.fromFile(file),
+                                    "audio"
+                            )
+                        }
 
-                val finalUriString = savedPath?.let { android.net.Uri.fromFile(File(it)).toString() }
-                                     ?: sourceFile?.absolutePath // Fallback
+                val finalUriString =
+                        savedPath?.let { android.net.Uri.fromFile(File(it)).toString() }
+                                ?: sourceFile?.absolutePath // Fallback
 
                 val entity =
                         VerificationEntity(

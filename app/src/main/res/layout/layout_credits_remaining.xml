@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llCreditsInfo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_credits_rounded"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="10dp">
+
+    <!-- Spacer to push content to center/right like iOS if needed, but iOS has it centered-ish/spaced -->
+    <!-- iOS: Spacer(), Image, Text, Spacer(), Spacer() -> effectively left aligned? No, HStack { Spacer, Image, Text, Spacer } centers the content group. -->
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/icCreditCard"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_remaining_credit_card"
+        app:tint="@color/vl_green" />
+
+    <ProgressBar
+        android:id="@+id/progressCredits"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:indeterminateTint="@color/vl_green"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvCreditsRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:text="@string/credits_remaining_0"
+        android:textColor="@color/header_text"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

@@ -40,6 +40,53 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
 
 
     private val bucketUrl = "https://verifylabs-temp.s3.eu-west-2.amazonaws.com"
+    private val falsiesBucketUrl = "https://verifylabs-falsie.s3.eu-west-2.amazonaws.com"
+
+    suspend fun reportToFalsies(originalS3Url: String, localFilePath: String, reportType: String): Response<JsonObject> {
+        val cleanPath = if (localFilePath.startsWith("file:")) {
+            android.net.Uri.parse(localFilePath).path ?: localFilePath
+        } else {
+            localFilePath
+        }
+        val file = File(cleanPath)
+        
+        if (!file.exists() || !file.canRead()) {
+             // If local file is missing, we might only be able to report the URL (depends on requirements, 
+             // but iOS uploads the data again. Here we assume local file is present).
+            throw IllegalArgumentException("Invalid or unreadable file for report: $cleanPath")
+        }
+
+        // Extract filename from original URL or generate new one
+        val originalFilename = originalS3Url.substringAfterLast("/")
+        val newFilename = "${reportType}_${originalFilename}"
+        
+        val s3Url = "$falsiesBucketUrl/falsies/$newFilename"
+        Log.d("ApiRepository", "reportToFalsies: s3Url: $s3Url")
+        
+        // Determine content type
+        val extension = file.extension.lowercase()
+        val contentType = when (extension) {
+            "jpg", "jpeg", "png", "heic" -> "image/$extension"
+            "mp4", "mov", "avi" -> "video/$extension"
+            "wav", "mp3", "m4a" -> "audio/$extension"
+            else -> "application/octet-stream"
+        }
+
+        val requestFile = file.asRequestBody(contentType.toMediaTypeOrNull())
+
+        return try {
+             // Re-using uploadToS3 since it is a generic PUT
+            val response = apiService.uploadToS3(s3Url, requestFile)
+            if (response.isSuccessful) {
+                Response.success(JsonObject().apply { addProperty("message", "Report submitted successfully") })
+            } else {
+                 val errorBody = response.errorBody()?.string() ?: response.message()
+                 throw Exception("Falsies upload failed: $errorBody")
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 
 
 

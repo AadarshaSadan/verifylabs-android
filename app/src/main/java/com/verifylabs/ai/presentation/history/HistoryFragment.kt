@@ -204,11 +204,14 @@ class HistoryFragment : Fragment() {
                         background.draw(c)
 
                         // Calculate position of delete icon
-                        val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
-                        val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
-                        val deleteIconLeft = itemView.right - deleteIconMargin - intrinsicWidth
+                        // Fix: Force 24dp size instead of using intrinsic width/height which is too large (800dp)
+                        val iconSize = (24 * requireContext().resources.displayMetrics.density).toInt()
+                        
+                        val deleteIconTop = itemView.top + (itemHeight - iconSize) / 2
+                        val deleteIconMargin = (itemHeight - iconSize) / 2
+                        val deleteIconLeft = itemView.right - deleteIconMargin - iconSize
                         val deleteIconRight = itemView.right - deleteIconMargin
-                        val deleteIconBottom = deleteIconTop + intrinsicHeight
+                        val deleteIconBottom = deleteIconTop + iconSize
 
                         // Draw the delete icon
                         deleteIcon?.setBounds(

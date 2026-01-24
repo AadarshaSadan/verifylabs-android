@@ -47,43 +47,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Credits Info -->
-    <LinearLayout
+    <include
+        layout="@layout/layout_credits_remaining"
         android:id="@+id/llCreditsInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_marginHorizontal="20dp"
-        android:background="@color/app_background"
-        android:backgroundTint="@color/app_background_3"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"/>
 
-        <ProgressBar
-            android:id="@+id/progressCredits"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="gone"
-            android:indeterminateTint="@color/verifylabs_logo_green"
-            style="?android:attr/progressBarStyle" />
-
-        <TextView
-            android:id="@+id/tvCreditsRemaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
-            android:gravity="center"
-            android:text="@string/credits_remaining_0"
-            android:textColor="@color/header_text"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:drawableStartCompat="@drawable/ic_remaining_credit_card"
-            app:drawableTint="@color/verifylabs_logo_green" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

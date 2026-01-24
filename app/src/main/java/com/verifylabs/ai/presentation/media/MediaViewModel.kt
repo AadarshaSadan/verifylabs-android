@@ -33,12 +33,21 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
         onError("Exception: ${throwable.localizedMessage}")
     }
 
+    private val _reportResponse = SingleLiveEvent<Resource<JsonObject>>()
+    val reportResponse: LiveData<Resource<JsonObject>> = _reportResponse
+
+    var lastUploadedS3Url: String? = null
+        private set
+
     fun uploadMedia(filePath: String, mediaType: MediaType) {
         _uploadResponse.postValue(Resource.loading(null))
         loading.postValue(true)
         viewModelScope.launch(exceptionHandler) {
             try {
                 val response = repository.uploadMedia(filePath, mediaType)
+                if (response.isSuccessful) {
+                     lastUploadedS3Url = response.body()?.get("uploadedUrl")?.asString
+                }
                 _uploadResponse.postValue(Resource.success(response.body()))
             } catch (e: Exception) {
                 _uploadResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
@@ -46,6 +55,28 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
             } finally {
                 loading.postValue(false)
             }
+        }
+    }
+
+    fun reportResult(reportType: String, localFilePath: String) {
+        val s3Url = lastUploadedS3Url
+        if (s3Url.isNullOrEmpty()) {
+            _reportResponse.postValue(Resource.error("No media uploaded to report", null))
+            return
+        }
+
+        _reportResponse.postValue(Resource.loading(null))
+        viewModelScope.launch(exceptionHandler) {
+             try {
+                 val response = repository.reportToFalsies(s3Url, localFilePath, reportType)
+                 if (response.isSuccessful) {
+                     _reportResponse.postValue(Resource.success(response.body()))
+                 } else {
+                     _reportResponse.postValue(Resource.error(response.message(), null))
+                 }
+             } catch (e: Exception) {
+                 _reportResponse.postValue(Resource.error(e.message ?: "Report failed", null))
+             }
         }
     }
 

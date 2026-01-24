@@ -52,9 +52,14 @@ class HomeFragment : Fragment() {
     private fun initUi() {
         val storeCredits = preferenceHelper.getCreditRemaining()
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-        binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
-        binding.progressCredits.visibility = View.GONE
-        binding.tvCreditsRemaining.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.llCreditsInfo.progressCredits.visibility = View.GONE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+
+        // Add Click Listener to Refresh
+        binding.llCreditsInfo.root.setOnClickListener {
+            apiCheckCredits()
+        }
     }
 
     private fun initViewModels() {
@@ -65,12 +70,17 @@ class HomeFragment : Fragment() {
         val username = preferenceHelper.getUserName()
         val apiKey = preferenceHelper.getApiKey()
         if (username.isNullOrEmpty() || apiKey.isNullOrEmpty()) {
-            binding.progressCredits.visibility = View.GONE
-            binding.tvCreditsRemaining.visibility = View.VISIBLE
-            binding.tvCreditsRemaining.text = "Credits: Invalid credentials"
+            binding.llCreditsInfo.progressCredits.visibility = View.GONE
+            binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+            binding.llCreditsInfo.tvCreditsRemaining.text = "Credits: Invalid credentials"
             Toast.makeText(requireContext(), "Invalid credentials. Please log in again.", Toast.LENGTH_LONG).show()
             return
         }
+        
+        // Show loading state
+        binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+        binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
+        
         loginViewModel.checkCredits(username, apiKey)
     }
 
@@ -81,26 +91,27 @@ class HomeFragment : Fragment() {
                  Status.SUCCESS -> {
                     val credits = response.data?.get("credits")?.asIntSafe() ?: 0
                     val creditsMonthly = response.data?.get("credits_monthly")?.asIntSafe() ?: 0
-                    binding.progressCredits.visibility = View.GONE
-                    binding.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
                     val totalCredits = creditsMonthly + credits
                     preferenceHelper.setCreditReamaining(totalCredits)
                     
                     val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
-                    binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                    binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
                 }
                 Status.ERROR -> {
-                    binding.progressCredits.visibility = View.GONE
-                    binding.tvCreditsRemaining.visibility = View.VISIBLE
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
                     // Fallback to stored credits on error
                     val storeCredits = preferenceHelper.getCreditRemaining()
                     val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-                    binding.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                    binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+                    Toast.makeText(requireContext(), "Failed to refresh credits", Toast.LENGTH_SHORT).show()
                 }
                  Status.LOADING -> {
-                    binding.progressCredits.visibility = View.VISIBLE
-                    binding.tvCreditsRemaining.visibility = View.VISIBLE
-                    binding.tvCreditsRemaining.text = "Loading credits..."
+                    // Handled in apiCheckCredits, but good to keep sync
+                    binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.GONE
                 }
             }
         }
@@ -108,19 +119,13 @@ class HomeFragment : Fragment() {
         // Observe error messages
         loginViewModel.getErrorMessage().observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                // Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             }
         }
 
-        // Observe loading state (fallback or additional handling if needed)
+        // Observe loading state
         loginViewModel.getLoading().observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                binding.progressCredits.visibility = View.GONE
-                binding.tvCreditsRemaining.visibility = View.VISIBLE
-            } else {
-                binding.progressCredits.visibility = View.GONE
-                binding.tvCreditsRemaining.visibility = View.VISIBLE
-            }
+             // handled by status
         }
     }
 

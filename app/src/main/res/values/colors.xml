@@ -110,4 +110,6 @@
     <color name="vl_onboarding_foreground">#272B27</color>
     <color name="vl_onboarding_red_card">#D32E23</color>
     <color name="vl_onboarding_green_card">#5EAE45</color>
+    <color name="vl_background_light">#FFFFFF</color>
+    <color name="vl_background_dark">#272B27</color>
 </resources>

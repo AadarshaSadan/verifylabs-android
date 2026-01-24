@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="24dp"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog_card">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guidelines"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/vl_red"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Close Button -->
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_close"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="@color/system_gray"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="This tool requires high-quality media. Low-quality input will give you incorrect results."
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Images Section -->
+    <TextView
+        android:id="@+id/tvImagesLabel"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="Images:"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tvDescription"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvImagesText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="use high resolution only. Anything under 1 megapixel (e.g., 1024×1024 pixels) is too small and will produce unreliable detections. Always use the original, clearest file."
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        app:layout_constraintTop_toTopOf="@id/tvImagesLabel"
+        app:layout_constraintStart_toEndOf="@id/tvImagesLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Videos Section -->
+    <TextView
+        android:id="@+id/tvVideosLabel"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="Videos:"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tvImagesText"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvVideosText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="upload 10 seconds or more. Never upload a still frame taken from a video; the analysis will be inaccurate."
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        app:layout_constraintTop_toTopOf="@id/tvVideosLabel"
+        app:layout_constraintStart_toEndOf="@id/tvVideosLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Audio Section -->
+    <TextView
+        android:id="@+id/tvAudioLabel"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="Audio:"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tvVideosText"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAudioText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="share 4 seconds or more via the share extension or record straight from the app. The quick record button will record for a given duration and automatically stop. In these two modes, long silences will result in a failure. The long record button will record up to 600 seconds and verify every 10 seconds. Silent segments will be ignored."
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        app:layout_constraintTop_toTopOf="@id/tvAudioLabel"
+        app:layout_constraintStart_toEndOf="@id/tvAudioLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Button -->
+    <Button
+        android:id="@+id/btnGotIt"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Got it"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:backgroundTint="@color/vl_green"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvAudioText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
