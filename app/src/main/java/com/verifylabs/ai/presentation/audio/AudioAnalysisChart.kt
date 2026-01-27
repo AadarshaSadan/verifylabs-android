@@ -188,17 +188,47 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
                 }
             }
 
-            // Draw trend line
-            val trendPaint =
-                Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = Color.WHITE
-                    strokeWidth = 4f
-                    style = Paint.Style.STROKE
-                    alpha = 200
-                    // strokeJoin = Paint.Join.ROUND
-                    // strokeCap = Paint.Cap.ROUND
+             // Draw trend line
+            if (dataPoints.size > 1) {
+                // Calculate colors and positions for the gradient
+                val colors = IntArray(dataPoints.size)
+                val positions = FloatArray(dataPoints.size)
+                
+                for (i in dataPoints.indices) {
+                    colors[i] = getScoreColor(dataPoints[i])
+                    val x = chartLeft + (i * stepX)
+                    // Normalize position to [0..1] range relative to the chart width
+                    positions[i] = (x - chartLeft) / chartWidth
                 }
-            canvas.drawPath(path, trendPaint)
+                
+                // Use a clamped gradient to handle edge cases, though points align perfectly
+                val gradient = LinearGradient(
+                    chartLeft, 0f, chartRight, 0f,
+                    colors,
+                    positions,
+                    Shader.TileMode.CLAMP
+                )
+                
+                val trendPaint =
+                    Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        strokeWidth = 4f
+                        style = Paint.Style.STROKE
+                        // Use the gradient shader
+                        shader = gradient
+                        // strokeJoin = Paint.Join.ROUND
+                        // strokeCap = Paint.Cap.ROUND
+                    }
+                canvas.drawPath(path, trendPaint)
+            } else if (dataPoints.size == 1) {
+                // Single point case
+                val trendPaint =
+                    Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        color = getScoreColor(dataPoints[0])
+                        strokeWidth = 4f
+                        style = Paint.Style.STROKE
+                    }
+                canvas.drawPath(path, trendPaint)
+            }
 
             // Draw points on top
             textPaint.textAlign = Paint.Align.CENTER

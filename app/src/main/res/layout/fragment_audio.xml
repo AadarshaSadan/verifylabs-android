@@ -189,6 +189,7 @@
                     <com.verifylabs.ai.presentation.audio.AudioAnalysisChart
                         android:id="@+id/audioAnalysisChart"
                         android:layout_width="match_parent"
+                        android:visibility="visible"
                         android:layout_height="match_parent" />
 
                     <TextView
@@ -204,6 +205,7 @@
 
                     <LinearLayout
                         android:id="@+id/layoutAnalysisPlaceholder"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

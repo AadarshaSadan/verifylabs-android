@@ -451,6 +451,7 @@ class FragmentAudio : Fragment() {
 
                 // Show Analysis Placeholder on start
                 binding.audioAnalysisChart.reset()
+                binding.audioAnalysisChart.visibility = View.VISIBLE // Ensure visible but empty
                 binding.cardAudioAnalysis.visibility = View.VISIBLE
                 binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE
             }
@@ -635,7 +636,9 @@ class FragmentAudio : Fragment() {
                         synchronized(temporalScores) {
                             if (isLongRecording || temporalScores.isNotEmpty()) {
                                 temporalScores.add(response.score)
+                                temporalScores.add(response.score)
                                 binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.audioAnalysisChart.visibility = View.VISIBLE
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setChronologicalScores(
@@ -647,6 +650,7 @@ class FragmentAudio : Fragment() {
                                 }
                             } else {
                                 binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.audioAnalysisChart.visibility = View.VISIBLE
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setScore(response.score)
