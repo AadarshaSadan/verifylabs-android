@@ -31,7 +31,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     private val textPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = ContextCompat.getColor(context, R.color.secondary_text)
-                textSize = 24f
+                textSize = 18f
                 textAlign = Paint.Align.RIGHT
             }
 
@@ -115,7 +115,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
         // Only draw chart elements if we have data
         if (dataPoints.isNotEmpty()) {
-            textPaint.textSize = 24f
+            textPaint.textSize = 18f // Reduced size to prevent overlap
             textPaint.color = ContextCompat.getColor(context, R.color.secondary_text) // Axis labels
             textPaint.textAlign = Paint.Align.LEFT
             textPaint.isFakeBoldText = false
@@ -240,8 +240,13 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
                 pointPaint.color = getScoreColor(score.toDouble())
                 canvas.drawCircle(p.x, p.y, 8f, pointPaint)
 
-                // Draw X-axis label (1, 2, 3...)
-                canvas.drawText((i + 1).toString(), p.x, chartBottom + 30f, textPaint)
+                // Draw X-axis label
+                // If we have few points (<15), show detailed start (0,1,2,3,4).
+                // If we have many points, switch to strictly 5-point interval (0, 5, 10...) to avoid clutter.
+                val shouldShowDetail = dataPoints.size < 15
+                if ((shouldShowDetail && i < 5) || i % 5 == 0) {
+                    canvas.drawText(i.toString(), p.x, chartBottom + 30f, textPaint)
+                }
             }
 
             // Legend
