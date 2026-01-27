@@ -1,6 +1,8 @@
 package com.verifylabs.ai.presentation.audio
 
 import android.Manifest
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
@@ -25,9 +27,9 @@ import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.data.database.VerificationEntity
 import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentAudioBinding
+import com.verifylabs.ai.presentation.media.GuidelinesDialogFragment
 import com.verifylabs.ai.presentation.media.MediaType
 import com.verifylabs.ai.presentation.media.VerificationResponse
-import com.verifylabs.ai.presentation.media.GuidelinesDialogFragment
 import com.verifylabs.ai.presentation.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -195,24 +197,24 @@ class FragmentAudio : Fragment() {
         }
         // Underline the guidelines text
         val guidelinesTv = binding.btnGuidelines.getChildAt(1) as? android.widget.TextView
-        guidelinesTv?.paintFlags = guidelinesTv?.paintFlags?.or(android.graphics.Paint.UNDERLINE_TEXT_FLAG) ?: 0
-        
+        guidelinesTv?.paintFlags =
+                guidelinesTv?.paintFlags?.or(android.graphics.Paint.UNDERLINE_TEXT_FLAG) ?: 0
+
         // Initial Local Load
         loadLocalCredits()
-        
+
         // Click to Refresh
-        binding.llCreditsInfo.root.setOnClickListener {
-             checkCredits()
-        }
+        binding.llCreditsInfo.root.setOnClickListener { checkCredits() }
 
         observeCredits()
         observeUploadAndVerify()
     }
-    
+
     private fun loadLocalCredits() {
         val storeCredits = preferenceHelper.getCreditRemaining()
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
-        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.llCreditsInfo.tvCreditsRemaining.text =
+                getString(R.string.credits_remaining, formattedCredits)
         binding.llCreditsInfo.progressCredits.visibility = View.GONE
         binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
     }
@@ -342,7 +344,6 @@ class FragmentAudio : Fragment() {
     private fun observeCredits() {
         Log.d(TAG, "observeCredits() - Observing LiveData")
 
-
         viewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
             Log.d(TAG, "Credits response: ${resource.status}, data: ${resource.data}")
 
@@ -447,6 +448,11 @@ class FragmentAudio : Fragment() {
                 startPulseAnimation()
                 silenceDurationMs = 0
                 silenceCheckHandler.postDelayed(silenceCheckRunnable, 500)
+
+                // Show Analysis Placeholder on start
+                binding.audioAnalysisChart.reset()
+                binding.cardAudioAnalysis.visibility = View.VISIBLE
+                binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE
             }
 
             if (isLongRecording) {
@@ -630,6 +636,8 @@ class FragmentAudio : Fragment() {
                             if (isLongRecording || temporalScores.isNotEmpty()) {
                                 temporalScores.add(response.score)
                                 binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.layoutAnalysisPlaceholder.visibility =
+                                        View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setChronologicalScores(
                                         ArrayList(temporalScores)
                                 )
@@ -639,6 +647,8 @@ class FragmentAudio : Fragment() {
                                 }
                             } else {
                                 binding.cardAudioAnalysis.visibility = View.VISIBLE
+                                binding.layoutAnalysisPlaceholder.visibility =
+                                        View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setScore(response.score)
                                 finalizeAndSaveHistory(response)
                             }
@@ -647,7 +657,7 @@ class FragmentAudio : Fragment() {
                         if (!isRecording) {
                             resetMicButton()
                         }
-                        
+
                         // Auto-refresh credits
                         checkCredits()
                     }
@@ -657,10 +667,15 @@ class FragmentAudio : Fragment() {
                         resetMicButton()
                     }
                     Status.INSUFFICIENT_CREDITS -> {
-                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
-                         binding.txtStatus.text = "Insufficient Credits"
-                         Toast.makeText(requireContext(), "Top up your credits to continue verifying audio", Toast.LENGTH_LONG).show()
-                         resetMicButton()
+                        Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
+                        binding.txtStatus.text = "Insufficient Credits"
+                        Toast.makeText(
+                                        requireContext(),
+                                        "Top up your credits to continue verifying audio",
+                                        Toast.LENGTH_LONG
+                                )
+                                .show()
+                        resetMicButton()
                     }
                 }
             }
@@ -680,8 +695,8 @@ class FragmentAudio : Fragment() {
     private fun finalizeAndSaveHistory(response: VerificationResponse) {
         val finalScore =
                 if (temporalScores.isNotEmpty()) temporalScores.average() else response.score
-        val result = getBandResult(response.band)
-        binding.txtStatus.text = "Done: $result"
+
+        displayResult(response)
 
         viewLifecycleOwner.lifecycleScope.launch(exceptionHandler) {
             try {
@@ -782,6 +797,10 @@ class FragmentAudio : Fragment() {
         binding.micButton.isEnabled = true
         binding.micButton.setOnClickListener {
             binding.cardAudioAnalysis.visibility = View.GONE
+            binding.layoutAnalysisPlaceholder.visibility = View.GONE
+            binding.audioAnalysisChart.reset()
+            binding.layoutInfoStatus.visibility = View.GONE
+            binding.imageOverlay.visibility = View.GONE
             requestRecordPermission()
         }
     }
@@ -795,6 +814,88 @@ class FragmentAudio : Fragment() {
             5 -> "AI-generated"
             else -> "Unknown"
         }.also { result -> Log.d(TAG, "getBandResult($band) → $result") }
+    }
+
+    private fun displayResult(response: VerificationResponse) {
+        Log.d(TAG, "displayResult(band=${response.band})")
+
+        binding.layoutInfoStatus.visibility = View.VISIBLE
+        binding.textStatusMessage.visibility = View.VISIBLE
+        binding.imageOverlay.visibility = View.VISIBLE
+
+        // Hide stats status text as we show the card now
+        binding.txtStatus.text = ""
+
+        binding.textStatusMessage.text =
+                response.bandDescription ?: getBandDescription(response.band)
+        binding.txtIdentifixation.text = getBandResult(response.band)
+        binding.txtIdentifixation.visibility = View.VISIBLE
+
+        // Success result logic matching iOS Parity
+        binding.layoutInfoStatus.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
+        binding.textStatusMessage.background = null
+
+        when (response.band) {
+            1, 2 -> { // Human (Capsule, Green Text, Traced Green Smile)
+                binding.txtIdentifixation.background =
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.bg_result_capsule_green
+                        )
+                binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
+                binding.imageOverlay.background = null
+                binding.imageOverlay.setImageDrawable(
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_
+                        )
+                )
+                binding.imageOverlay.imageTintList = null
+            }
+            3 -> { // Unsure (Capsule, Gray Text)
+                binding.txtIdentifixation.background =
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.bg_result_capsule_gray
+                        )
+                binding.textStatusMessage.setTextColor(Color.parseColor("#616161")) // Dark gray
+                binding.imageOverlay.background = null
+                binding.imageOverlay.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_question_circle)
+                )
+                binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.GRAY)
+            }
+            4, 5 -> { // AI (Rectangle, Red Text, Red Square Icon with White Robot)
+                binding.txtIdentifixation.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
+                binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
+                binding.imageOverlay.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_square_red)
+                binding.imageOverlay.setImageDrawable(
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_
+                        )
+                )
+                binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            }
+        }
+    }
+
+    private fun getBandDescription(band: Int): String {
+        return when (band) {
+            1 ->
+                    "There’s a high probability that this was created by a human and has not been altered by AI."
+            2 ->
+                    "This was likely created by a human, but may have been improved by photo apps or a phone's automated software."
+            3 ->
+                    "This result can't be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information."
+            4 ->
+                    "This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results."
+            5 -> "There’s a high probability that this is deepfake or AI-generated."
+            else -> ""
+        }
     }
 
     // ========== ANIMATION ==========

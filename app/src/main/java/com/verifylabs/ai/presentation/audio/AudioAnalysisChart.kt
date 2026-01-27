@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.verifylabs.ai.R
 
 class AudioAnalysisChart
 @JvmOverloads
@@ -15,7 +17,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
     private val backgroundPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.parseColor("#9E9E9E")
+                color = ContextCompat.getColor(context, R.color.audio_chart_background)
                 style = Paint.Style.FILL
             }
 
@@ -28,7 +30,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
     private val textPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.parseColor("#757575")
+                color = ContextCompat.getColor(context, R.color.secondary_text)
                 textSize = 24f
                 textAlign = Paint.Align.RIGHT
             }
@@ -88,6 +90,12 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
         }
     }
 
+    fun reset() {
+        this.dataPoints = emptyList()
+        this.averageScore = 0.0
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -105,31 +113,25 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
         val rect = RectF(0f, 0f, w, h)
         canvas.drawRoundRect(rect, 24f, 24f, backgroundPaint)
 
-        // Title
-        textPaint.textAlign = Paint.Align.LEFT
-        textPaint.color = Color.WHITE
-        textPaint.textSize = 32f
-        textPaint.isFakeBoldText = true
-        canvas.drawText("Audio Analysis", padding, padding + 30f, textPaint)
-
-        textPaint.textSize = 24f
-        textPaint.color = Color.parseColor("#E0E0E0")
-        textPaint.textAlign = Paint.Align.LEFT
-        textPaint.isFakeBoldText = false
-
-        for (i in labels.indices) {
-            val y = chartBottom - (labelValues[i].toFloat() * chartHeight)
-            canvas.drawLine(chartLeft, y, chartRight, y, gridPaint)
-            // Draw labels on the right side of the chart area
-            canvas.drawText(labels[i], chartRight + 15f, y + 8f, textPaint)
-        }
-
-        // Left vertical axis line
-        canvas.drawLine(chartLeft, chartTop, chartLeft, chartBottom, gridPaint)
-        // Right vertical axis line
-        canvas.drawLine(chartRight, chartTop, chartRight, chartBottom, gridPaint)
-
+        // Only draw chart elements if we have data
         if (dataPoints.isNotEmpty()) {
+            textPaint.textSize = 24f
+            textPaint.color = ContextCompat.getColor(context, R.color.secondary_text) // Axis labels
+            textPaint.textAlign = Paint.Align.LEFT
+            textPaint.isFakeBoldText = false
+
+            for (i in labels.indices) {
+                val y = chartBottom - (labelValues[i].toFloat() * chartHeight)
+                canvas.drawLine(chartLeft, y, chartRight, y, gridPaint)
+                // Draw labels on the right side of the chart area
+                canvas.drawText(labels[i], chartRight + 15f, y + 8f, textPaint)
+            }
+
+            // Left vertical axis line
+            canvas.drawLine(chartLeft, chartTop, chartLeft, chartBottom, gridPaint)
+            // Right vertical axis line
+            canvas.drawLine(chartRight, chartTop, chartRight, chartBottom, gridPaint)
+
             // Draw average line
             val avgY = chartBottom - (averageScore.toFloat() * chartHeight)
             linePaint.color = getScoreColor(averageScore)
@@ -144,10 +146,10 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
             canvas.drawRoundRect(badgeRect, 8f, 8f, badgePaint)
             badgeTextPaint.color = Color.WHITE
             canvas.drawText(
-                    "Avg: %.2f".format(averageScore),
-                    badgeX + badgeWidth / 2,
-                    badgeY + badgeHeight / 2 + 8f,
-                    badgeTextPaint
+                "Avg: %.2f".format(averageScore),
+                badgeX + badgeWidth / 2,
+                badgeY + badgeHeight / 2 + 8f,
+                badgeTextPaint
             )
 
             // Draw Data Points and connecting lines (Smooth Curve)
@@ -155,12 +157,12 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
             val path = Path()
 
             val points =
-                    dataPoints.mapIndexed { i, score ->
-                        PointF(
-                                chartLeft + (i * stepX),
-                                chartBottom - (score.toFloat() * chartHeight)
-                        )
-                    }
+                dataPoints.mapIndexed { i, score ->
+                    PointF(
+                        chartLeft + (i * stepX),
+                        chartBottom - (score.toFloat() * chartHeight)
+                    )
+                }
 
             if (points.isNotEmpty()) {
                 path.moveTo(points[0].x, points[0].y)
@@ -188,14 +190,14 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
             // Draw trend line
             val trendPaint =
-                    Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.WHITE
-                        strokeWidth = 4f
-                        style = Paint.Style.STROKE
-                        alpha = 200
-                        // strokeJoin = Paint.Join.ROUND
-                        // strokeCap = Paint.Cap.ROUND
-                    }
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.WHITE
+                    strokeWidth = 4f
+                    style = Paint.Style.STROKE
+                    alpha = 200
+                    // strokeJoin = Paint.Join.ROUND
+                    // strokeCap = Paint.Cap.ROUND
+                }
             canvas.drawPath(path, trendPaint)
 
             // Draw points on top
@@ -211,22 +213,22 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
                 // Draw X-axis label (1, 2, 3...)
                 canvas.drawText((i + 1).toString(), p.x, chartBottom + 30f, textPaint)
             }
-        }
 
-        // Legend
-        val legendY = h - 30f
-        val legendItemWidth = (w - padding * 2) / 5
-        val legendLabels = listOf("Human", "Likely...", "Unsure", "Likely...", "AI")
-        val legendColors = listOf("#4CAF50", "#8BC34A", "#9E9E9E", "#FF5252", "#D32F2F")
+            // Legend
+            val legendY = h - 30f
+            val legendItemWidth = (w - padding * 2) / 5
+            val legendLabels = listOf("Human", "Likely...", "Unsure", "Likely...", "AI")
+            val legendColors = listOf("#4CAF50", "#8BC34A", "#9E9E9E", "#FF5252", "#D32F2F")
 
-        for (i in legendLabels.indices) {
-            val lx = padding + (i * legendItemWidth)
-            pointPaint.color = Color.parseColor(legendColors[i])
-            canvas.drawCircle(lx + 10f, legendY - 10f, 8f, pointPaint)
-            textPaint.textAlign = Paint.Align.LEFT
-            textPaint.textSize = 20f
-            textPaint.color = Color.WHITE
-            canvas.drawText(legendLabels[i], lx + 25f, legendY - 2f, textPaint)
+            for (i in legendLabels.indices) {
+                val lx = padding + (i * legendItemWidth)
+                pointPaint.color = Color.parseColor(legendColors[i])
+                canvas.drawCircle(lx + 10f, legendY - 10f, 8f, pointPaint)
+                textPaint.textAlign = Paint.Align.LEFT
+                textPaint.textSize = 20f
+                textPaint.color = ContextCompat.getColor(context, R.color.secondary_text)
+                canvas.drawText(legendLabels[i], lx + 25f, legendY - 2f, textPaint)
+            }
         }
     }
 }

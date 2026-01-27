@@ -108,4 +108,7 @@
     
     <!-- Report Dialog Colors -->
     <color name="report_option_bg">#2C2C2E</color>
+    
+    <!-- Audio Chart Background -->
+    <color name="audio_chart_background">#1AFFFFFF</color>
 </resources>
