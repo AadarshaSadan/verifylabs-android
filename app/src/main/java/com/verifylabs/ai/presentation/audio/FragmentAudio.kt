@@ -420,7 +420,8 @@ class FragmentAudio : Fragment() {
         }
 
         try {
-            val fileName = "audio_chunk_${allChunkFiles.size}_${System.currentTimeMillis()}.mp4"
+            // Use .aac extension for ADTS format (allows concatenation)
+            val fileName = "audio_chunk_${allChunkFiles.size}_${System.currentTimeMillis()}.aac"
             val outputFile = File(requireContext().externalCacheDir, fileName)
             currentRecordedFile = outputFile
             allChunkFiles.add(outputFile)
@@ -429,7 +430,8 @@ class FragmentAudio : Fragment() {
             recorder =
                     MediaRecorder().apply {
                         setAudioSource(MediaRecorder.AudioSource.MIC)
-                        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                        // Use AAC_ADTS container which supports binary concatenation
+                        setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
                         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                         setOutputFile(outputFile.absolutePath)
                         prepare()
@@ -709,7 +711,7 @@ class FragmentAudio : Fragment() {
                 // Use HistoryFileManager to save persistently
                 val sourceFile =
                         if (allChunkFiles.size > 1) {
-                            val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
+                            val mergedFile = File(context.externalCacheDir, "merged_audio.aac")
                             if (mergedFile.exists()) mergedFile else currentRecordedFile
                         } else {
                             currentRecordedFile
@@ -752,7 +754,7 @@ class FragmentAudio : Fragment() {
 
                 // Cleanup
                 allChunkFiles.forEach { it.delete() }
-                File(context.externalCacheDir, "merged_audio.mp4").delete()
+                File(context.externalCacheDir, "merged_audio.aac").delete()
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to finalize history", e)
             }
@@ -774,7 +776,7 @@ class FragmentAudio : Fragment() {
         lifecycleScope.launch(exceptionHandler) {
             try {
                 val context = context ?: return@launch
-                val mergedFile = File(context.externalCacheDir, "merged_audio.mp4")
+                val mergedFile = File(context.externalCacheDir, "merged_audio.aac")
                 val fos = java.io.FileOutputStream(mergedFile)
                 for (file in ArrayList(allChunkFiles)) { // Use copy to avoid CME
                     if (file.exists()) {
