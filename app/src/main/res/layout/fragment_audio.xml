@@ -70,6 +70,32 @@
                 app:layout_constraintStart_toStartOf="@id/micPulse"
                 app:layout_constraintEnd_toEndOf="@id/micPulse" />
 
+            <!-- Analyzing State (Blue Circle + White Spinner) -->
+            <FrameLayout
+                android:id="@+id/layoutAnalyzing"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:visibility="gone"
+                android:elevation="10dp"
+                app:layout_constraintTop_toBottomOf="@id/micPulsebtn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="24dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_blue_solid" />
+
+                <ProgressBar
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@android:color/white" />
+            </FrameLayout>
+
             <!-- Timer -->
             <TextView
                 android:id="@+id/txtTimer"

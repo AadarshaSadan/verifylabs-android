@@ -38,8 +38,10 @@ import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class FragmentAudio : Fragment() {
@@ -564,6 +566,9 @@ class FragmentAudio : Fragment() {
             } else if (currentRecordedFile == null) {
                 Log.w(TAG, "Audio file not found after recording")
                 binding.txtStatus.text = "File not found"
+            } else {
+                // Final Verification State for regular/quick recording
+                showAnalyzingState()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping recording", e)
@@ -573,10 +578,22 @@ class FragmentAudio : Fragment() {
         }
     }
 
+    private fun showAnalyzingState() {
+        Log.d(TAG, "showAnalyzingState() - Showing Blue Circle Layout")
+        // Hide Mic & Pulse
+        binding.micButton.visibility = View.INVISIBLE
+        binding.micPulse.visibility = View.INVISIBLE
+        
+        // Show Blue Analyzing Circle
+        binding.layoutAnalyzing.visibility = View.VISIBLE
+        binding.layoutAnalyzing.bringToFront() // Ensure it's on top
+        binding.txtStatus.text = "Analyzing..." 
+        stopPulseAnimation()
+    }
+
     // ========== UPLOAD ==========
     private fun uploadAudio(file: File) {
         Log.d(TAG, "uploadAudio() - Uploading: ${file.name} (${file.length()} bytes)")
-        binding.txtStatus.text = "Uploading audio..."
         viewModel.uploadMedia(file.absolutePath, MediaType.AUDIO)
     }
 
@@ -790,15 +807,30 @@ class FragmentAudio : Fragment() {
                     }
                 }
                 fos.close()
+                // fos.close() was already called above
                 Log.d(TAG, "Merged file created at: ${mergedFile.absolutePath}")
+                
+                // Final Verification for Long Recording
+                withContext(Dispatchers.Main) {
+                     uploadAudio(mergedFile)
+                     showAnalyzingState()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to merge chunks", e)
+                withContext(Dispatchers.Main) {
+                    binding.txtStatus.text = "Merge failed"
+                    resetMicButton()
+                }
             }
         }
     }
 
     private fun resetMicButton() {
         Log.d(TAG, "resetMicButton()")
+        binding.layoutAnalyzing.visibility = View.GONE
+        binding.micPulse.visibility = View.VISIBLE
+        binding.micButton.visibility = View.VISIBLE
+        
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
         binding.micButton.setOnClickListener {
