@@ -568,7 +568,10 @@ class FragmentAudio : Fragment() {
                 binding.txtStatus.text = "File not found"
             } else {
                 // Final Verification State for regular/quick recording
-                showAnalyzingState()
+                Log.d(TAG, "Starting Quick/Regular Verification Flow")
+                binding.root.post { 
+                     showAnalyzingState()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping recording", e)
@@ -826,7 +829,7 @@ class FragmentAudio : Fragment() {
     }
 
     private fun resetMicButton() {
-        Log.d(TAG, "resetMicButton()")
+        Log.d(TAG, "resetMicButton() - Called from ${Thread.currentThread().stackTrace[3].methodName}")
         binding.layoutAnalyzing.visibility = View.GONE
         binding.micPulse.visibility = View.VISIBLE
         binding.micButton.visibility = View.VISIBLE
