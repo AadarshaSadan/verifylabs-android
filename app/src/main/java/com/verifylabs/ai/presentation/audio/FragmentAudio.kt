@@ -210,6 +210,17 @@ class FragmentAudio : Fragment() {
 
         observeCredits()
         observeUploadAndVerify()
+
+        // New Result Buttons Logic
+        binding.btnReset.setOnClickListener { resetMicButton() }
+
+        binding.btnShowAnalysis.setOnClickListener {
+            // binding.layoutResultsContainer.visibility = View.GONE // Don't hide result
+            binding.btnShowAnalysis.visibility = View.GONE // Hide the button instead
+            binding.cardAudioAnalysis.visibility = View.VISIBLE
+            binding.audioAnalysisChart.visibility = View.VISIBLE
+            binding.layoutAnalysisPlaceholder.visibility = View.GONE
+        }
     }
 
     private fun loadLocalCredits() {
@@ -622,9 +633,7 @@ class FragmentAudio : Fragment() {
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Upload FAILED: ${resource.message}")
-                    binding.txtStatus.text = "Upload failed: ${resource.message}"
-                    Toast.makeText(requireContext(), "Error: ${resource.message}", Toast.LENGTH_LONG).show()
-                    resetMicButton()
+                    showErrorResult(resource.message ?: "Upload failed")
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
@@ -689,8 +698,7 @@ class FragmentAudio : Fragment() {
                     }
                     Status.ERROR -> {
                         Log.e(TAG, "Verify FAILED: ${resource.message}")
-                        binding.txtStatus.text = "Failed: ${resource.message}"
-                        resetMicButton()
+                        showErrorResult(resource.message ?: "Verification failed")
                     }
                     Status.INSUFFICIENT_CREDITS -> {
                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
@@ -843,10 +851,10 @@ class FragmentAudio : Fragment() {
         binding.micButton.isEnabled = true
         binding.micButton.setOnClickListener {
             binding.cardAudioAnalysis.visibility = View.GONE
+            binding.layoutResultsContainer.visibility = View.GONE // Hide Result Container
             binding.layoutAnalysisPlaceholder.visibility = View.GONE
             binding.audioAnalysisChart.reset()
-            binding.layoutInfoStatus.visibility = View.GONE
-            binding.imageOverlay.visibility = View.GONE
+            // binding.layoutInfoStatus.visibility = View.GONE // Removed old ID
 
             // Fix: Reset state for next recording (Long Recording by default)
             isLongRecording = true
@@ -869,69 +877,101 @@ class FragmentAudio : Fragment() {
         }.also { result -> Log.d(TAG, "getBandResult($band) → $result") }
     }
 
+    private fun showErrorResult(message: String) {
+        Log.d(TAG, "showErrorResult: $message")
+        binding.layoutAnalyzing.visibility = View.GONE
+        binding.layoutResultsContainer.visibility = View.VISIBLE
+        binding.cardAudioAnalysis.visibility = View.GONE
+        binding.txtStatus.text = ""
+
+        binding.cardResultStatus.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_red)
+        binding.imgResultIcon.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
+        )
+        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+
+        binding.txtResultTitle.text = "Verification failed"
+        binding.txtResultTitle.visibility = View.VISIBLE
+
+        binding.txtResultMessage.text =
+                "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
+        binding.txtResultMessage.setTextColor(Color.WHITE)
+
+        binding.btnReset.visibility = View.VISIBLE
+        binding.btnShowAnalysis.visibility = View.VISIBLE
+    }
+
     private fun displayResult(response: VerificationResponse) {
         Log.d(TAG, "displayResult(band=${response.band})")
 
-        binding.layoutInfoStatus.visibility = View.VISIBLE
-        binding.textStatusMessage.visibility = View.VISIBLE
-        binding.imageOverlay.visibility = View.VISIBLE
+        binding.layoutAnalyzing.visibility = View.GONE // Ensure analyzing spinner is gone
+        binding.layoutResultsContainer.visibility = View.VISIBLE
+        binding.txtStatus.text = "" // Clear status text
 
-        // Hide stats status text as we show the card now
-        binding.txtStatus.text = ""
-
-        binding.textStatusMessage.text =
-                response.bandDescription ?: getBandDescription(response.band)
-        binding.txtIdentifixation.text = getBandResult(response.band)
-        binding.txtIdentifixation.visibility = View.VISIBLE
-
-        // Success result logic matching iOS Parity
-        binding.layoutInfoStatus.background =
+        // Default to Success Green Style
+        binding.cardResultStatus.background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
-        binding.textStatusMessage.background = null
+        binding.imgResultIcon.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
+        )
+        binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50")) // Green text
+        binding.txtResultTitle.visibility = View.GONE
+
+        binding.txtResultMessage.text =
+                response.bandDescription ?: getBandDescription(response.band)
 
         when (response.band) {
-            1, 2 -> { // Human (Capsule, Green Text, Traced Green Smile)
-                binding.txtIdentifixation.background =
-                        ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.bg_result_capsule_green
-                        )
-                binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
-                binding.imageOverlay.background = null
-                binding.imageOverlay.setImageDrawable(
-                        ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_
-                        )
+            1, 2 -> { // Human - Green
+                binding.cardResultStatus.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
+                binding.imgResultIcon.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
                 )
-                binding.imageOverlay.imageTintList = null
+                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+                binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50"))
             }
-            3 -> { // Unsure (Capsule, Gray Text)
-                binding.txtIdentifixation.background =
-                        ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.bg_result_capsule_gray
-                        )
-                binding.textStatusMessage.setTextColor(Color.parseColor("#616161")) // Dark gray
-                binding.imageOverlay.background = null
-                binding.imageOverlay.setImageDrawable(
+            3 -> { // Unsure - Gray? (Requirement only specified Success/Error layouts, but handling
+                // 3 safely)
+                // Keeping Green/Success style or maybe switch to a Neutral Gray card if we had one.
+                // For now, let's treat it as a "Result" but maybe with question mark.
+                binding.imgResultIcon.setImageDrawable(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_question_circle)
                 )
-                binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                binding.txtResultMessage.setTextColor(Color.LTGRAY)
             }
-            4, 5 -> { // AI (Rectangle, Red Text, Red Square Icon with White Robot)
-                binding.txtIdentifixation.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
-                binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
-                binding.imageOverlay.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_square_red)
-                binding.imageOverlay.setImageDrawable(
-                        ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_
-                        )
+            4, 5 -> { // AI - Red (Error Style)
+                binding.cardResultStatus.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_red)
+                binding.imgResultIcon.setImageDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
                 )
-                binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.WHITE)
+                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+                binding.txtResultMessage.setTextColor(
+                        Color.WHITE
+                ) // White text on Red card usually? Or Red text?
+                // The requirements say: "Title says 'Verification failed.' The text below
+                // explains..."
+                // However, Band 4/5 is "AI Detected", NOT "Verification failed" (technical error).
+                // "Verification failed" usually means analysis couldn't happen (too short, etc).
+                // BUT, if the user considers "AI" as the "Error Page" from the description?
+                // The description "Image 2: The 'Error' / Failed Page... usually means audio
+                // couldn't be analyzed".
+                // So Band 4/5 is a VALID result (AI), not an error.
+                // I should check where "Verification Failed" (technical error) happens.
+                // It happens in Status.ERROR blocks usually.
+
+                // So for Band 4/5 (AI), I should probably use the Red styling but with "AI
+                // Detected" text?
+                // The prompt says "Image 1: The 'Success' Result Page... passed the check and is
+                // considered authentic human".
+                // "Image 2: The 'Error' / Failed Page... verification failed... too short, wrong
+                // format".
+
+                // So Band 4/5 should still use the Red Card but maybe with AI text.
+                // Let's stick to the Red Card style for AI results for now as it matches "Bad"
+                // result.
+                binding.txtResultMessage.setTextColor(Color.parseColor("#FF5252"))
             }
         }
     }

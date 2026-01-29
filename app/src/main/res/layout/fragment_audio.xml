@@ -155,43 +155,103 @@
                     android:layout_marginTop="8dp" />
             </LinearLayout>
 
-            <!-- Verification Result (Hidden until done) -->
+            <!-- Verification Result Container -->
             <LinearLayout
-                android:id="@+id/layoutInfoStatus"
+                android:id="@+id/layoutResultsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:visibility="gone"
+                android:layout_marginHorizontal="24dp"
                 app:layout_constraintTop_toBottomOf="@id/layoutNoCreditStatus"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp">
 
-                <ImageView
-                    android:id="@+id/imageOverlay"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:scaleType="fitCenter" />
+                <!-- Result Card -->
+                <LinearLayout
+                    android:id="@+id/cardResultStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingTop="32dp"
+                    android:paddingBottom="32dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:background="@drawable/bg_result_card_green">
 
-                <TextView
-                    android:id="@+id/txtIdentifixation"
+                    <ImageView
+                        android:id="@+id/imgResultIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@android:color/white"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:orientation="vertical"
+                         android:gravity="center">
+
+                         <TextView
+                             android:id="@+id/txtResultTitle"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="Verification failed"
+                             android:textColor="@android:color/white"
+                             android:textSize="18sp"
+                             android:textStyle="bold"
+                             android:visibility="gone"
+                             android:layout_marginBottom="8dp" />
+
+                         <TextView
+                            android:id="@+id/txtResultMessage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="There’s a high probability that this was created by a human and has not been altered by AI."
+                            android:textColor="#4CAF50"
+                            android:textSize="14sp"
+                            android:textAlignment="center"
+                            android:gravity="center"
+                            android:lineSpacingExtra="4dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Action Buttons -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Result"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:padding="8dp"
+                    android:text="Reset"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#424242"
+                    app:icon="@drawable/ic_refresh"
+                    app:iconTint="@android:color/white"
+                    app:cornerRadius="8dp"
+                    android:layout_marginTop="24dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnShowAnalysis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="48dp"
+                    android:text="Show analysis"
+                    android:textAllCaps="false"
+                    android:textColor="#2196F3"
+                    android:backgroundTint="#00000000"
+                    app:strokeColor="#2196F3"
+                    app:strokeWidth="1dp"
+                    app:icon="@drawable/ic_chart_line"
+                    app:iconTint="#2196F3"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="12dp"
                     android:layout_marginTop="12dp" />
 
-                <TextView
-                    android:id="@+id/textStatusMessage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:layout_marginTop="8dp" />
             </LinearLayout>
 
             <!-- Audio Analysis Chart -->
@@ -205,7 +265,7 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus"
+                app:layout_constraintTop_toBottomOf="@id/layoutResultsContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp">
