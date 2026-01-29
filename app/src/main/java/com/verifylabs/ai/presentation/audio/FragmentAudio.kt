@@ -442,6 +442,7 @@ class FragmentAudio : Fragment() {
 
             Log.d(TAG, "Recording started")
             binding.micButton.setImageResource(R.drawable.ic_audio)
+            binding.txtTimer.visibility = View.VISIBLE
             binding.txtStatus.text =
                     if (isQuickRecording) "Quick Recording..." else "Long Recording..."
             isRecording = true
@@ -569,9 +570,7 @@ class FragmentAudio : Fragment() {
             } else {
                 // Final Verification State for regular/quick recording
                 Log.d(TAG, "Starting Quick/Regular Verification Flow")
-                binding.root.post { 
-                     showAnalyzingState()
-                }
+                binding.root.post { showAnalyzingState() }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping recording", e)
@@ -586,11 +585,11 @@ class FragmentAudio : Fragment() {
         // Hide Mic & Pulse
         binding.micButton.visibility = View.INVISIBLE
         binding.micPulse.visibility = View.INVISIBLE
-        
+
         // Show Blue Analyzing Circle
         binding.layoutAnalyzing.visibility = View.VISIBLE
         binding.layoutAnalyzing.bringToFront() // Ensure it's on top
-        binding.txtStatus.text = "Analyzing..." 
+        binding.txtStatus.text = "Analyzing..."
         stopPulseAnimation()
     }
 
@@ -623,7 +622,8 @@ class FragmentAudio : Fragment() {
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Upload FAILED: ${resource.message}")
-                    binding.txtStatus.text = "Upload failed"
+                    binding.txtStatus.text = "Upload failed: ${resource.message}"
+                    Toast.makeText(requireContext(), "Error: ${resource.message}", Toast.LENGTH_LONG).show()
                     resetMicButton()
                 }
                 Status.INSUFFICIENT_CREDITS -> {
@@ -812,11 +812,11 @@ class FragmentAudio : Fragment() {
                 fos.close()
                 // fos.close() was already called above
                 Log.d(TAG, "Merged file created at: ${mergedFile.absolutePath}")
-                
+
                 // Final Verification for Long Recording
                 withContext(Dispatchers.Main) {
-                     uploadAudio(mergedFile)
-                     showAnalyzingState()
+                    uploadAudio(mergedFile)
+                    showAnalyzingState()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to merge chunks", e)
@@ -829,11 +829,16 @@ class FragmentAudio : Fragment() {
     }
 
     private fun resetMicButton() {
-        Log.d(TAG, "resetMicButton() - Called from ${Thread.currentThread().stackTrace[3].methodName}")
+        Log.d(
+                TAG,
+                "resetMicButton() - Called from ${Thread.currentThread().stackTrace[3].methodName}"
+        )
+        binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutAnalyzing.visibility = View.GONE
         binding.micPulse.visibility = View.VISIBLE
         binding.micButton.visibility = View.VISIBLE
-        
+        binding.txtTimer.visibility = View.GONE
+
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
         binding.micButton.setOnClickListener {
@@ -842,6 +847,13 @@ class FragmentAudio : Fragment() {
             binding.audioAnalysisChart.reset()
             binding.layoutInfoStatus.visibility = View.GONE
             binding.imageOverlay.visibility = View.GONE
+
+            // Fix: Reset state for next recording (Long Recording by default)
+            isLongRecording = true
+            isQuickRecording = false
+            allChunkFiles.clear()
+            temporalScores.clear()
+
             requestRecordPermission()
         }
     }
