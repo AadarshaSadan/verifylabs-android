@@ -35,10 +35,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
+import java.util.ArrayList
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,8 +62,11 @@ class FragmentAudio : Fragment() {
     private var recorder: MediaRecorder? = null
     private var isRecording = false
     private var startTime = 0L
+    private var startTimestampPosition: Long = 0
     private var currentRecordedFile: File? = null
     private var isQuickRecording = false
+    private var isVerificationCompleted = false // Flag to prevent multiple results/API glitches
+    private var quickRecordingJob: Job? = null
     private val quickRecordStopHandler = Handler(Looper.getMainLooper())
     private val quickRecordStopRunnable = Runnable { stopRecording() }
     private var quickMicBlinkAnimator: android.animation.ValueAnimator? = null
@@ -220,7 +225,7 @@ class FragmentAudio : Fragment() {
             binding.layoutStatsRow.visibility = View.VISIBLE
             binding.audioAnalysisChart.visibility = View.VISIBLE
             binding.layoutAnalysisPlaceholder.visibility = View.GONE
-            
+
             // Hide the button itself as per requirement
             binding.btnShowAnalysis.visibility = View.GONE
         }
@@ -657,6 +662,8 @@ class FragmentAudio : Fragment() {
                         // binding.txtStatus.text = "Verifying audio..."
                     }
                     Status.SUCCESS -> {
+                        if (isVerificationCompleted) return@collect
+
                         Log.d(TAG, "Verify: SUCCESS")
                         val response =
                                 Gson().fromJson(
@@ -671,8 +678,10 @@ class FragmentAudio : Fragment() {
                             if (isLongRecording || temporalScores.isNotEmpty()) {
                                 temporalScores.add(response.score)
                                 temporalScores.add(response.score)
-                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't auto-show
-                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't auto-show
+                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
+                                // auto-show
+                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
+                                // auto-show
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setChronologicalScores(
@@ -683,8 +692,10 @@ class FragmentAudio : Fragment() {
                                     finalizeAndSaveHistory(response)
                                 }
                             } else {
-                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't auto-show
-                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't auto-show
+                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
+                                // auto-show
+                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
+                                // auto-show
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setScore(response.score)
@@ -863,8 +874,9 @@ class FragmentAudio : Fragment() {
 
         // Reset Logic State
         binding.audioAnalysisChart.reset()
-        isLongRecording = true
+        isLongRecording = false
         isQuickRecording = false
+        isVerificationCompleted = false
         allChunkFiles.clear()
         temporalScores.clear()
     }
@@ -905,13 +917,16 @@ class FragmentAudio : Fragment() {
         binding.btnReset.visibility = View.VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE
         binding.btnShowAnalysis.text = "Show analysis"
-        
+
         // Hide charts/stats initially
         binding.cardAudioAnalysis.visibility = View.GONE
         binding.layoutStatsRow.visibility = View.GONE
     }
 
     private fun displayResult(response: VerificationResponse) {
+        if (isVerificationCompleted) return // Prevent duplicate calls
+        isVerificationCompleted = true
+
         Log.d(TAG, "displayResult(band=${response.band})")
 
         binding.layoutAnalyzing.visibility = View.GONE // Ensure analyzing spinner is gone
@@ -935,7 +950,8 @@ class FragmentAudio : Fragment() {
         showMicControls(false)
 
         // Calculate Stats
-        val scoresToUse = if (temporalScores.isNotEmpty()) temporalScores else listOf(response.score)
+        val scoresToUse =
+                if (temporalScores.isNotEmpty()) temporalScores else listOf(response.score)
         val avg = scoresToUse.average()
         val min = scoresToUse.minOrNull() ?: 0.0
         val max = scoresToUse.maxOrNull() ?: 0.0
@@ -943,12 +959,12 @@ class FragmentAudio : Fragment() {
         binding.txtAvgValue.text = String.format("%.2f", avg)
         binding.txtMinValue.text = String.format("%.2f", min)
         binding.txtMaxValue.text = String.format("%.2f", max)
-        
+
         // Ensure stats and chart are HIDDEN initially as per user request
         // They will be shown only when "Show analysis" is clicked.
         binding.layoutStatsRow.visibility = View.GONE
         binding.cardAudioAnalysis.visibility = View.GONE
-        
+
         // Ensure button is VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE
         binding.btnShowAnalysis.text = "Show analysis"
