@@ -215,17 +215,14 @@ class FragmentAudio : Fragment() {
         binding.btnReset.setOnClickListener { resetMicButton() }
 
         binding.btnShowAnalysis.setOnClickListener {
-            if (binding.cardAudioAnalysis.visibility == View.VISIBLE) {
-                binding.cardAudioAnalysis.visibility = View.GONE
-                binding.layoutStatsRow.visibility = View.GONE
-                binding.btnShowAnalysis.text = "Show analysis"
-            } else {
-                binding.cardAudioAnalysis.visibility = View.VISIBLE
-                binding.layoutStatsRow.visibility = View.VISIBLE
-                binding.audioAnalysisChart.visibility = View.VISIBLE
-                binding.layoutAnalysisPlaceholder.visibility = View.GONE
-                binding.btnShowAnalysis.text = "Hide analysis"
-            }
+            // Show Analysis & Stats
+            binding.cardAudioAnalysis.visibility = View.VISIBLE
+            binding.layoutStatsRow.visibility = View.VISIBLE
+            binding.audioAnalysisChart.visibility = View.VISIBLE
+            binding.layoutAnalysisPlaceholder.visibility = View.GONE
+            
+            // Hide the button itself as per requirement
+            binding.btnShowAnalysis.visibility = View.GONE
         }
     }
 
@@ -674,8 +671,8 @@ class FragmentAudio : Fragment() {
                             if (isLongRecording || temporalScores.isNotEmpty()) {
                                 temporalScores.add(response.score)
                                 temporalScores.add(response.score)
-                                binding.cardAudioAnalysis.visibility = View.VISIBLE
-                                binding.audioAnalysisChart.visibility = View.VISIBLE
+                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't auto-show
+                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't auto-show
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setChronologicalScores(
@@ -686,8 +683,8 @@ class FragmentAudio : Fragment() {
                                     finalizeAndSaveHistory(response)
                                 }
                             } else {
-                                binding.cardAudioAnalysis.visibility = View.VISIBLE
-                                binding.audioAnalysisChart.visibility = View.VISIBLE
+                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't auto-show
+                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't auto-show
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setScore(response.score)
@@ -905,11 +902,13 @@ class FragmentAudio : Fragment() {
         binding.txtResultMessage.setTextColor(Color.WHITE)
 
         binding.btnReset.visibility = View.VISIBLE
+        binding.btnReset.visibility = View.VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE
-        // Sync button text with current chart visibility (usually visible on success)
-        binding.btnShowAnalysis.text =
-                if (binding.cardAudioAnalysis.visibility == View.VISIBLE) "Hide analysis"
-                else "Show analysis"
+        binding.btnShowAnalysis.text = "Show analysis"
+        
+        // Hide charts/stats initially
+        binding.cardAudioAnalysis.visibility = View.GONE
+        binding.layoutStatsRow.visibility = View.GONE
     }
 
     private fun displayResult(response: VerificationResponse) {
@@ -945,12 +944,14 @@ class FragmentAudio : Fragment() {
         binding.txtMinValue.text = String.format("%.2f", min)
         binding.txtMaxValue.text = String.format("%.2f", max)
         
-        // Ensure stats visibility matches result container (it's inside it in XML logic but separate view)
-        // Wait, layoutStatsRow is INSIDE layoutResultsContainer in XML? 
-        // Checking XML... yes, added inside layoutResultsContainer.
-        // So making layoutResultsContainer VISIBLE makes stats visible. Good.
-        // But we want to be explicit if we are toggling it separately.
-        binding.layoutStatsRow.visibility = View.VISIBLE
+        // Ensure stats and chart are HIDDEN initially as per user request
+        // They will be shown only when "Show analysis" is clicked.
+        binding.layoutStatsRow.visibility = View.GONE
+        binding.cardAudioAnalysis.visibility = View.GONE
+        
+        // Ensure button is VISIBLE
+        binding.btnShowAnalysis.visibility = View.VISIBLE
+        binding.btnShowAnalysis.text = "Show analysis"
 
         when (response.band) {
             1, 2 -> { // Human - Green
