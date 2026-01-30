@@ -74,6 +74,11 @@ class SignUpActivity : AppCompatActivity() {
 
 
        updateSignUpButtonState()
+
+        // iOS Parity: Finish activity when Verify Email sheet describes
+        supportFragmentManager.setFragmentResultListener("VERIFY_EMAIL_DISMISSED", this) { _, _ ->
+            finish()
+        }
     }
 
     // -------------------- CLICK LISTENERS --------------------
@@ -137,6 +142,8 @@ class SignUpActivity : AppCompatActivity() {
 
     // -------------------- UI STATE UPDATE (EXACT LIKE LOGIN) --------------------
 
+    // -------------------- UI STATE UPDATE (EXACT LIKE LOGIN) --------------------
+
     private fun updateSignUpButtonState() {
 
         val username = binding.etFullUsername.text.toString().trim()
@@ -184,7 +191,17 @@ class SignUpActivity : AppCompatActivity() {
                     binding.cbAgreeTerms.isChecked
 
         binding.btnCreateAccount.isEnabled = enableButton
-        binding.btnCreateAccount.alpha = if (enableButton) 1.0f else 0.6f
+        
+        // iOS: Gray opacity 0.6 when disabled, Green opacity 1.0 when enabled
+        if (enableButton) {
+            binding.btnCreateAccount.setBackgroundResource(R.drawable.bg_ios_green_button)
+            binding.btnCreateAccount.alpha = 1.0f
+            binding.btnCreateAccount.elevation = 8f
+        } else {
+            binding.btnCreateAccount.setBackgroundResource(R.drawable.bg_ios_gray_button)
+            binding.btnCreateAccount.alpha = 0.6f
+            binding.btnCreateAccount.elevation = 0f
+        }
     }
 
     // -------------------- VALIDATION --------------------
@@ -221,32 +238,54 @@ class SignUpActivity : AppCompatActivity() {
         signUpViewModel.getSignUpResponse().observe(this) { resource ->
             when (resource.status) {
                 Status.LOADING -> {
-                    binding.tvCreateAccount.text = getString(R.string.creating_account_now)
+                    // Show Spinner
+                    binding.progressBar.visibility = android.view.View.VISIBLE
+                    binding.tvCreateAccount.text = "CREATING..."
+                    binding.btnCreateAccount.isEnabled = false
+                    binding.btnCreateAccount.alpha = 0.8f
                 }
 
 
                 Status.SUCCESS -> {
+                    // Hide Spinner
+                    binding.progressBar.visibility = android.view.View.GONE
+                    binding.tvCreateAccount.text = "CREATE"
+                    
                     resource.data?.let {
                         try {
                             val response = Gson().fromJson(it.toString(), SignUpVerificationResponse::class.java)
                             Log.d(TAG, "setupObservers: Sign Up Response: ${response.toString()}")
 
-                            // Show success dialog (iOS Style)
-                            showSuccessDialog("Success", "Sign up successful. Please verify your email before logging in.")
+                            // iOS Parity: Show BottomSheet directly (no intermediate dialog)
+                            val email = binding.etEmail.text.toString().trim()
+                            val bottomSheet = VerifyEmailBottomSheet.newInstance(email)
+                            bottomSheet.isCancelable = false
+                            bottomSheet.show(supportFragmentManager, "VerifyEmailBottomSheet")
 
                         } catch (e: Exception) {
                             e.printStackTrace()
+                             // Revert button state
+                             updateSignUpButtonState()
                         }
                     }
                 }
 
 
                 Status.ERROR -> {
-                    binding.tvCreateAccount.text = getString(R.string.create)
+                    // Hide Spinner
+                    binding.progressBar.visibility = android.view.View.GONE
+                    binding.tvCreateAccount.text = "CREATE"
+                    
+                    // Revert button state
+                    updateSignUpButtonState()
+                    
                     showErrorDialog("Error", resource.message ?: "Sign up failed. Please try again.")
                 }
                 Status.INSUFFICIENT_CREDITS -> {
-                    binding.tvCreateAccount.text = getString(R.string.create)
+                    binding.progressBar.visibility = android.view.View.GONE
+                    binding.tvCreateAccount.text = "CREATE"
+                    updateSignUpButtonState()
+                    
                     showErrorDialog("Error", "Insufficient credits error during signup.")
                 }
             }

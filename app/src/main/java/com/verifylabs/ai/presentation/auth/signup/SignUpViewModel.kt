@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.verifylabs.ai.core.util.Resource
+import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.core.util.SingleLiveEvent
 import com.verifylabs.ai.data.network.ApiRepository
 import com.google.gson.JsonObject
@@ -45,6 +46,13 @@ class SignUpViewModel @Inject constructor(
             try {
                 val response = repository.postSignUp(fullName, email, username, password,secretKey,isVerified)
                 if (response.isSuccessful) {
+                    // Logic Parity: iOS calls resendVerificationEmail immediately after success
+                    try {
+                        repository.resendVerificationEmail(secretKey, email)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        // Proceed even if resend fails, as the account is created
+                    }
                     _signUpResponse.postValue(Resource.success(response.body()))
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -58,7 +66,11 @@ class SignUpViewModel @Inject constructor(
                     } catch (e: Exception) {
                          if (response.message().isNullOrEmpty()) "Error ${response.code()}" else response.message()
                     }
-                    _signUpResponse.postValue(Resource.error(errorMessage, null))
+                    if (errorMessage.contains("Insufficient credits", ignoreCase = true)) {
+                         _signUpResponse.postValue(Resource(Status.INSUFFICIENT_CREDITS, null, errorMessage))
+                    } else {
+                         _signUpResponse.postValue(Resource.error(errorMessage, null))
+                    }
                     onError(errorMessage)
                 }
             } catch (e: java.io.IOException) {

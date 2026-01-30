@@ -62,6 +62,8 @@ class VerifyEmailBottomSheet : BottomSheetDialogFragment() {
 
         // Verify Later
         binding.btnVerifyLaterContainer.setOnClickListener {
+            // Notify parent to finish (iOS parity)
+            parentFragmentManager.setFragmentResult("VERIFY_EMAIL_DISMISSED", androidx.core.os.bundleOf())
             dismiss()
         }
 
@@ -75,6 +77,12 @@ class VerifyEmailBottomSheet : BottomSheetDialogFragment() {
             bottomSheetDialog.setCancelable(false)
             bottomSheetDialog.setCanceledOnTouchOutside(false)
         }
+    }
+
+    override fun onDismiss(dialog: android.content.DialogInterface) {
+        super.onDismiss(dialog)
+        // Ensure result is sent whenever dismissed
+        parentFragmentManager.setFragmentResult("VERIFY_EMAIL_DISMISSED", androidx.core.os.bundleOf())
     }
 
     override fun onStart() {

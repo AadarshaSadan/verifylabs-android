@@ -72,4 +72,10 @@ interface ApiService {
         @Body body: JsonObject
     ): Response<JsonObject>
 
+    // Resend Verification Email
+    @POST("resend_verification")
+    suspend fun resendVerificationEmail(
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
 }

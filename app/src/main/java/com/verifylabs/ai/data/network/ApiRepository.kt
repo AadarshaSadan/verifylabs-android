@@ -34,8 +34,17 @@ class ApiRepository @Inject internal constructor(var apiService: ApiService) : B
             addProperty("password", password)
             addProperty("secret_key", secretKey)
             addProperty("is_verified", isVerified)
+            addProperty("credits", 10) // iOS parity: Match default credits
         }
         return apiService.postSignUp(jsonBody)
+    }
+
+    suspend fun resendVerificationEmail(secretKey: String, email: String): Response<JsonObject> {
+        val jsonBody = JsonObject().apply {
+            addProperty("secret_key", secretKey)
+            addProperty("email", email)
+        }
+        return apiService.resendVerificationEmail(jsonBody)
     }
 
 
