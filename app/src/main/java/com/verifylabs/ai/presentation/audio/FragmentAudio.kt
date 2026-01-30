@@ -904,7 +904,7 @@ class FragmentAudio : Fragment() {
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
         )
-        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+//        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.GREEN)
 
         binding.txtResultTitle.text = "Verification failed"
         binding.txtResultTitle.visibility = View.VISIBLE
@@ -976,7 +976,7 @@ class FragmentAudio : Fragment() {
                 binding.imgResultIcon.setImageDrawable(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
                 )
-                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+               binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
                 binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50"))
             }
             3 -> { // Unsure - Gray? (Requirement only specified Success/Error layouts, but handling
@@ -994,7 +994,7 @@ class FragmentAudio : Fragment() {
                 binding.imgResultIcon.setImageDrawable(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
                 )
-                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
+                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#FF5252"))
                 binding.txtResultMessage.setTextColor(
                         Color.WHITE
                 ) // White text on Red card usually? Or Red text?
