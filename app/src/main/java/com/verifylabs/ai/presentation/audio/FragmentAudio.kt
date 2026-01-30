@@ -217,9 +217,11 @@ class FragmentAudio : Fragment() {
         binding.btnShowAnalysis.setOnClickListener {
             if (binding.cardAudioAnalysis.visibility == View.VISIBLE) {
                 binding.cardAudioAnalysis.visibility = View.GONE
+                binding.layoutStatsRow.visibility = View.GONE
                 binding.btnShowAnalysis.text = "Show analysis"
             } else {
                 binding.cardAudioAnalysis.visibility = View.VISIBLE
+                binding.layoutStatsRow.visibility = View.VISIBLE
                 binding.audioAnalysisChart.visibility = View.VISIBLE
                 binding.layoutAnalysisPlaceholder.visibility = View.GONE
                 binding.btnShowAnalysis.text = "Hide analysis"
@@ -857,6 +859,7 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutResultsContainer.visibility = View.GONE
         binding.cardAudioAnalysis.visibility = View.GONE
+        binding.layoutStatsRow.visibility = View.GONE // Reset stats visibility
         binding.layoutAnalysisPlaceholder.visibility =
                 View.VISIBLE // Should be visible if card were visible, but card is GONE.
         // Actually initial state has placeholder VISIBLE inside hierarchy.
@@ -931,6 +934,23 @@ class FragmentAudio : Fragment() {
                 response.bandDescription ?: getBandDescription(response.band)
 
         showMicControls(false)
+
+        // Calculate Stats
+        val scoresToUse = if (temporalScores.isNotEmpty()) temporalScores else listOf(response.score)
+        val avg = scoresToUse.average()
+        val min = scoresToUse.minOrNull() ?: 0.0
+        val max = scoresToUse.maxOrNull() ?: 0.0
+
+        binding.txtAvgValue.text = String.format("%.2f", avg)
+        binding.txtMinValue.text = String.format("%.2f", min)
+        binding.txtMaxValue.text = String.format("%.2f", max)
+        
+        // Ensure stats visibility matches result container (it's inside it in XML logic but separate view)
+        // Wait, layoutStatsRow is INSIDE layoutResultsContainer in XML? 
+        // Checking XML... yes, added inside layoutResultsContainer.
+        // So making layoutResultsContainer VISIBLE makes stats visible. Good.
+        // But we want to be explicit if we are toggling it separately.
+        binding.layoutStatsRow.visibility = View.VISIBLE
 
         when (response.band) {
             1, 2 -> { // Human - Green
