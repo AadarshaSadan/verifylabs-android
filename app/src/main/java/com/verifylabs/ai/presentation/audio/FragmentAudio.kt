@@ -70,6 +70,7 @@ class FragmentAudio : Fragment() {
     private val quickRecordStopHandler = Handler(Looper.getMainLooper())
     private val quickRecordStopRunnable = Runnable { stopRecording() }
     private var quickMicBlinkAnimator: android.animation.ValueAnimator? = null
+    private var currentQuickDuration: Int = 40
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e(TAG, "Coroutine failed: ${throwable.localizedMessage}", throwable)
@@ -122,12 +123,18 @@ class FragmentAudio : Fragment() {
             object : Runnable {
                 override fun run() {
                     val elapsed = System.currentTimeMillis() - startTime
-                    val minutes = (elapsed / 1000) / 60
-                    val seconds = (elapsed / 1000) % 60
-                    val millis = (elapsed % 1000) / 10
-                    binding.txtTimer.text =
-                            String.format("%02d:%02d:%02d", minutes, seconds, millis)
-                    handler.postDelayed(this, 10)
+                    if (isQuickRecording) {
+                        val elapsedSeconds = elapsed / 1000
+                        val remaining = (currentQuickDuration - elapsedSeconds).coerceAtLeast(0)
+                        binding.txtTimer.text = "Recording $remaining seconds"
+                    } else {
+                        val minutes = (elapsed / 1000) / 60
+                        val seconds = (elapsed / 1000) % 60
+                        val millis = (elapsed % 1000) / 10
+                        binding.txtTimer.text =
+                                String.format("%02d:%02d:%02d", minutes, seconds, millis)
+                    }
+                    handler.postDelayed(this, 100) // Update slightly less frequently for text
                 }
             }
 
@@ -271,6 +278,7 @@ class FragmentAudio : Fragment() {
 
     private fun startQuickRecording() {
         val durationSeconds = preferenceHelper.getQuickRecordDuration().takeIf { it > 0 } ?: 40
+        currentQuickDuration = durationSeconds
         Log.d(TAG, "startQuickRecording() - Duration: ${durationSeconds}s")
 
         isQuickRecording = true
