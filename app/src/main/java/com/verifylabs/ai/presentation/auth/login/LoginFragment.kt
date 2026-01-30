@@ -160,10 +160,10 @@ class LoginFragment : Fragment() {
                             preferenceHelper.setApiKey(response.apiKey)
                             preferenceHelper.setIsLoggedIn(true)
                             preferenceHelper.setCreditReamaining(response.credits + response.creditsMonthly)
-                            Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
+//                            Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
                             navigateToMainActivity()
                         } catch (e: Exception) {
-                            Toast.makeText(requireContext(), "Parsing error: ${e.message}", Toast.LENGTH_SHORT).show()
+//                            Toast.makeText(requireContext(), "Parsing error: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -180,11 +180,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun showErrorDialog(title: String, message: String) {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            .show()
+        com.verifylabs.ai.core.util.DialogUtils.showIosErrorDialog(requireContext(), title, message)
     }
 
     private fun navigateToMainActivity() {

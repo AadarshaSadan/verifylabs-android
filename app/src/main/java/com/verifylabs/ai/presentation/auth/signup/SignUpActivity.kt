@@ -59,6 +59,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         // Ensure status bar icons are correct based on theme (backward compatible)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -271,11 +272,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun showErrorDialog(title: String, message: String) {
-        androidx.appcompat.app.AlertDialog.Builder(this, R.style.CustomAlertDialog)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            .show()
+        com.verifylabs.ai.core.util.DialogUtils.showIosErrorDialog(this, title, message)
     }
 
     private fun showSuccessDialog(title: String, message: String) {

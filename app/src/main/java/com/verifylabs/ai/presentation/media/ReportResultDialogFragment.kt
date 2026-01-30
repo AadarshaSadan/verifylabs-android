@@ -1,6 +1,6 @@
 package com.verifylabs.ai.presentation.media
 
-import InternetHelper
+import com.verifylabs.ai.data.network.InternetHelper
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

@@ -14,8 +14,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.verifylabs.ai.data.network.InternetHelper
+
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: ApiRepository) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val repository: ApiRepository,
+    private val internetHelper: InternetHelper
+) : ViewModel() {
 
     private var job: Job? = null
     private val loading = MutableLiveData<Boolean>()
@@ -35,13 +40,30 @@ class LoginViewModel @Inject constructor(private val repository: ApiRepository) 
         loading.postValue(true)
         job?.cancel()
         job = viewModelScope.launch(exceptionHandler) {
+            if (!internetHelper.isInternetAvailable()) {
+                _loginResponse.postValue(Resource.error("No internet connection", null))
+                onError("No internet connection")
+                loading.postValue(false)
+                return@launch
+            }
             try {
                 val response = repository.postLogin(username, password)
                 if (response.isSuccessful) {
                     _loginResponse.postValue(Resource.success(response.body()))
                 } else {
-                    _loginResponse.postValue(Resource.error(response.message(), null))
-                    onError("Login failed: ${response.message()}")
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        val errorJson = org.json.JSONObject(errorBody ?: "")
+                        if (errorJson.has("error")) {
+                            errorJson.getString("error")
+                        } else {
+                            response.message()
+                        }
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+                    _loginResponse.postValue(Resource.error(errorMessage, null))
+                    onError("Login failed: $errorMessage")
                 }
             } catch (e: Exception) {
                 _loginResponse.postValue(Resource.error(e.message ?: "Unknown error", null))

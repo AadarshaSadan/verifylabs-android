@@ -1,3 +1,5 @@
+package com.verifylabs.ai.data.network
+
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -5,9 +7,12 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class InternetHelper(private val context: Context) {
+@Singleton
+class InternetHelper @Inject constructor(@ApplicationContext private val context: Context) {
 
     private val _isConnected = MutableLiveData<Boolean>()
     val isConnected: LiveData<Boolean> get() = _isConnected
@@ -36,7 +41,9 @@ class InternetHelper(private val context: Context) {
     }
 
     fun stopMonitoring() {
-        connectivityManager.unregisterNetworkCallback(networkCallback)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+             connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
     }
 
     fun checkInternetNow(): Boolean {
@@ -48,9 +55,10 @@ class InternetHelper(private val context: Context) {
     suspend fun isInternetAvailable(): Boolean {
         return try {
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                // Ping google.com to check for actual internet connectivity
                 val socket = java.net.Socket()
-                val socketAddress = java.net.InetSocketAddress("8.8.8.8", 53)
-                socket.connect(socketAddress, 1500)
+                val socketAddress = java.net.InetSocketAddress("google.com", 80)
+                socket.connect(socketAddress, 3000) // 3 seconds timeout
                 socket.close()
                 true
             }

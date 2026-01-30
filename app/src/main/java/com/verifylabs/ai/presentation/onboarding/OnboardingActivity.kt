@@ -24,6 +24,15 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Enable edge-to-edge layout
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
+        // Ensure status bar icons are correct based on theme
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        // On Light Mode (NOT Dark Mode), we want Dark Icons (LightStatusBars = true)
+        // On Dark Mode, we want Light Icons (LightStatusBars = false)
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         prefs = PreferencesHelperImpl(this)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)

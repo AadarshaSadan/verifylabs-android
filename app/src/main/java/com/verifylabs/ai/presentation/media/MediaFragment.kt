@@ -1,7 +1,7 @@
 package com.verifylabs.ai.presentation.media
 
 import com.verifylabs.ai.core.util.MediaQualityAnalyzer
-import InternetHelper
+import com.verifylabs.ai.data.network.InternetHelper
 import android.Manifest
 import android.content.res.ColorStateList
 import android.content.Context

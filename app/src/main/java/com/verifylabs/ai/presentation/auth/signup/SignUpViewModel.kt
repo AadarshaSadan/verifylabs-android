@@ -14,8 +14,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.verifylabs.ai.data.network.InternetHelper
+
 @HiltViewModel
-class SignUpViewModel @Inject constructor(private val repository: ApiRepository) : ViewModel() {
+class SignUpViewModel @Inject constructor(
+    private val repository: ApiRepository,
+    private val internetHelper: InternetHelper
+) : ViewModel() {
 
     private var job: Job? = null
     private val loading = MutableLiveData<Boolean>()
@@ -31,13 +36,30 @@ class SignUpViewModel @Inject constructor(private val repository: ApiRepository)
         loading.postValue(true)
         job?.cancel()
         job = viewModelScope.launch(exceptionHandler) {
+            if (!internetHelper.isInternetAvailable()) {
+                _signUpResponse.postValue(Resource.error("No internet connection", null))
+                onError("No internet connection")
+                loading.postValue(false)
+                return@launch
+            }
             try {
                 val response = repository.postSignUp(fullName, email, username, password,secretKey,isVerified)
                 if (response.isSuccessful) {
                     _signUpResponse.postValue(Resource.success(response.body()))
                 } else {
-                    _signUpResponse.postValue(Resource.error(response.message(), null))
-                    onError("Sign up failed: ${response.message()}")
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        val errorJson = org.json.JSONObject(errorBody ?: "")
+                        if (errorJson.has("error")) {
+                            errorJson.getString("error")
+                        } else {
+                            response.message()
+                        }
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+                    _signUpResponse.postValue(Resource.error(errorMessage, null))
+                    onError("Sign up failed: $errorMessage")
                 }
             } catch (e: Exception) {
                 _signUpResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
