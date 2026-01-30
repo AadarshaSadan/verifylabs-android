@@ -176,19 +176,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:paddingTop="32dp"
-                    android:paddingBottom="32dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:background="@drawable/bg_result_card_green">
 
                     <ImageView
                         android:id="@+id/imgResultIcon"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_check_circle"
                         app:tint="@android:color/white"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="8dp" />
 
                     <LinearLayout
                          android:layout_width="wrap_content"
@@ -205,7 +205,7 @@
                              android:textSize="18sp"
                              android:textStyle="bold"
                              android:visibility="gone"
-                             android:layout_marginBottom="8dp" />
+                             android:layout_marginBottom="4dp" />
 
                          <TextView
                             android:id="@+id/txtResultMessage"
@@ -221,36 +221,43 @@
 
                 </LinearLayout>
 
-                <!-- Action Buttons -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnReset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reset"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="#424242"
-                    app:icon="@drawable/ic_refresh"
-                    app:iconTint="@android:color/white"
-                    app:cornerRadius="8dp"
-                    android:layout_marginTop="24dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnShowAnalysis"
+                <!-- Action Buttons Container -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="48dp"
-                    android:text="Show analysis"
-                    android:textAllCaps="false"
-                    android:textColor="#2196F3"
-                    android:backgroundTint="#00000000"
-                    app:strokeColor="#2196F3"
-                    app:strokeWidth="1dp"
-                    app:icon="@drawable/ic_chart_line"
-                    app:iconTint="#2196F3"
-                    app:iconGravity="textStart"
-                    app:cornerRadius="12dp"
-                    android:layout_marginTop="12dp" />
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reset"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="#424242"
+                        app:icon="@drawable/ic_refresh"
+                        app:iconTint="@android:color/white"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShowAnalysis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="48dp"
+                        android:text="Show analysis"
+                        android:textAllCaps="false"
+                        android:textColor="#2196F3"
+                        android:backgroundTint="#00000000"
+                        app:strokeColor="#2196F3"
+                        app:strokeWidth="1dp"
+                        app:icon="@drawable/ic_chart_line"
+                        app:iconTint="#2196F3"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="12dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
 
             </LinearLayout>
 
