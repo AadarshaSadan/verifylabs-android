@@ -215,11 +215,15 @@ class FragmentAudio : Fragment() {
         binding.btnReset.setOnClickListener { resetMicButton() }
 
         binding.btnShowAnalysis.setOnClickListener {
-            // binding.layoutResultsContainer.visibility = View.GONE // Don't hide result
-            binding.btnShowAnalysis.visibility = View.GONE // Hide the button instead
-            binding.cardAudioAnalysis.visibility = View.VISIBLE
-            binding.audioAnalysisChart.visibility = View.VISIBLE
-            binding.layoutAnalysisPlaceholder.visibility = View.GONE
+            if (binding.cardAudioAnalysis.visibility == View.VISIBLE) {
+                binding.cardAudioAnalysis.visibility = View.GONE
+                binding.btnShowAnalysis.text = "Show analysis"
+            } else {
+                binding.cardAudioAnalysis.visibility = View.VISIBLE
+                binding.audioAnalysisChart.visibility = View.VISIBLE
+                binding.layoutAnalysisPlaceholder.visibility = View.GONE
+                binding.btnShowAnalysis.text = "Hide analysis"
+            }
         }
     }
 
@@ -838,13 +842,13 @@ class FragmentAudio : Fragment() {
 
     private fun resetMicButton() {
         Log.d(TAG, "resetMicButton()")
-        
+
         // Restore Mic UI
         showMicControls(true)
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
         binding.txtTimer.visibility = View.GONE
-        
+
         // Reset Status Text
         binding.txtStatus.text = ""
         binding.txtStatus.visibility = View.VISIBLE
@@ -853,9 +857,10 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutResultsContainer.visibility = View.GONE
         binding.cardAudioAnalysis.visibility = View.GONE
-        binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE // Should be visible if card were visible, but card is GONE.
-                                                                    // Actually initial state has placeholder VISIBLE inside hierarchy.
-        
+        binding.layoutAnalysisPlaceholder.visibility =
+                View.VISIBLE // Should be visible if card were visible, but card is GONE.
+        // Actually initial state has placeholder VISIBLE inside hierarchy.
+
         // Reset Logic State
         binding.audioAnalysisChart.reset()
         isLongRecording = true
@@ -898,6 +903,10 @@ class FragmentAudio : Fragment() {
 
         binding.btnReset.visibility = View.VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE
+        // Sync button text with current chart visibility (usually visible on success)
+        binding.btnShowAnalysis.text =
+                if (binding.cardAudioAnalysis.visibility == View.VISIBLE) "Hide analysis"
+                else "Show analysis"
     }
 
     private fun displayResult(response: VerificationResponse) {
