@@ -242,13 +242,13 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnShowAnalysis"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="70dp"
+                        android:layout_marginHorizontal="48dp"
                         android:text="Show analysis"
                         android:textAllCaps="false"
                         android:textColor="#2196F3"
-                        android:backgroundTint="#00000000"
                         app:strokeColor="#2196F3"
                         app:strokeWidth="1dp"
                         app:icon="@drawable/ic_chart_line"
