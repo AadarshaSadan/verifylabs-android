@@ -111,20 +111,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp" />
 
-            <!-- Status -->
-            <TextView
-                android:id="@+id/txtStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="16sp"
-                android:textColor="@color/colorBlack"
-                android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/txtTimer"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="12dp" />
-
             <!-- No Credit Banner -->
             <LinearLayout
                 android:id="@+id/layoutNoCreditStatus"
@@ -135,7 +121,7 @@
                 android:background="@drawable/drawable_verify_background_btn_failed_likely_red"
                 android:padding="12dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/txtStatus"
+                app:layout_constraintTop_toBottomOf="@id/txtTimer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp">

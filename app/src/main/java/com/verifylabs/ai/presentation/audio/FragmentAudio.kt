@@ -138,7 +138,7 @@ class FragmentAudio : Fragment() {
                     startRecording()
                 } else {
                     Log.d(TAG, "Microphone permission denied")
-                    binding.txtStatus.text = "Permission denied"
+                    Log.d(TAG, "Permission denied")
                     Toast.makeText(
                                     requireContext(),
                                     "Microphone permission required",
@@ -375,7 +375,7 @@ class FragmentAudio : Fragment() {
                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
                     binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
                     binding.layoutNoCreditStatus.visibility = View.GONE
-                    binding.txtStatus.text = "Checking credits..."
+                    Log.d(TAG, "Checking credits...")
                     binding.micButton.isEnabled = false
                 }
                 Status.SUCCESS -> {
@@ -402,11 +402,11 @@ class FragmentAudio : Fragment() {
                     if (total <= 0) {
                         Log.d(TAG, "No credits - showing banner")
                         binding.layoutNoCreditStatus.visibility = View.VISIBLE
-                        binding.txtStatus.text = "No credits remaining"
+                        // binding.txtStatus.text = "No credits remaining"
                     } else {
                         Log.d(TAG, "Credits available - ready to record")
                         binding.layoutNoCreditStatus.visibility = View.GONE
-                        binding.txtStatus.text = "Tap to record"
+                        Log.d(TAG, "Tap to record")
                     }
                 }
                 Status.ERROR -> {
@@ -416,7 +416,7 @@ class FragmentAudio : Fragment() {
                     binding.llCreditsInfo.tvCreditsRemaining.text = "Credit check failed"
                     binding.micButton.isEnabled = false
                     binding.layoutNoCreditStatus.visibility = View.GONE
-                    binding.txtStatus.text = "Failed to check credits"
+                    Log.e(TAG, "Failed to check credits")
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     binding.llCreditsInfo.progressCredits.visibility = View.GONE
@@ -434,7 +434,7 @@ class FragmentAudio : Fragment() {
 
         if (total <= 0) {
             Log.d(TAG, "startRecording blocked: insufficient credits")
-            binding.txtStatus.text = "Insufficient credits"
+            Log.d(TAG, "Insufficient credits")
             Toast.makeText(requireContext(), "You need at least 1 credit", Toast.LENGTH_SHORT)
                     .show()
             return
@@ -462,8 +462,11 @@ class FragmentAudio : Fragment() {
             Log.d(TAG, "Recording started")
             binding.micButton.setImageResource(R.drawable.ic_audio)
             binding.txtTimer.visibility = View.VISIBLE
-            binding.txtStatus.text =
-                    if (isQuickRecording) "Quick Recording..." else "Long Recording..."
+            Log.d(
+                    TAG,
+                    if (isQuickRecording) "Status: Quick Recording..."
+                    else "Status: Long Recording..."
+            )
             isRecording = true
 
             if (allChunkFiles.size == 1) { // First chunk
@@ -486,7 +489,7 @@ class FragmentAudio : Fragment() {
             }
         } catch (e: IOException) {
             Log.e(TAG, "Recording failed", e)
-            binding.txtStatus.text = "Recording failed"
+            Log.e(TAG, "Recording failed msg")
             Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -530,7 +533,7 @@ class FragmentAudio : Fragment() {
     private fun handleSilenceFailure() {
         Log.w(TAG, "Silence threshold reached. Stopping recording.")
         stopRecording()
-        binding.txtStatus.text = "Failure: Long silence detected"
+        Log.d(TAG, "Failure: Long silence detected")
         Toast.makeText(requireContext(), "Recording stopped due to silence", Toast.LENGTH_LONG)
                 .show()
     }
@@ -585,7 +588,7 @@ class FragmentAudio : Fragment() {
                 mergeAndSaveChunks()
             } else if (currentRecordedFile == null) {
                 Log.w(TAG, "Audio file not found after recording")
-                binding.txtStatus.text = "File not found"
+                Log.e(TAG, "File not found")
             } else {
                 // Final Verification State for regular/quick recording
                 Log.d(TAG, "Starting Quick/Regular Verification Flow")
@@ -594,7 +597,7 @@ class FragmentAudio : Fragment() {
         } catch (e: Exception) {
             Log.e(TAG, "Error stopping recording", e)
             if (_binding != null) {
-                binding.txtStatus.text = "Stop failed"
+                Log.e(TAG, "Stop failed")
             }
         }
     }
@@ -608,7 +611,7 @@ class FragmentAudio : Fragment() {
         // Show Blue Analyzing Circle
         binding.layoutAnalyzing.visibility = View.VISIBLE
         binding.layoutAnalyzing.bringToFront() // Ensure it's on top
-        binding.txtStatus.text = "Analyzing..."
+        Log.d(TAG, "Analyzing...")
         stopPulseAnimation()
     }
 
@@ -626,12 +629,14 @@ class FragmentAudio : Fragment() {
             when (resource.status) {
                 Status.LOADING -> {
                     Log.d(TAG, "Upload: LOADING")
-                    binding.txtStatus.text = "Uploading audio..."
+//                    binding.txtStatus.text = "Uploading audio..."
+                    Log.d(TAG, "Uploading audio...")
                 }
                 Status.SUCCESS -> {
                     val url = resource.data?.get("uploadedUrl")?.asString.orEmpty()
                     Log.d(TAG, "Upload SUCCESS - URL: $url")
-                    binding.txtStatus.text = "Verifying audio..."
+//                    binding.txtStatus.text = "Verifying audio..."
+                    Log.d(TAG, "Verifying audio...")
                     viewModel.verifyMedia(
                             username = preferenceHelper.getUserName().orEmpty(),
                             apiKey = preferenceHelper.getApiKey().orEmpty(),
@@ -645,7 +650,8 @@ class FragmentAudio : Fragment() {
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
-                    binding.txtStatus.text = "Insufficient credits for upload"
+//                    binding.txtStatus.text = "Insufficient credits for upload"
+                    Log.d(TAG, "Insufficient credits for upload")
                     resetMicButton()
                 }
             }
@@ -716,7 +722,8 @@ class FragmentAudio : Fragment() {
                     }
                     Status.INSUFFICIENT_CREDITS -> {
                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
-                        binding.txtStatus.text = "Insufficient Credits"
+//                        binding.txtStatus.text = "Insufficient Credits"
+                        Log.d(TAG, "Insufficient Credits")
                         Toast.makeText(
                                         requireContext(),
                                         "Top up your credits to continue verifying audio",
@@ -843,7 +850,8 @@ class FragmentAudio : Fragment() {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to merge chunks", e)
                 withContext(Dispatchers.Main) {
-                    binding.txtStatus.text = "Merge failed"
+//                    binding.txtStatus.text = "Merge failed"
+                    Log.e(TAG, "Merge failed")
                     resetMicButton()
                 }
             }
@@ -860,8 +868,9 @@ class FragmentAudio : Fragment() {
         binding.txtTimer.visibility = View.GONE
 
         // Reset Status Text
-        binding.txtStatus.text = ""
-        binding.txtStatus.visibility = View.VISIBLE
+//        binding.txtStatus.text = ""
+//        binding.txtStatus.visibility = View.VISIBLE
+        Log.d(TAG, "Resetting Mic Button Status")
 
         // Hide Analysis/Results
         binding.layoutAnalyzing.visibility = View.GONE
@@ -899,8 +908,7 @@ class FragmentAudio : Fragment() {
         binding.cardAudioAnalysis.visibility = View.GONE
 
         // Hide controls and status similar to success state
-        binding.txtStatus.text = ""
-        binding.txtStatus.visibility = View.INVISIBLE
+        Log.d(TAG, "Status: ")
         binding.txtTimer.visibility = View.GONE
         showMicControls(false)
 
@@ -936,8 +944,8 @@ class FragmentAudio : Fragment() {
 
         binding.layoutAnalyzing.visibility = View.GONE // Ensure analyzing spinner is gone
         binding.layoutResultsContainer.visibility = View.VISIBLE
-        binding.txtStatus.text = "" // Clear status text
-        binding.txtStatus.visibility = View.INVISIBLE // User requested to hide it
+        // binding.txtStatus.text = "" // Clear status text
+        // binding.txtStatus.visibility = View.INVISIBLE // User requested to hide it
         binding.txtTimer.visibility = View.GONE // User requested to hide timer
 
         // Default to Success Green Style
