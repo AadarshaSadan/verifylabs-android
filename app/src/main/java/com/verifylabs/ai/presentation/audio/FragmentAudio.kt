@@ -689,9 +689,9 @@ class FragmentAudio : Fragment() {
                             }
                         }
 
-                        if (!isRecording) {
-                            resetMicButton()
-                        }
+                        // if (!isRecording) {
+                        //     resetMicButton()
+                        // }
 
                         // Auto-refresh credits
                         checkCredits()
@@ -837,33 +837,31 @@ class FragmentAudio : Fragment() {
     }
 
     private fun resetMicButton() {
-        Log.d(
-                TAG,
-                "resetMicButton() - Called from ${Thread.currentThread().stackTrace[3].methodName}"
-        )
-        binding.layoutAnalyzing.visibility = View.GONE
-        binding.layoutAnalyzing.visibility = View.GONE
-        binding.micPulse.visibility = View.VISIBLE
-        binding.micButton.visibility = View.VISIBLE
-        binding.txtTimer.visibility = View.GONE
-
+        Log.d(TAG, "resetMicButton()")
+        
+        // Restore Mic UI
+        showMicControls(true)
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
-        binding.micButton.setOnClickListener {
-            binding.cardAudioAnalysis.visibility = View.GONE
-            binding.layoutResultsContainer.visibility = View.GONE // Hide Result Container
-            binding.layoutAnalysisPlaceholder.visibility = View.GONE
-            binding.audioAnalysisChart.reset()
-            // binding.layoutInfoStatus.visibility = View.GONE // Removed old ID
+        binding.txtTimer.visibility = View.GONE
+        
+        // Reset Status Text
+        binding.txtStatus.text = ""
+        binding.txtStatus.visibility = View.VISIBLE
 
-            // Fix: Reset state for next recording (Long Recording by default)
-            isLongRecording = true
-            isQuickRecording = false
-            allChunkFiles.clear()
-            temporalScores.clear()
-
-            requestRecordPermission()
-        }
+        // Hide Analysis/Results
+        binding.layoutAnalyzing.visibility = View.GONE
+        binding.layoutResultsContainer.visibility = View.GONE
+        binding.cardAudioAnalysis.visibility = View.GONE
+        binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE // Should be visible if card were visible, but card is GONE.
+                                                                    // Actually initial state has placeholder VISIBLE inside hierarchy.
+        
+        // Reset Logic State
+        binding.audioAnalysisChart.reset()
+        isLongRecording = true
+        isQuickRecording = false
+        allChunkFiles.clear()
+        temporalScores.clear()
     }
 
     private fun getBandResult(band: Int?): String {
@@ -908,6 +906,8 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalyzing.visibility = View.GONE // Ensure analyzing spinner is gone
         binding.layoutResultsContainer.visibility = View.VISIBLE
         binding.txtStatus.text = "" // Clear status text
+        binding.txtStatus.visibility = View.INVISIBLE // User requested to hide it
+        binding.txtTimer.visibility = View.GONE // User requested to hide timer
 
         // Default to Success Green Style
         binding.cardResultStatus.background =
@@ -920,6 +920,8 @@ class FragmentAudio : Fragment() {
 
         binding.txtResultMessage.text =
                 response.bandDescription ?: getBandDescription(response.band)
+
+        showMicControls(false)
 
         when (response.band) {
             1, 2 -> { // Human - Green
@@ -974,6 +976,15 @@ class FragmentAudio : Fragment() {
                 binding.txtResultMessage.setTextColor(Color.parseColor("#FF5252"))
             }
         }
+    }
+
+    private fun showMicControls(show: Boolean) {
+        val visibility = if (show) View.VISIBLE else View.GONE
+
+        binding.micButton.visibility = visibility
+        binding.micTimer.visibility = visibility
+        binding.micPulse.visibility = visibility
+        binding.micPulsebtn.visibility = visibility
     }
 
     private fun getBandDescription(band: Int): String {
