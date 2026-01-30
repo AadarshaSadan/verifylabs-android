@@ -15,11 +15,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 import com.verifylabs.ai.data.network.InternetHelper
+import com.verifylabs.ai.data.base.PreferenceHelper
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: ApiRepository,
-    private val internetHelper: InternetHelper
+    private val internetHelper: InternetHelper,
+    private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
 
     private var job: Job? = null
@@ -47,9 +49,52 @@ class LoginViewModel @Inject constructor(
                 return@launch
             }
             try {
+                // 1. Perform Backend Login
                 val response = repository.postLogin(username, password)
-                if (response.isSuccessful) {
-                    _loginResponse.postValue(Resource.success(response.body()))
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()!!
+                    
+                    // Parse Login Response
+                    val apiKey = body.get("api_key")?.asString ?: ""
+                    val credits = body.get("credits")?.asInt ?: 0
+                    val creditsMonthly = body.get("credits_monthly")?.asInt ?: 0
+                    val totalCredits = credits + creditsMonthly
+                    
+                    // 2. Identify with RevenueCat
+                    com.revenuecat.purchases.Purchases.sharedInstance.logIn(username, object : com.revenuecat.purchases.interfaces.LogInCallback {
+                         override fun onReceived(customerInfo: com.revenuecat.purchases.CustomerInfo, created: Boolean) {
+                            // Set attributes for webhooks
+                            com.revenuecat.purchases.Purchases.sharedInstance.setAttributes(mapOf(
+                                "verifylabs_api_key" to apiKey,
+                                "verifylabs_username" to username
+                            ))
+                        }
+                        override fun onError(error: com.revenuecat.purchases.PurchasesError) {
+                            // Log error but don't block login flow
+                            android.util.Log.e("LoginViewModel", "RevenueCat login failed: ${error.message}")
+                        }
+                    })
+
+                    // 3. Authoritative Credit Sync (Update local immediately)
+                    preferenceHelper.setCreditReamaining(totalCredits)
+                    
+                    // 4. Check Email Verification Status
+                    try {
+                        val userInfoResponse = repository.getWpUserInfo(com.verifylabs.ai.core.util.Constants.SECRET_KEY, username)
+                        if (userInfoResponse.isSuccessful && userInfoResponse.body() != null) {
+                            val userInfo = userInfoResponse.body()!!
+                            val isEmailVerified = userInfo.get("is_email_verified")?.asBoolean ?: false
+                            // Store verification status if needed (currently iOS clears profile completion helper)
+                             if (isEmailVerified) {
+                                // Logic to clear profile completion if implemented in Android
+                            }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.w("LoginViewModel", "Failed to fetch user info for email verification: ${e.message}")
+                    }
+
+                    // Final Success
+                    _loginResponse.postValue(Resource.success(body))
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {

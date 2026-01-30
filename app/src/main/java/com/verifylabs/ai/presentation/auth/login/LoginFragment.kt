@@ -126,14 +126,29 @@ class LoginFragment : Fragment() {
                 // Update button state (iOS Style)
                 val canProceed = username.isNotEmpty() && password.isNotEmpty()
                 binding.btnGetStarted.isEnabled = canProceed
-                binding.btnGetStarted.alpha = if (canProceed) 1.0f else 0.6f
-                binding.btnGetStarted.setBackgroundResource(R.drawable.bg_ios_green_button)
+                // iOS: Gray opacity 0.6 when disabled, Green opacity 1.0 when enabled
+                // We use different drawables to match colors exactly
+                if (canProceed) {
+                    binding.btnGetStarted.setBackgroundResource(R.drawable.bg_ios_green_button)
+                    binding.btnGetStarted.alpha = 1.0f
+                    binding.btnGetStarted.elevation = 8f // Add shadow
+                } else {
+                    binding.btnGetStarted.setBackgroundResource(R.drawable.bg_ios_gray_button)
+                    binding.btnGetStarted.alpha = 0.6f
+                    binding.btnGetStarted.elevation = 0f // No shadow
+                }
             }
         }
 
         // Attach the same TextWatcher to both fields
         binding.etUsername.addTextChangedListener(textWatcher)
         binding.etPassword.addTextChangedListener(textWatcher)
+        
+        // Initial state check
+        binding.btnGetStarted.isEnabled = false
+        binding.btnGetStarted.setBackgroundResource(R.drawable.bg_ios_gray_button)
+        binding.btnGetStarted.alpha = 0.6f
+        binding.btnGetStarted.elevation = 0f
     }
 
     private fun validateInputs(username: String, password: String): Boolean {
@@ -148,31 +163,52 @@ class LoginFragment : Fragment() {
         loginViewModel.getLoginResponse().observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 Status.LOADING -> {
-                    Toast.makeText(requireContext(), "Logging in...", Toast.LENGTH_SHORT).show()
-
-                    binding.tvSignIn.text= getString(R.string.signing_in)
+                    // Show Spinner
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.tvSignIn.text = "SIGNING IN..." 
+                    binding.btnGetStarted.isEnabled = false
+                    binding.btnGetStarted.alpha = 0.8f // Slight dim during loading
                 }
                 Status.SUCCESS -> {
+                    // Hide Spinner
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvSignIn.text = "SIGN IN"
+                    
                     resource.data?.let {
                         try {
                             val response = Gson().fromJson(it.toString(), ApiResponseLogin::class.java)
                             Log.d(TAG, "setupObservers: Login Response: $response")
+                            
+                            // Note: ViewModel already handles authoritative credit sync & RevenueCat login
+                            // We just need to save the basic session info and navigate
+                            
                             preferenceHelper.setApiKey(response.apiKey)
                             preferenceHelper.setIsLoggedIn(true)
-                            preferenceHelper.setCreditReamaining(response.credits + response.creditsMonthly)
-//                            Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
+                            // Credits are already set in ViewModel before this observer flows
+                            
                             navigateToMainActivity()
                         } catch (e: Exception) {
-//                            Toast.makeText(requireContext(), "Parsing error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            // On error, revert button state
+                             binding.btnGetStarted.isEnabled = true
+                             binding.btnGetStarted.alpha = 1.0f
                         }
                     }
                 }
                 Status.ERROR -> {
-                    binding.tvSignIn.text = getString(R.string.sign_in_login)
+                    // Hide Spinner and Reset
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvSignIn.text = "SIGN IN" // Reset text
+                    binding.btnGetStarted.isEnabled = true
+                    binding.btnGetStarted.alpha = 1.0f
+                    
                     showErrorDialog("Error", resource.message ?: "Invalid credentials. Please check your username and password.")
                 }
                 Status.INSUFFICIENT_CREDITS -> {
-                    binding.tvSignIn.text = getString(R.string.sign_in_login)
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvSignIn.text = "SIGN IN"
+                    binding.btnGetStarted.isEnabled = true
+                    binding.btnGetStarted.alpha = 1.0f
+                    
                     showErrorDialog("Error", "Insufficient credits.")
                 }
             }
