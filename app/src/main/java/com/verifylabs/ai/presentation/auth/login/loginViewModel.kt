@@ -57,16 +57,24 @@ class LoginViewModel @Inject constructor(
                         if (errorJson.has("error")) {
                             errorJson.getString("error")
                         } else {
-                            response.message()
+                            if (response.message().isNullOrEmpty()) "Error ${response.code()}" else response.message()
                         }
                     } catch (e: Exception) {
-                        response.message()
+                        if (response.message().isNullOrEmpty()) "Error ${response.code()}" else response.message()
                     }
                     _loginResponse.postValue(Resource.error(errorMessage, null))
-                    onError("Login failed: $errorMessage")
+                    onError(errorMessage)
                 }
+            } catch (e: java.io.IOException) {
+                // Network error (timeout, connection dropped, etc.)
+                val msg = "Network error. Please check your connection."
+                _loginResponse.postValue(Resource.error(msg, null))
+                onError(msg)
             } catch (e: Exception) {
-                _loginResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
+                // Other errors
+                val msg = e.localizedMessage ?: "An unexpected error occurred"
+                _loginResponse.postValue(Resource.error(msg, null))
+                onError(msg)
             } finally {
                 loading.postValue(false)
             }

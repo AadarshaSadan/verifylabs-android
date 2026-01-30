@@ -99,14 +99,18 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun loadOfferings() {
+    private fun loadOfferings(completion: (() -> Unit)? = null) {
         Purchases.sharedInstance.getOfferingsWith(
             onError = { error ->
                 Log.e(TAG, "Failed to load offerings")
                 Toast.makeText(requireContext(), "Network error. Try again.", Toast.LENGTH_SHORT).show()
+                completion?.invoke()
             },
             onSuccess = { offerings ->
-                val current = offerings.current ?: return@getOfferingsWith
+                val current = offerings.current ?: run {
+                    completion?.invoke()
+                    return@getOfferingsWith
+                }
 
                 val packages = current.availablePackages.mapNotNull { pkg ->
                     val product = pkg.product
@@ -119,11 +123,6 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
                     }
 
                     Log.d(TAG, "product title: ${product.title} ")
-
-//                    val cleanName = product.title
-//                        .substringBefore("(").trim()
-//                        .let { if (it.contains("Credits")) it.substringBefore("Credits").trim() else it }
-//                        .ifBlank { if (isSub) product.title.substringBefore("(").trim() else "Credit Pack" }
 
                     val cleanName = product.title
                         .replace(Regex("\\(.*\\)"), "")
@@ -150,15 +149,37 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
                 val finalList = packages.map { it.copy(isBestValue = it == bestValue) }
 
                 adapter?.submitList(finalList)
+                completion?.invoke()
             }
         )
     }
 
     private fun restorePurchases() {
-        Purchases.sharedInstance.restorePurchasesWith { customerInfo ->
-            Toast.makeText(requireContext(), "Purchases restored!", Toast.LENGTH_SHORT).show()
-            // Optional: refresh balance from backend or customerInfo
-        }
+        binding.progressBar.visibility = View.VISIBLE
+        // Disable button to prevent double clicks
+        binding.tvRestorePurchase.isEnabled = false
+
+        Purchases.sharedInstance.restorePurchasesWith(
+            onError = { error ->
+                // Even if restore fails, we try to reload offerings? 
+                // Or just stop here. RevenueCat says restore error usually means network.
+                Toast.makeText(requireContext(), "Restore failed: ${error.message}", Toast.LENGTH_SHORT).show()
+                
+                // Still try to refresh plans as user requested "fetch same api"
+                loadOfferings {
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvRestorePurchase.isEnabled = true
+                }
+            },
+            onSuccess = { customerInfo ->
+                Toast.makeText(requireContext(), "Purchases restored!", Toast.LENGTH_SHORT).show()
+                // Now fetch plans as requested
+                loadOfferings {
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvRestorePurchase.isEnabled = true
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {

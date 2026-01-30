@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.verifylabs.ai.R
-import com.verifylabs.ai.core.util.Constants
+import com.verifylabs.ai.core.util.Resource
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.data.repository.VerificationRepository
@@ -20,7 +20,6 @@ import com.verifylabs.ai.databinding.FragmentSettingsBinding
 import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.auth.login.ApiResponseLogin
 import com.verifylabs.ai.presentation.auth.login.LoginViewModel
-import com.verifylabs.ai.presentation.plan.PlanResponse
 import com.verifylabs.ai.presentation.purchasecredits.PurchaseCreditsBottomSheet
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -40,8 +39,6 @@ class SettingsFragment : Fragment() {
         get() = _binding!!
 
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var planViewModel: PlanViewModel
-    private var planList: List<PlanResponse> = emptyList()
 
     companion object {
         private const val TAG = "SettingsFragment"
@@ -61,13 +58,11 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
-        planViewModel = ViewModelProvider(this)[PlanViewModel::class.java]
 
         setupSeekBars()
         setupUi()
         setupObservers()
         setupClickListeners()
-        fetchPlans()
     }
 
     private fun setupUi() {
@@ -77,8 +72,9 @@ class SettingsFragment : Fragment() {
         // ""}....."
 
         // disable the purchase button until plans are loaded
-        binding.btnPurchaseCredits.isEnabled = false
-        binding.btnPurchaseCredits.alpha = 0.5f
+        // disable the purchase button until plans are loaded
+        // binding.btnPurchaseCredits.isEnabled = false
+        // binding.btnPurchaseCredits.alpha = 0.5f
 
         val storeCredits = preferenceHelper.getCreditRemaining()
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(storeCredits)
@@ -265,33 +261,29 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    showCreditsLoading(false)
-                    resource.data?.let { dataJson ->
-                        val credits = dataJson.get("credits")?.asInt ?: 0
-                        val creditsMonthly = dataJson.get("credits_monthly")?.asInt ?: 0
-                        val totalCredits = credits + creditsMonthly
-                        preferenceHelper.setCreditReamaining(totalCredits)
-                        val formattedCredits =
-                                NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
-                        binding.tvCreditsRemaining.text =
-                                getString(R.string.credits_remaining, formattedCredits)
-                        Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT)
-                                .show()
-                    }
-                }
-                Status.ERROR -> {
-                    showCreditsLoading(false)
-                    Toast.makeText(
-                                    requireContext(),
-                                    resource.message ?: "Failed to refresh credits",
-                                    Toast.LENGTH_SHORT
-                            )
+        loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource: com.verifylabs.ai.core.util.Resource<com.google.gson.JsonObject> ->
+            if (resource.status == Status.SUCCESS) {
+                showCreditsLoading(false)
+                resource.data?.let { dataJson ->
+                    val credits = dataJson.get("credits")?.asInt ?: 0
+                    val creditsMonthly = dataJson.get("credits_monthly")?.asInt ?: 0
+                    val totalCredits = credits + creditsMonthly
+                    preferenceHelper.setCreditReamaining(totalCredits)
+                    val formattedCredits =
+                            NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+                    binding.tvCreditsRemaining.text =
+                            getString(R.string.credits_remaining, formattedCredits)
+                    Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT)
                             .show()
                 }
-                else -> {}
+            } else if (resource.status == Status.ERROR) {
+                showCreditsLoading(false)
+                Toast.makeText(
+                                requireContext(),
+                                resource.message ?: "Failed to refresh credits",
+                                Toast.LENGTH_SHORT
+                        )
+                        .show()
             }
         }
     }
@@ -303,34 +295,6 @@ class SettingsFragment : Fragment() {
         } else {
             binding.llCreditsBalance.visibility = View.VISIBLE
             binding.llCreditsLoading.visibility = View.GONE
-        }
-    }
-
-    private fun fetchPlans() {
-        planViewModel.getPlans(Constants.SECRET_KEY)
-        planViewModel.plansObserver.observe(viewLifecycleOwner) { resource ->
-            when (resource.status) {
-                Status.LOADING -> {
-                    Log.d(TAG, "Fetching plans...")
-                }
-                Status.SUCCESS -> {
-                    resource.data?.let {
-                        planList = it
-                        Log.d(TAG, "Plans fetched: $planList")
-                        // enable purchase button
-                        binding.btnPurchaseCredits.isEnabled = true
-                        binding.btnPurchaseCredits.alpha = 1f
-                    }
-                }
-                Status.ERROR -> {
-                    Log.e(TAG, "Error fetching plans: ${resource.message}")
-                    Toast.makeText(requireContext(), "Failed to load plans", Toast.LENGTH_SHORT)
-                            .show()
-                }
-                Status.INSUFFICIENT_CREDITS -> {
-                    // No-op for plans
-                }
-            }
         }
     }
 
