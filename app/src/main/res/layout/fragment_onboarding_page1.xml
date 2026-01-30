@@ -48,7 +48,6 @@ android:padding="25dp">
         android:textSize="50sp"
         android:textStyle="bold"
         app:drawableLeftCompat="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_"
-        app:drawableTint="@color/vl_onboarding_background"
         app:layout_constraintEnd_toEndOf="@+id/textViewProtecting"
         app:layout_constraintStart_toStartOf="@+id/textViewProtecting"
         app:layout_constraintTop_toBottomOf="@id/textViewProtecting" />
@@ -79,7 +78,7 @@ android:padding="25dp">
         android:textSize="50sp"
         android:textStyle="bold"
         app:drawableRightCompat="@drawable/verifylabs_robot_icon_light_grey_rgb_1__traced_"
-        app:drawableTint="@color/vl_onboarding_background"
+
         app:layout_constraintStart_toStartOf="@+id/textViewProtecting3"
         app:layout_constraintTop_toBottomOf="@id/textViewProtecting3" />
 
