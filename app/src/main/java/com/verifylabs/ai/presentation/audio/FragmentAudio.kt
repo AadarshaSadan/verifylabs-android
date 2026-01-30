@@ -897,14 +897,19 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutResultsContainer.visibility = View.VISIBLE
         binding.cardAudioAnalysis.visibility = View.GONE
+
+        // Hide controls and status similar to success state
         binding.txtStatus.text = ""
+        binding.txtStatus.visibility = View.INVISIBLE
+        binding.txtTimer.visibility = View.GONE
+        showMicControls(false)
 
         binding.cardResultStatus.background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_red)
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
         )
-//        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.GREEN)
+        //        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.GREEN)
 
         binding.txtResultTitle.text = "Verification failed"
         binding.txtResultTitle.visibility = View.VISIBLE
@@ -976,7 +981,8 @@ class FragmentAudio : Fragment() {
                 binding.imgResultIcon.setImageDrawable(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
                 )
-               binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                binding.imgResultIcon.imageTintList =
+                        ColorStateList.valueOf(Color.parseColor("#4CAF50"))
                 binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50"))
             }
             3 -> { // Unsure - Gray? (Requirement only specified Success/Error layouts, but handling
@@ -994,7 +1000,8 @@ class FragmentAudio : Fragment() {
                 binding.imgResultIcon.setImageDrawable(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
                 )
-                binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#FF5252"))
+                binding.imgResultIcon.imageTintList =
+                        ColorStateList.valueOf(Color.parseColor("#FF5252"))
                 binding.txtResultMessage.setTextColor(
                         Color.WHITE
                 ) // White text on Red card usually? Or Red text?
