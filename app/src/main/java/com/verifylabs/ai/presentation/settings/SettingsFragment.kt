@@ -209,25 +209,46 @@ class SettingsFragment : Fragment() {
 
         // Purge All History
         binding.llDeleteAccount.setOnClickListener {
-            androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Delete All History?")
-                    .setMessage(
-                            "This will permanently delete all verification history. This cannot be undone."
-                    )
-                    .setPositiveButton("Delete") { _, _ ->
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            val deleted = verificationRepository.purgeAll()
-                            Toast.makeText(
-                                            requireContext(),
-                                            "Deleted $deleted items",
-                                            Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                            updateStorageSize()
-                        }
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+            // Fetch size dynamically before showing dialog
+            viewLifecycleOwner.lifecycleScope.launch {
+                val sizeKb = verificationRepository.getTotalSizeKb()
+                showPurgeConfirmationDialog(sizeKb)
+            }
+        }
+    }
+
+    private fun showPurgeConfirmationDialog(sizeKb: Long) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_purge_history, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        val tvMessage = dialogView.findViewById<android.widget.TextView>(R.id.tvMessage)
+        val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancel)
+        val btnPurge = dialogView.findViewById<android.widget.TextView>(R.id.btnPurge)
+
+        tvMessage.text = "This will permanently delete all verification history and associated media files ($sizeKb KB). This action cannot be undone."
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnPurge.setOnClickListener {
+            dialog.dismiss()
+            performPurge()
+        }
+
+        dialog.show()
+    }
+
+    private fun performPurge() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val deleted = verificationRepository.purgeAll()
+            Toast.makeText(requireContext(), "Deleted $deleted items", Toast.LENGTH_SHORT).show()
+            updateStorageSize()
         }
     }
 

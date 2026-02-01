@@ -12,7 +12,7 @@
     <color name="app_background_2">#ECF5EC</color>
     <color name="colorBackground3">#FFFFFF</color>
     <color name="app_background_3">#1C1C1E</color>
-    <color name="app_background_before_login">#000000</color>
+    <color name="app_background_before_login">#272B27</color>
     <!-- Dark theme overrides -->
     <color name="colorBlack">#FFFFFF</color>
     <color name="colorWhite">#000000</color>
@@ -111,4 +111,11 @@
     
     <!-- Audio Chart Background -->
     <color name="audio_chart_background">#1AFFFFFF</color>
+
+    <!-- iOS Dialog Colors -->
+    <color name="ios_dialog_bg">#1C1C1E</color>
+    <color name="ios_dialog_button_bg">#2C2C2E</color>
+    <color name="ios_dialog_title">#FFFFFF</color>
+    <color name="ios_dialog_message">#EBEBF5</color>
+    <color name="ios_dialog_stroke">#33FFFFFF</color>
 </resources>

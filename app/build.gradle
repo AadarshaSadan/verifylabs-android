@@ -67,18 +67,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
-    buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
-
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-        }
-    }
 }
 
 dependencies {
@@ -95,7 +83,6 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.activity
     implementation libs.androidx.constraintlayout
-    implementation libs.androidx.core.ktx.v1120
 
 
     // Retrofit & networking
@@ -116,19 +103,12 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
-    //fornightmode
-    implementation libs.androidx.appcompat
-
 
     //lottie animation
     implementation libs.lottie
 
     //for in-app purchase
-
-
     implementation(libs.purchases)
-
-    implementation libs.purchases.v770
 
     // Firebase
     implementation(libs.firebase.analytics.ktx)

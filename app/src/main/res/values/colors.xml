@@ -118,4 +118,11 @@
     
     <!-- Audio Chart Background -->
     <color name="audio_chart_background">#FBFCFC</color>
+
+    <!-- iOS Dialog Colors -->
+    <color name="ios_dialog_bg">#F2F2F2</color>
+    <color name="ios_dialog_button_bg">#FFFFFF</color> <!-- Buttons in light mode often white on gray bg -->
+    <color name="ios_dialog_title">#000000</color>
+    <color name="ios_dialog_message">#333333</color>
+    <color name="ios_dialog_stroke">#33333333</color>
 </resources>
