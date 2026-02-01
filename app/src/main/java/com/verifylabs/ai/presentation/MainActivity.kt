@@ -175,7 +175,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateStatusBarColor(colorResId: Int) {
-        window.statusBarColor = ContextCompat.getColor(this, colorResId)
+        val color = ContextCompat.getColor(this, colorResId)
+        window.statusBarColor = color
+        window.navigationBarColor = color
 
         // Update light/dark status bar icons based on background brightness
         // For ios_settings_background (#F2F2F7 in light), we want dark icons
@@ -190,5 +192,44 @@ class MainActivity : AppCompatActivity() {
         // Simple heuristic: if dark mode, icons are light. If light mode, icons are dark.
         // This generally works for our current setup where light mode has light backgrounds.
         windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
+        windowInsetsController.isAppearanceLightNavigationBars = !isDarkMode
+    }
+
+    fun updateBottomNavColor(colorResId: Int, elevationDp: Float = 8f) {
+        try {
+            val color = ContextCompat.getColor(this, colorResId)
+
+            // Update CardView background
+            binding.floatingBottomNav.setCardBackgroundColor(color)
+            
+            // Update elevation (remove shadow/overlay for immersive screens if 0 is passed)
+            binding.floatingBottomNav.cardElevation = elevationDp * resources.displayMetrics.density
+
+            // Accessing the inner LinearLayout via the ID we just added in XML
+            val container = binding.floatingBottomNav.findViewById<View>(R.id.bottomNavContainer)
+            
+            // Should stay compatible with shape drawable
+            val background = container?.background
+            if (background is android.graphics.drawable.GradientDrawable) {
+                background.mutate()
+                background.setColor(color)
+            } else if (background is android.graphics.drawable.ColorDrawable) {
+                background.color = color
+            } else {
+                 android.util.Log.w("MainActivity", "Background is not GradientDrawable: ${background?.javaClass?.name}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "Error updating bottom nav color", e)
+        }
+    }
+
+    fun updateAppBarColor(colorResId: Int) {
+        val color = ContextCompat.getColor(this, colorResId)
+        binding.appbar.root.setBackgroundColor(color)
+    }
+
+    fun updateMainBackgroundColor(colorResId: Int) {
+        val color = ContextCompat.getColor(this, colorResId)
+        binding.main.setBackgroundColor(color)
     }
 }

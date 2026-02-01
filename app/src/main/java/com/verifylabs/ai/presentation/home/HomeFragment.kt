@@ -153,6 +153,11 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
+        // Restore standard elevation for Home
+        (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
+        // Set AppBar to transparent or app_background to match standard look
+        (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
+        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
     }
 
     override fun onDestroyView() {

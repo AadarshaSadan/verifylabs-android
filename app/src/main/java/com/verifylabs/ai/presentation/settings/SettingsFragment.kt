@@ -355,6 +355,10 @@ class SettingsFragment : Fragment() {
 
         // Set status bar color for this fragment
         (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+        // Pass 0f elevation to remove the white surface tint in dark mode
+        (activity as? MainActivity)?.updateBottomNavColor(R.color.ios_settings_background, 0f)
+        (activity as? MainActivity)?.updateAppBarColor(R.color.ios_settings_background)
+        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
 
         // Clean up old history based on retention setting
         cleanupOldHistory()

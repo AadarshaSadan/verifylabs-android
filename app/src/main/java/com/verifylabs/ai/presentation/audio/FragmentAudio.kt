@@ -242,6 +242,10 @@ class FragmentAudio : Fragment() {
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
+        // Restore standard elevation
+        (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
+        (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
+        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
     }
 
     private fun loadLocalCredits() {

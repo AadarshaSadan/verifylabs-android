@@ -75,6 +75,10 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+        // Pass 0f elevation to remove the white surface tint in dark mode
+        (activity as? MainActivity)?.updateBottomNavColor(R.color.ios_settings_background, 0f)
+        (activity as? MainActivity)?.updateAppBarColor(R.color.ios_settings_background)
+        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
     }
 
     private fun initViewModel() {
