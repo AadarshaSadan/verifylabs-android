@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var currentSelectedIndex: Int = 0
+    private var isBounceEnabled: Boolean = true // Toggle for bounce animations
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,31 +94,77 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(SettingsFragment())
         }
 
+        setupBottomNavTouchSensitivity()
         setupTopIconInteraction()
+    }
+
+    private fun animateRubberBounce(view: View, pressure: Float = 1.0f) {
+        // Cancel any pending animations
+        view.animate().cancel()
+        
+        // Intensity mapping: Normalize pressure (usually 0.5 to 1.0) to a scale factor
+        // We reduce base intensity as user said 5.0 was too high.
+        val baseScaleDown = 0.95f // Subtler initial snap
+        val adaptiveScaleDown = baseScaleDown - (0.02f * pressure.coerceIn(0f, 1f))
+        
+        // 1. Set the scale down INSTANTLY based on pressure
+        view.scaleX = adaptiveScaleDown
+        view.scaleY = adaptiveScaleDown
+        
+        // 2. Animate back to 1.0 with a moderated Overshoot (iOS-like snap)
+        view.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(400)
+            .setInterpolator(OvershootInterpolator(3.0f)) // Reduced from 5.0f for better balance
+            .start()
+    }
+
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
+    private fun setupBottomNavTouchSensitivity() {
+        val navItems = listOf(
+            binding.navHome,
+            binding.navMedia,
+            binding.navAudio,
+            binding.navHistory,
+            binding.navSettings
+        )
+        
+        navItems.forEach { view ->
+            view.setOnTouchListener { v, event ->
+                if (isBounceEnabled && event.action == android.view.MotionEvent.ACTION_DOWN) {
+                    val pressure = event.pressure
+                    animateRubberBounce(binding.floatingBottomNav, pressure)
+                }
+                false // Allow the click listener to still trigger
+            }
+        }
     }
 
     private fun setupTopIconInteraction() {
         try {
             val btnTopIcon = binding.appbar.root.findViewById<View>(R.id.btn_top_icon)
             btnTopIcon?.setOnClickListener {
-                // Rubber Bounce Animation (Scale 0.8 -> 1.1 -> 1.0 with Overshoot)
-                it.animate()
-                    .scaleX(1.1f)
-                    .scaleY(1.1f)
-                    .setDuration(300)
-                    .setInterpolator(OvershootInterpolator(2.0f))
-                    .withStartAction {
-                        it.scaleX = 0.8f
-                        it.scaleY = 0.8f
-                    }
-                    .withEndAction {
-                        it.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .setDuration(100)
-                            .start()
-                    }
-                    .start()
+                if (isBounceEnabled) {
+                    // Rubber Bounce Animation (Scale 0.8 -> 1.1 -> 1.0 with Overshoot)
+                    it.animate()
+                        .scaleX(1.1f)
+                        .scaleY(1.1f)
+                        .setDuration(300)
+                        .setInterpolator(OvershootInterpolator(2.0f))
+                        .withStartAction {
+                            it.scaleX = 0.8f
+                            it.scaleY = 0.8f
+                        }
+                        .withEndAction {
+                            it.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100)
+                                .start()
+                        }
+                        .start()
+                }
 
                 // Fast Sequential Navigation to Home
                 lifecycleScope.launch {
