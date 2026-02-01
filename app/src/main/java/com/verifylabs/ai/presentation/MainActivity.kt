@@ -9,7 +9,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.setPadding
+import android.view.animation.OvershootInterpolator
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.ActivityMainBinding
 import com.verifylabs.ai.presentation.audio.FragmentAudio
@@ -18,11 +20,14 @@ import com.verifylabs.ai.presentation.home.HomeFragment
 import com.verifylabs.ai.presentation.media.MediaFragment
 import com.verifylabs.ai.presentation.settings.SettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var currentSelectedIndex: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,10 +92,62 @@ class MainActivity : AppCompatActivity() {
             selectNavItem(it)
             replaceFragment(SettingsFragment())
         }
+
+        setupTopIconInteraction()
+    }
+
+    private fun setupTopIconInteraction() {
+        try {
+            val btnTopIcon = binding.appbar.root.findViewById<View>(R.id.btn_top_icon)
+            btnTopIcon?.setOnClickListener {
+                // Rubber Bounce Animation (Scale 0.8 -> 1.1 -> 1.0 with Overshoot)
+                it.animate()
+                    .scaleX(1.1f)
+                    .scaleY(1.1f)
+                    .setDuration(300)
+                    .setInterpolator(OvershootInterpolator(2.0f))
+                    .withStartAction {
+                        it.scaleX = 0.8f
+                        it.scaleY = 0.8f
+                    }
+                    .withEndAction {
+                        it.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start()
+                    }
+                    .start()
+
+                // Fast Sequential Navigation to Home
+                lifecycleScope.launch {
+                    val navButtons = listOf(
+                        binding.navHome,
+                        binding.navMedia,
+                        binding.navAudio,
+                        binding.navHistory,
+                        binding.navSettings
+                    )
+                    
+                    // Animate through intermediate tabs back to 0
+                    if (currentSelectedIndex > 0) {
+                        for (i in (currentSelectedIndex - 1) downTo 0) {
+                            selectNavItem(navButtons[i], updateIndex = false)
+                            delay(60) // Fast slide speed
+                        }
+                    }
+                    
+                    // Final navigation action
+                    binding.navHome.performClick()
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "Error setting up top icon interaction", e)
+        }
     }
 
     /** Bottom navigation selection coloring */
-    private fun selectNavItem(selected: View) {
+    private fun selectNavItem(selected: View, updateIndex: Boolean = true) {
 
         val buttons =
                 listOf(
@@ -135,6 +192,11 @@ class MainActivity : AppCompatActivity() {
                 texts[index].setTextColor(
                         ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
                 )
+            }
+            
+            // Update global index tracker if requested
+            if (updateIndex && btn == selected) {
+                currentSelectedIndex = index
             }
         }
     }
