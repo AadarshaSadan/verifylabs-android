@@ -218,23 +218,26 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showPurgeConfirmationDialog(sizeKb: Long) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_purge_history, null)
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val dialogView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_purge_history, null)
+        val dialog =
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setView(dialogView)
+                        .setCancelable(true)
+                        .create()
 
-        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
+        )
 
         val tvMessage = dialogView.findViewById<android.widget.TextView>(R.id.tvMessage)
         val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancel)
         val btnPurge = dialogView.findViewById<android.widget.TextView>(R.id.btnPurge)
 
-        tvMessage.text = "This will permanently delete all verification history and associated media files ($sizeKb KB). This action cannot be undone."
+        tvMessage.text =
+                "This will permanently delete all verification history and associated media files ($sizeKb KB). This action cannot be undone."
 
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
+        btnCancel.setOnClickListener { dialog.dismiss() }
 
         btnPurge.setOnClickListener {
             dialog.dismiss()
@@ -282,7 +285,8 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) { resource: com.verifylabs.ai.core.util.Resource<com.google.gson.JsonObject> ->
+        loginViewModel.getCreditsResponse().observe(viewLifecycleOwner) {
+                resource: com.verifylabs.ai.core.util.Resource<com.google.gson.JsonObject> ->
             if (resource.status == Status.SUCCESS) {
                 showCreditsLoading(false)
                 resource.data?.let { dataJson ->
@@ -294,8 +298,7 @@ class SettingsFragment : Fragment() {
                             NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
                     binding.tvCreditsRemaining.text =
                             getString(R.string.credits_remaining, formattedCredits)
-                    Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT)
-                            .show()
+                    Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT).show()
                 }
             } else if (resource.status == Status.ERROR) {
                 showCreditsLoading(false)
@@ -349,6 +352,9 @@ class SettingsFragment : Fragment() {
         // Show bottom nav again
         (activity as? MainActivity)?.setAppBarVisibility(true)
         (activity as? MainActivity)?.setBottomNavVisibility(true)
+
+        // Set status bar color for this fragment
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
 
         // Clean up old history based on retention setting
         cleanupOldHistory()

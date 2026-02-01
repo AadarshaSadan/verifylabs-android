@@ -1,5 +1,6 @@
 package com.verifylabs.ai.presentation.history
 
+import com.verifylabs.ai.presentation.MainActivity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -204,9 +205,11 @@ class HistoryFragment : Fragment() {
                         background.draw(c)
 
                         // Calculate position of delete icon
-                        // Fix: Force 24dp size instead of using intrinsic width/height which is too large (800dp)
-                        val iconSize = (24 * requireContext().resources.displayMetrics.density).toInt()
-                        
+                        // Fix: Force 24dp size instead of using intrinsic width/height which is too
+                        // large (800dp)
+                        val iconSize =
+                                (24 * requireContext().resources.displayMetrics.density).toInt()
+
                         val deleteIconTop = itemView.top + (itemHeight - iconSize) / 2
                         val deleteIconMargin = (itemHeight - iconSize) / 2
                         val deleteIconLeft = itemView.right - deleteIconMargin - iconSize
@@ -293,6 +296,11 @@ class HistoryFragment : Fragment() {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyState.visibility = View.GONE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
     }
 
     override fun onDestroyView() {

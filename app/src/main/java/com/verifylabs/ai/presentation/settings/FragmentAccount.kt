@@ -72,6 +72,11 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+    }
+
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[ViewModelgetAccountInfo::class.java]
     }

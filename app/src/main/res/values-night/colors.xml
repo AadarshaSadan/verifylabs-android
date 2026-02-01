@@ -99,6 +99,7 @@
     <color name="system_green">#30D158</color>
     <color name="system_gray">#8E8E93</color>
     <color name="divider_color">#38383A</color>
+    <color name="ios_settings_background">#000000</color>
 
     <!-- Onboarding Colors (iOS Parity) -->
     <color name="vl_onboarding_background">#272B27</color>

@@ -1,5 +1,6 @@
 package com.verifylabs.ai.presentation.media
 
+import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.core.util.MediaQualityAnalyzer
 import com.verifylabs.ai.data.network.InternetHelper
 import android.Manifest
@@ -211,7 +212,12 @@ class MediaFragment : Fragment() {
         observeViewModel()
         observeCredits()
     }
-    
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
+    }
+
     private fun loadLocalCredits() {
         val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)

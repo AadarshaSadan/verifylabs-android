@@ -1,5 +1,6 @@
 package com.verifylabs.ai.presentation.audio
 
+import com.verifylabs.ai.presentation.MainActivity
 import android.Manifest
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -236,6 +237,11 @@ class FragmentAudio : Fragment() {
             // Hide the button itself as per requirement
             binding.btnShowAnalysis.visibility = View.GONE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
     }
 
     private fun loadLocalCredits() {

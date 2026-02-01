@@ -104,6 +104,7 @@
     <color name="system_gray">#8E8E93</color>
     <color name="account_card_bg">#FFFFFF</color>
     <color name="divider_color">#C6C6C8</color>
+    <color name="ios_settings_background">#F2F2F7</color>
 
     <!-- Onboarding Colors (iOS Parity) -->
     <color name="vl_onboarding_background">#ECF5EC</color>

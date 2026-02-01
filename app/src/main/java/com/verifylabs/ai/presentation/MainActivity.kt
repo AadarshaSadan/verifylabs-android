@@ -8,9 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.setPadding
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.ActivityMainBinding
@@ -38,23 +36,26 @@ class MainActivity : AppCompatActivity() {
         // Handle system bars insets (edge-to-edge support)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            
+
             // Apply top inset to the AppBar to keep it below status bar
             // Use setPadding to avoid shrinking content (since it's now wrap_content)
             binding.appbar.root.setPadding(0, systemBars.top, 0, 0)
-            
+
             // Apply bottom inset to the Floating Bottom Nav layout margin
             val params = binding.floatingBottomNav.layoutParams as ConstraintLayout.LayoutParams
-            params.bottomMargin = systemBars.bottom + resources.getDimensionPixelSize(R.dimen.bottom_nav_margin)
+            params.bottomMargin =
+                    systemBars.bottom + resources.getDimensionPixelSize(R.dimen.bottom_nav_margin)
             binding.floatingBottomNav.layoutParams = params
-            
+
             insets
         }
 
         // Ensure status bar icons are correct based on theme (backward compatible)
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == 
-                android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val isDarkMode =
+                (resources.configuration.uiMode and
+                        android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES
         windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         // Load default fragment
@@ -88,68 +89,59 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Bottom navigation selection coloring
-     */
+    /** Bottom navigation selection coloring */
     private fun selectNavItem(selected: View) {
 
-        val buttons = listOf(
-            binding.navHome,
-            binding.navMedia,
-            binding.navAudio,
-            binding.navHistory,
-            binding.navSettings
-        )
+        val buttons =
+                listOf(
+                        binding.navHome,
+                        binding.navMedia,
+                        binding.navAudio,
+                        binding.navHistory,
+                        binding.navSettings
+                )
 
-        val icons = listOf(
-            binding.iconHome,
-            binding.iconMedia,
-            binding.iconAudio,
-            binding.iconHistory,
-            binding.iconSettings
-        )
+        val icons =
+                listOf(
+                        binding.iconHome,
+                        binding.iconMedia,
+                        binding.iconAudio,
+                        binding.iconHistory,
+                        binding.iconSettings
+                )
 
-        val texts = listOf(
-            binding.textHome,
-            binding.textMedia,
-            binding.textAudio,
-            binding.textHistory,
-            binding.textSettings
-        )
+        val texts =
+                listOf(
+                        binding.textHome,
+                        binding.textMedia,
+                        binding.textAudio,
+                        binding.textHistory,
+                        binding.textSettings
+                )
 
         buttons.forEachIndexed { index, btn ->
             if (btn == selected) {
                 // Selected → set watercolor ripple background
                 btn.setBackgroundResource(R.drawable.nav_overlay)
 
-                icons[index].setColorFilter(
-                    ContextCompat.getColor(this, R.color.txtGreen)
-                )
-                texts[index].setTextColor(
-                    ContextCompat.getColor(this, R.color.txtGreen)
-                )
-
-
+                icons[index].setColorFilter(ContextCompat.getColor(this, R.color.txtGreen))
+                texts[index].setTextColor(ContextCompat.getColor(this, R.color.txtGreen))
             } else {
                 btn.background = null
 
                 icons[index].setColorFilter(
-                    ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
+                        ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
                 )
                 texts[index].setTextColor(
-                    ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
+                        ContextCompat.getColor(this, R.color.verifylabs_dots_indicator)
                 )
             }
         }
     }
 
-    /**
-     * Fragment replacement
-     */
+    /** Fragment replacement */
     private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
-            .commit()
+        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
     fun setBottomNavVisibility(isVisible: Boolean) {
@@ -169,15 +161,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun navigateToTab(index: Int) {
-        val navButtons = listOf(
-            binding.navHome,
-            binding.navMedia,
-            binding.navAudio,
-            binding.navHistory,
-            binding.navSettings
-        )
+        val navButtons =
+                listOf(
+                        binding.navHome,
+                        binding.navMedia,
+                        binding.navAudio,
+                        binding.navHistory,
+                        binding.navSettings
+                )
         if (index in navButtons.indices) {
             navButtons[index].performClick()
         }
+    }
+
+    fun updateStatusBarColor(colorResId: Int) {
+        window.statusBarColor = ContextCompat.getColor(this, colorResId)
+
+        // Update light/dark status bar icons based on background brightness
+        // For ios_settings_background (#F2F2F7 in light), we want dark icons
+        // For app_background or black, we want light icons
+        val isDarkMode =
+                (resources.configuration.uiMode and
+                        android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                        android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+
+        // Simple heuristic: if dark mode, icons are light. If light mode, icons are dark.
+        // This generally works for our current setup where light mode has light backgrounds.
+        windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
     }
 }
