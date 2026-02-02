@@ -163,10 +163,27 @@ class HistoryFragment : Fragment() {
                     private val backgroundColor = Color.parseColor("#FF3B30") // iOS System Red
                     private val clearPaint =
                             Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+                    private val boxMargin = 24f // Initial margin
+                    
+                    override fun onMove(
+                            recyclerView: RecyclerView,
+                            viewHolder: RecyclerView.ViewHolder,
+                            target: RecyclerView.ViewHolder
+                    ): Boolean = false
+
+                    // --- CONFIGURATION ---
+                    private val configTextSize = 20f // Change this to increase/decrease text size
+                    private val iconScale = 1.0f // Change this to 0.8f, 1.2f etc. to resize icon
+                    private val visibilityThreshold = 120f // Swipe distance to start showing text/icon
+                    private val boxVerticalMargin = 48f // Increase this to make the background thinner (less height)
+                    private val customCornerRadius = -1f // Set to > 0 to use a fixed radius. Set to -1f for automatic pill shape (full circle ends).
+                    private val textColorHex = "#8E8E93" // Configurable text color
+                    // ---------------------
+
                     private val textPaint =
                             Paint().apply {
                                 color = Color.WHITE
-                                textSize = 32f // Reduced slightly for better fit
+                                textSize = configTextSize 
                                 isAntiAlias = true
                                 textAlign = Paint.Align.CENTER
                                 typeface =
@@ -175,14 +192,6 @@ class HistoryFragment : Fragment() {
                                                 android.graphics.Typeface.NORMAL
                                         )
                             }
-                    private val boxCornerRadius = 32f // More rounded for pill shape
-                    private val boxMargin = 24f // Initial margin
-
-                    override fun onMove(
-                            recyclerView: RecyclerView,
-                            viewHolder: RecyclerView.ViewHolder,
-                            target: RecyclerView.ViewHolder
-                    ): Boolean = false
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                         val position = viewHolder.bindingAdapterPosition
@@ -237,10 +246,11 @@ class HistoryFragment : Fragment() {
                             // to look like a floating pill.
                             // Left boundary moves with swipe. Right boundary is fixed (minus
                             // margin).
+                            // boxVerticalMargin is now defined in configuration block
                             val buttonLeft = itemView.right + dX + boxMargin
-                            val buttonTop = itemView.top + boxMargin
+                            val buttonTop = itemView.top + boxVerticalMargin
                             val buttonRight = itemView.right - boxMargin
-                            val buttonBottom = itemView.bottom - boxMargin
+                            val buttonBottom = itemView.bottom - boxVerticalMargin
 
                             // Only draw if we have positive width
                             if (buttonLeft < buttonRight) {
@@ -251,15 +261,19 @@ class HistoryFragment : Fragment() {
                                                 buttonRight,
                                                 buttonBottom
                                         )
+                                // Calculate radius: Use custom if set, otherwise dynamic pill shape
+                                val buttonHeight = buttonBottom - buttonTop
+                                val dynamicRadius = if (customCornerRadius > 0) customCornerRadius else buttonHeight / 2f
+                                
                                 val paint =
                                         Paint().apply {
                                             color = backgroundColor
                                             isAntiAlias = true
                                         }
-                                c.drawRoundRect(rect, boxCornerRadius, boxCornerRadius, paint)
+                                c.drawRoundRect(rect, dynamicRadius, dynamicRadius, paint)
 
                                 // Draw Icon & Text if wide enough
-                                if (swipeWidth > 120) {
+                                if (swipeWidth > visibilityThreshold) {
                                     val iconMarginBottom = 8f
 
                                     // Calculate total content height to center it vertically
@@ -268,18 +282,19 @@ class HistoryFragment : Fragment() {
                                     textPaint.getTextBounds(text, 0, text.length, textBounds)
                                     val textHeight = textBounds.height()
 
-                                    val totalContentHeight =
-                                            intrinsicHeight + iconMarginBottom + textHeight
+                                    // Scale Icon
+                                    val iconW = (intrinsicWidth * iconScale).toInt()
+                                    val iconH = (intrinsicHeight * iconScale).toInt()
 
                                     // Center coordinates
                                     val centerX = (buttonLeft + buttonRight) / 2
                                     val centerY = (buttonTop + buttonBottom) / 2
 
-                                    // Icon Position
-                                    val iconTop = centerY - (totalContentHeight / 2)
-                                    val iconBottom = iconTop + intrinsicHeight
-                                    val iconLeft = centerX - (intrinsicWidth / 2)
-                                    val iconRight = iconLeft + intrinsicWidth
+                                    // Icon Position: STRICTLY CENTERED in the pill
+                                    val iconTop = centerY - (iconH / 2)
+                                    val iconBottom = iconTop + iconH
+                                    val iconLeft = centerX - (iconW / 2)
+                                    val iconRight = iconLeft + iconW
 
                                     deleteIcon?.setBounds(
                                             iconLeft.toInt(),
@@ -291,18 +306,44 @@ class HistoryFragment : Fragment() {
 
                                     // Fade in effect
                                     val alpha =
-                                            kotlin.math.min(255f, (swipeWidth - 120) * 2).toInt()
+                                            kotlin.math.min(255f, (swipeWidth - visibilityThreshold) * 2).toInt()
                                     deleteIcon?.alpha = alpha
                                     textPaint.alpha = alpha
 
                                     if (alpha > 0) {
                                         deleteIcon?.draw(c)
-                                        // Text Position: below icon
-                                        // Draw text centered at centerX. Y is baseline.
-                                        val textY =
-                                                iconBottom + iconMarginBottom + textHeight -
-                                                        textBounds.bottom
+                                        
+                                        // Text Position: OUTSIDE and BELOW the background
+                                        // We use the space provided by boxVerticalMargin
+                                        val textTopMargin = 8f
+                                        val textY = buttonBottom + textTopMargin + textHeight
+                                        
+                                        // Change text color to Gray or Black if it's on white background? 
+                                        // User didn't specify, but assuming white background of row, white text won't be visible.
+                                        // Assuming dark mode or checking contrast? 
+                                        // The original text was White on Red. Now it's on the row background.
+                                        // Let's use a visible color (e.g., Light Gray or match previous style if it was overlay).
+                                        // Ideally, we should check theme. For now, let's keep it White if the row is dark, or Gray if light.
+                                        // Current app seems to have dark theme references (ios_settings_background).
+                                        // But wait, if we draw on top of the row, and the row is white, white text is invisible.
+                                        // Let's use a safe color like Color.GRAY or specific deletion red color for text too?
+                                        // For now, I will use Color.GRAY to be safe, or re-use the textPaint color if it was already appropriate.
+                                        // Previous textPaint was White.
+                                        
+                                        // Let's create a temporary paint for this or modify textPaint color just for this draw
+                                        val originalColor = textPaint.color
+                                        
+                                        // Use Configurable Color
+                                        try {
+                                            textPaint.color = Color.parseColor(textColorHex)
+                                        } catch (e: Exception) {
+                                            textPaint.color = Color.GRAY // Fallback
+                                        }
+                                        
                                         c.drawText(text, centerX, textY, textPaint)
+                                        
+                                        // Restore color
+                                        textPaint.color = originalColor
                                     }
                                 }
                             }

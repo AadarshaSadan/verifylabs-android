@@ -1012,6 +1012,11 @@ class FragmentAudio : Fragment() {
         binding.btnShowAnalysis.text = "Show analysis"
 
         when (response.band) {
+            0 ->{
+                showErrorResult("short recording")
+
+            }
+
             1, 2 -> { // Human - Green
                 binding.cardResultStatus.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)

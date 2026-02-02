@@ -63,7 +63,8 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     fun setScore(score: Double) {
         this.averageScore = score
         // iOS Parity: Use actual data only, no fake noise
-        this.dataPoints = listOf(score)
+        // Use two points (start and end) to draw a straight line across the chart
+        this.dataPoints = listOf(score, score)
 
         // Update badge color based on score
         badgePaint.color = getScoreColor(score)
