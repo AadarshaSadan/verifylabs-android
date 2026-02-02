@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape
             android:shape="ring"
-            android:thicknessRatio="12"
+            android:thicknessRatio="16"
             android:useLevel="false">
             <solid android:color="#EEEEEE" />
         </shape>
@@ -17,7 +17,7 @@
             android:toDegrees="270">
             <shape
                 android:shape="ring"
-                android:thicknessRatio="12"
+                android:thicknessRatio="16"
                 android:useLevel="true">
                 <solid android:color="#FF9800" /> <!-- Orange color -->
             </shape>

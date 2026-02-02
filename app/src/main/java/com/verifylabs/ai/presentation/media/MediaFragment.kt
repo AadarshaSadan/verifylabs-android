@@ -1,12 +1,9 @@
 package com.verifylabs.ai.presentation.media
 
-import com.verifylabs.ai.presentation.MainActivity
-import com.verifylabs.ai.core.util.MediaQualityAnalyzer
-import com.verifylabs.ai.data.network.InternetHelper
 import android.Manifest
-import android.content.res.ColorStateList
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
@@ -27,18 +24,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.verifylabs.ai.R
+import com.verifylabs.ai.core.util.MediaQualityAnalyzer
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.data.database.VerificationEntity
+import com.verifylabs.ai.data.network.InternetHelper
 import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentMediaBinding
+import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
-import javax.inject.Inject
 import java.text.NumberFormat
 import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -144,9 +144,7 @@ class MediaFragment : Fragment() {
         binding.imageViewMedia.setOnClickListener { checkMediaPermissionsAndSelect() }
 
         binding.cardQuality.setOnClickListener {
-             currentQualityScore?.let { score ->
-                showQualityTipsDialog(score.percentage)
-            }
+            currentQualityScore?.let { score -> showQualityTipsDialog(score.percentage) }
         }
 
         binding.btnAction.setOnClickListener {
@@ -169,44 +167,44 @@ class MediaFragment : Fragment() {
                 }
             }
         }
-        
+
         binding.btnCrop.setOnClickListener {
-             selectedMediaUri?.let { uri ->
-                 showCropBottomSheet(uri)
-             }
+            selectedMediaUri?.let { uri -> showCropBottomSheet(uri) }
         }
 
         binding.btnReport.setOnClickListener {
             val reportDialog = ReportResultDialogFragment.newInstance()
             reportDialog.onReportSelected = { reportType ->
-                 selectedMediaUri?.let { uri ->
-                    val path = if(uri.scheme == "file") uri.path else uri.toString()
+                selectedMediaUri?.let { uri ->
+                    val path = if (uri.scheme == "file") uri.path else uri.toString()
                     viewModel.reportResult(reportType, path ?: "")
-                 }
+                }
             }
             reportDialog.show(childFragmentManager, ReportResultDialogFragment.TAG)
         }
 
         binding.btnGuidelines.setOnClickListener {
-            GuidelinesDialogFragment.newInstance().show(parentFragmentManager, GuidelinesDialogFragment.TAG)
+            GuidelinesDialogFragment.newInstance()
+                    .show(parentFragmentManager, GuidelinesDialogFragment.TAG)
         }
         // Underline the guidelines text
         val guidelinesTv = binding.btnGuidelines.getChildAt(1) as? android.widget.TextView
-        guidelinesTv?.paintFlags = guidelinesTv?.paintFlags?.or(android.graphics.Paint.UNDERLINE_TEXT_FLAG) ?: 0
-        
+        guidelinesTv?.paintFlags =
+                guidelinesTv?.paintFlags?.or(android.graphics.Paint.UNDERLINE_TEXT_FLAG) ?: 0
+
         // Initial Local Load
         loadLocalCredits()
-        
+
         // Click to Refresh
         binding.llCreditsInfo.root.setOnClickListener {
             val username = preferenceHelper.getUserName()
-             val apiKey = preferenceHelper.getApiKey()
-             if (!username.isNullOrEmpty() && !apiKey.isNullOrEmpty()) {
-                 binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
-                 binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-                 binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
-                 viewModel.checkCredits(username, apiKey)
-             }
+            val apiKey = preferenceHelper.getApiKey()
+            if (!username.isNullOrEmpty() && !apiKey.isNullOrEmpty()) {
+                binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
+                binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
+                viewModel.checkCredits(username, apiKey)
+            }
         }
 
         observeViewModel()
@@ -225,10 +223,11 @@ class MediaFragment : Fragment() {
     private fun loadLocalCredits() {
         val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
         val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
-        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
+        binding.llCreditsInfo.tvCreditsRemaining.text =
+                getString(R.string.credits_remaining, formattedCredits)
         binding.llCreditsInfo.progressCredits.visibility = View.GONE
         binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-        
+
         binding.btnAction.isEnabled = totalCredits > 0
         binding.btnAction.alpha = if (totalCredits > 0) 1f else 0.5f
     }
@@ -239,16 +238,18 @@ class MediaFragment : Fragment() {
                 Status.SUCCESS -> {
                     binding.llCreditsInfo.progressCredits.visibility = View.GONE
                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-                    
+
                     val creditsJson = resource.data
                     val credits = creditsJson?.get("credits")?.asInt ?: 0
                     val monthlyCredits = creditsJson?.get("credits_monthly")?.asInt ?: 0
                     val totalCredits = credits + monthlyCredits
                     preferenceHelper.setCreditReamaining(totalCredits)
-                    
-                    val formattedCredits = NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
-                    binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining, formattedCredits)
-                    
+
+                    val formattedCredits =
+                            NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
+                    binding.llCreditsInfo.tvCreditsRemaining.text =
+                            getString(R.string.credits_remaining, formattedCredits)
+
                     binding.btnAction.isEnabled = totalCredits > 0
                     binding.btnAction.alpha = if (totalCredits > 0) 1f else 0.5f
                 }
@@ -256,7 +257,7 @@ class MediaFragment : Fragment() {
                     binding.llCreditsInfo.progressCredits.visibility = View.GONE
                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
                     Toast.makeText(context, "Failed to refresh credits", Toast.LENGTH_SHORT).show()
-                    
+
                     binding.btnAction.isEnabled = false
                     binding.btnAction.alpha = 0.5f
                 }
@@ -266,9 +267,9 @@ class MediaFragment : Fragment() {
                     binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
                 }
                 Status.INSUFFICIENT_CREDITS -> {
-                     binding.llCreditsInfo.progressCredits.visibility = View.GONE
-                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-                     // No specific UI for this in credits box, just show text or ignore
+                    binding.llCreditsInfo.progressCredits.visibility = View.GONE
+                    binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
+                    // No specific UI for this in credits box, just show text or ignore
                 }
             }
         }
@@ -376,7 +377,7 @@ class MediaFragment : Fragment() {
                     mp.setVolume(0f, 0f)
                     binding.videoViewMedia.start()
                     // Force re-layout to respect aspect ratio with constraints
-                    binding.videoViewMedia.requestLayout() 
+                    binding.videoViewMedia.requestLayout()
                 }
             }
             MediaType.AUDIO -> {
@@ -392,41 +393,54 @@ class MediaFragment : Fragment() {
         // Initial UI State for processing
         binding.statsLayout.visibility = View.GONE
         setButtonState(ScanButtonState.SCANNING)
-        
+
         // Show \"Please wait\" message with Blue background (iOS style)
         binding.layoutInfoStatus.visibility = View.VISIBLE
-        binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_blue_light)
-        
+        binding.layoutInfoStatus.background =
+                ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.drawable_verify_background_blue_light
+                )
+
         binding.txtIdentifixation.visibility = View.GONE // Hide specific result views
         binding.imgIdentification.visibility = View.GONE
         binding.btnReport.visibility = View.GONE
-        
+
         binding.textStatusMessage.visibility = View.VISIBLE
         binding.textStatusMessage.text = "Please wait while we analyze your media"
-        binding.textStatusMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorBlack))
+        binding.textStatusMessage.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorBlack)
+        )
         // Background is now on layoutInfoStatus (the card)
-        binding.textStatusMessage.background = null 
+        binding.textStatusMessage.background = null
 
         viewLifecycleOwner.lifecycleScope.launch {
             // 1. Check Internet (Ping)
             val isConnected = internetHelper.isInternetAvailable()
             if (!isConnected) {
                 // Manually set background for error on the card
-                binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_red_light)
+                binding.layoutInfoStatus.background =
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.drawable_verify_background_red_light
+                        )
                 binding.textStatusMessage.text = "An error occurred during verification"
                 binding.textStatusMessage.setTextColor(Color.RED)
-                
+
                 binding.statsLayout.visibility = View.GONE
                 setButtonState(ScanButtonState.FAILED) // Shows Retry
                 return@launch
             }
 
-            // 2. Check Credits (Local + potentially refreshing via VM, but for now blocking on local info or proceeding to upload which handles backend check)
-             // User says: "proceeds to check the user’s available credits".
-             // We can do a quick check here if needed, or rely on the fact that upload/verify will check backend.
-             // Given the UI requirement "While the credit check... is in progress", we flow naturally.
+            // 2. Check Credits (Local + potentially refreshing via VM, but for now blocking on
+            // local info or proceeding to upload which handles backend check)
+            // User says: "proceeds to check the user’s available credits".
+            // We can do a quick check here if needed, or rely on the fact that upload/verify will
+            // check backend.
+            // Given the UI requirement "While the credit check... is in progress", we flow
+            // naturally.
             val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
-             /* If we wanted to enforce backend check first:
+            /* If we wanted to enforce backend check first:
             if (totalCredits <= 0) {
                  binding.layoutNoCreditStatus.visibility = View.VISIBLE
                  updateStatus("", false)
@@ -435,23 +449,27 @@ class MediaFragment : Fragment() {
             }
             */
 
-             // 3. Prepare File
-             val uri = selectedMediaUri ?: run {
-                updateStatus("No media selected", true)
-                setButtonState(ScanButtonState.FAILED)
-                return@launch
-            }
+            // 3. Prepare File
+            val uri =
+                    selectedMediaUri
+                            ?: run {
+                                updateStatus("No media selected", true)
+                                setButtonState(ScanButtonState.FAILED)
+                                return@launch
+                            }
 
-            val file = getFileFromUri(requireContext(), uri) ?: run {
-                 updateStatus("Cannot prepare file", true)
-                 setButtonState(ScanButtonState.FAILED)
-                 return@launch
-            }
+            val file =
+                    getFileFromUri(requireContext(), uri)
+                            ?: run {
+                                updateStatus("Cannot prepare file", true)
+                                setButtonState(ScanButtonState.FAILED)
+                                return@launch
+                            }
 
             if (file.length() > 100 * 1024 * 1024) {
-                 updateStatus("File too large (max 100MB)", true)
-                 setButtonState(ScanButtonState.FAILED)
-                 return@launch
+                updateStatus("File too large (max 100MB)", true)
+                setButtonState(ScanButtonState.FAILED)
+                return@launch
             }
 
             // 4. Start Upload
@@ -461,7 +479,8 @@ class MediaFragment : Fragment() {
 
     private fun getFileFromUri(context: Context, uri: Uri): File? {
         val extension = if (mediaType == MediaType.VIDEO) "mp4" else "jpg"
-        val tempFile = File(context.cacheDir, "temp_upload_${System.currentTimeMillis()}.$extension")
+        val tempFile =
+                File(context.cacheDir, "temp_upload_${System.currentTimeMillis()}.$extension")
 
         return try {
             // Use ContentResolver to handle all URI schemes (content://, file://)
@@ -522,9 +541,9 @@ class MediaFragment : Fragment() {
             viewModel.verifyResponseFlow.collect { resource ->
                 when (resource.status) {
                     Status.LOADING -> {
-                    // StartUpload handles SCANNING state, but we ensure stats are hidden
-                     binding.statsLayout.visibility = View.GONE
-                }
+                        // StartUpload handles SCANNING state, but we ensure stats are hidden
+                        binding.statsLayout.visibility = View.GONE
+                    }
                     Status.SUCCESS -> {
                         val response =
                                 Gson().fromJson(
@@ -538,7 +557,11 @@ class MediaFragment : Fragment() {
                         binding.statsLayout.visibility = View.GONE
 
                         if (response.error != null) {
-                            binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_red_light)
+                            binding.layoutInfoStatus.background =
+                                    ContextCompat.getDrawable(
+                                            requireContext(),
+                                            R.drawable.drawable_verify_background_red_light
+                                    )
                             binding.textStatusMessage.text = response.error
                             binding.textStatusMessage.setTextColor(Color.RED)
                             binding.txtIdentifixation.visibility = View.GONE
@@ -552,105 +575,234 @@ class MediaFragment : Fragment() {
                             binding.textStatusMessage.background = null
                             binding.txtIdentifixation.visibility = View.VISIBLE
                             binding.imgIdentification.visibility = View.VISIBLE
-                            
+
                             when (response.band) {
                                 1 -> { // Human (VLGreen Card + Capsule)
-                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
-                                    
-                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_green)
+                                    binding.layoutInfoStatus.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_human
+                                            )
+
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_capsule_green
+                                            )
                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
-                                    
+                                    binding.textStatusMessage.setTextColor(
+                                            Color.parseColor("#2E7D32")
+                                    ) // Dark green
+
                                     binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_))
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
                                     binding.imgIdentification.imageTintList = null
                                 }
                                 2 -> { // Likely Human (System Green Card + Green Capsule)
-                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_likely_human)
-                                    
-                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_green)
+                                    binding.layoutInfoStatus.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_likely_human
+                                            )
+
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_capsule_green
+                                            )
                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
-                                    
+                                    binding.textStatusMessage.setTextColor(
+                                            Color.parseColor("#2E7D32")
+                                    ) // Dark green
+
                                     binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_))
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
                                     binding.imgIdentification.imageTintList = null
                                 }
                                 3 -> { // Unsure (Gray Card + Gray Capsule)
-                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_unsure)
-                                    
-                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_gray)
+                                    binding.layoutInfoStatus.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_unsure
+                                            )
+
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_capsule_gray
+                                            )
                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(Color.parseColor("#616161")) // Dark gray
-                                    
+                                    binding.textStatusMessage.setTextColor(
+                                            Color.parseColor("#616161")
+                                    ) // Dark gray
+
                                     binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_question_circle))
-                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_question_circle
+                                            )
+                                    )
+                                    binding.imgIdentification.imageTintList =
+                                            ColorStateList.valueOf(Color.GRAY)
                                 }
                                 4 -> { // Likely AI (System Red Card + Red Rect)
-                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_likely_ai)
-                                    
-                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
+                                    binding.layoutInfoStatus.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_likely_ai
+                                            )
+
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_rect_red
+                                            )
                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
-                                    
+                                    binding.textStatusMessage.setTextColor(
+                                            Color.parseColor("#C62828")
+                                    ) // Dark red
+
                                     binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_))
-                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.vl_red))
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
+                                    binding.imgIdentification.imageTintList =
+                                            ColorStateList.valueOf(
+                                                    ContextCompat.getColor(
+                                                            requireContext(),
+                                                            R.color.vl_red
+                                                    )
+                                            )
                                 }
                                 5 -> { // AI (VLRed Card + Red Rect)
-                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_ai)
-                                    
-                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
+                                    binding.layoutInfoStatus.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_ai
+                                            )
+
+                                    binding.txtIdentifixation.background =
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_rect_red
+                                            )
                                     binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
-                                    
+                                    binding.textStatusMessage.setTextColor(
+                                            Color.parseColor("#C62828")
+                                    ) // Dark red
+
                                     binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_))
-                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.vl_red))
+                                    binding.imgIdentification.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                            )
+                                    )
+                                    binding.imgIdentification.imageTintList =
+                                            ColorStateList.valueOf(
+                                                    ContextCompat.getColor(
+                                                            requireContext(),
+                                                            R.color.vl_red
+                                                    )
+                                            )
                                 }
                             }
-                            
+
                             // Overlay Image Logic (Center of Preview)
                             binding.imageOverlay.visibility = View.VISIBLE
-                            binding.imageOverlay.alpha = 0.7f // Ensure transparency matches typical overlay
+                            binding.imageOverlay.alpha =
+                                    0.7f // Ensure transparency matches typical overlay
                             when (response.band) {
                                 1, 2 -> { // Human -> Tick
-                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_tick_icon_light_grey_rgb_2__traced___1_))
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable
+                                                            .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
+                                            )
+                                    )
                                     binding.imageOverlay.imageTintList = null // Use original colors
                                 }
                                 3 -> { // Unsure -> Warning (Gray)
-                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning))
-                                    binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_warning
+                                            )
+                                    )
+                                    binding.imageOverlay.imageTintList =
+                                            ColorStateList.valueOf(Color.GRAY)
                                 }
                                 4, 5 -> { // AI -> Cross (Red)
-                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_red_cross_tranparent))
+                                    binding.imageOverlay.setImageDrawable(
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.ic_red_cross_tranparent
+                                            )
+                                    )
                                     binding.imageOverlay.imageTintList = null // Use original colors
                                 }
                             }
-                            
+
                             binding.btnReport.visibility = View.VISIBLE
 
                             setButtonState(ScanButtonState.DONE)
 
-                        // Save verification result to database
+                            // Save verification result to database
                             viewLifecycleOwner.lifecycleScope.launch {
                                 try {
-                                    val entity = VerificationEntity(
+                                    val entity =
+                                            VerificationEntity(
                                                     mediaType =
-                                                            if (mediaType == MediaType.IMAGE) "Image"
+                                                            if (mediaType == MediaType.IMAGE)
+                                                                    "Image"
                                                             else "Video",
-                                                    mediaUri = selectedMediaUri?.let { uri ->
-                                                        // Save to internal storage for persistence
-                                                        val savedPath = com.verifylabs.ai.core.util.HistoryFileManager.saveMedia(
-                                                            requireContext(), 
-                                                            uri, 
-                                                            if (mediaType == MediaType.IMAGE) "image" else "video"
-                                                        )
-                                                        // Return file URI string if saved, else original URI
-                                                        if (savedPath != null) Uri.fromFile(File(savedPath)).toString()
-                                                        else uri.toString()
-                                                    },
+                                                    mediaUri =
+                                                            selectedMediaUri?.let { uri ->
+                                                                // Save to internal storage for
+                                                                // persistence
+                                                                val savedPath =
+                                                                        com.verifylabs.ai.core.util
+                                                                                .HistoryFileManager
+                                                                                .saveMedia(
+                                                                                        requireContext(),
+                                                                                        uri,
+                                                                                        if (mediaType ==
+                                                                                                        MediaType
+                                                                                                                .IMAGE
+                                                                                        )
+                                                                                                "image"
+                                                                                        else "video"
+                                                                                )
+                                                                // Return file URI string if saved,
+                                                                // else original URI
+                                                                if (savedPath != null)
+                                                                        Uri.fromFile(
+                                                                                        File(
+                                                                                                savedPath
+                                                                                        )
+                                                                                )
+                                                                                .toString()
+                                                                else uri.toString()
+                                                            },
                                                     mediaThumbnail =
                                                             if (mediaType == MediaType.IMAGE)
                                                                     selectedMediaUri?.toString()
@@ -660,7 +812,9 @@ class MediaFragment : Fragment() {
                                                     bandDescription = response.bandDescription,
                                                     aiScore = response.score,
                                                     fileSizeKb =
-                                                            selectedMediaUri?.let { getFileSizeKb(it) },
+                                                            selectedMediaUri?.let {
+                                                                getFileSizeKb(it)
+                                                            },
                                                     resolution =
                                                             when (mediaType) {
                                                                 MediaType.IMAGE ->
@@ -679,14 +833,20 @@ class MediaFragment : Fragment() {
                                                     username = preferenceHelper.getUserName() ?: ""
                                             )
                                     verificationRepository.saveVerification(entity)
-                                    Log.d(TAG, "Verification saved to database with ID: ${entity.id}")
+                                    Log.d(
+                                            TAG,
+                                            "Verification saved to database with ID: ${entity.id}"
+                                    )
                                 } catch (e: Exception) {
                                     Log.e(TAG, "Failed to save verification to database", e)
                                 }
                             }
 
                             // Auto-refresh credits
-                            viewModel.checkCredits(preferenceHelper.getUserName() ?: "", preferenceHelper.getApiKey() ?: "")
+                            viewModel.checkCredits(
+                                    preferenceHelper.getUserName() ?: "",
+                                    preferenceHelper.getApiKey() ?: ""
+                            )
                         }
                     }
                     Status.ERROR -> {
@@ -700,44 +860,62 @@ class MediaFragment : Fragment() {
                         setButtonState(ScanButtonState.FAILED)
                     }
                     Status.INSUFFICIENT_CREDITS -> {
-                         binding.layoutInfoStatus.visibility = View.VISIBLE
-                         binding.textStatusMessage.visibility = View.VISIBLE
-                         binding.imageOverlay.visibility = View.VISIBLE
-                         binding.statsLayout.visibility = View.GONE
-                         
-                         // Orange configuration matching iOS
-                         binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_orange) 
-                         
-                         // Fallback if drawable missing (though we just created it):
-                         if (ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_orange) == null) {
-                              binding.layoutInfoStatus.setBackgroundColor(Color.parseColor("#FFF3E0"))
-                         }
-                         
-                         binding.textStatusMessage.text = "Insufficient Credits"
-                         binding.textStatusMessage.setTextColor(Color.parseColor("#FF9800")) // Orange
-                         
-                         binding.txtIdentifixation.visibility = View.VISIBLE
-                         binding.txtIdentifixation.text = "Please purchase more credits to continue"
-                         binding.txtIdentifixation.setTextColor(Color.GRAY)
-                         binding.txtIdentifixation.background = null // Remove capsule background
-                         
-                         binding.imgIdentification.visibility = View.VISIBLE
-                         binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_credit_card_error))
-                         binding.imgIdentification.background = null // No square bg
-                         binding.imgIdentification.imageTintList = ColorStateList.valueOf(Color.parseColor("#FF9800")) // Orange Tint
-                         
+                        binding.layoutInfoStatus.visibility = View.VISIBLE
+                        binding.textStatusMessage.visibility = View.VISIBLE
+                        binding.imageOverlay.visibility = View.VISIBLE
+                        binding.statsLayout.visibility = View.GONE
 
-                         binding.btnReport.visibility = View.GONE
-                         
-                         setButtonState(ScanButtonState.FAILED) // To show Retry/Action button? iOS shows "Buy Credits"?
-                         // User request: "exact same function design". iOS likely blocks or offers buy.
-                         // StartButtonState.FAILED shows "Retry" which calls verify again.
-                         // Maybe we need a "BUY" button state? For now, FAILED allows retrying.
+                        // Orange configuration matching iOS
+                        binding.layoutInfoStatus.background =
+                                ContextCompat.getDrawable(
+                                        requireContext(),
+                                        R.drawable.bg_result_card_orange
+                                )
+
+                        // Fallback if drawable missing (though we just created it):
+                        if (ContextCompat.getDrawable(
+                                        requireContext(),
+                                        R.drawable.bg_result_card_orange
+                                ) == null
+                        ) {
+                            binding.layoutInfoStatus.setBackgroundColor(Color.parseColor("#FFF3E0"))
+                        }
+
+                        binding.textStatusMessage.text = "Insufficient Credits"
+                        binding.textStatusMessage.setTextColor(
+                                Color.parseColor("#FF9800")
+                        ) // Orange
+
+                        binding.txtIdentifixation.visibility = View.VISIBLE
+                        binding.txtIdentifixation.text = "Please purchase more credits to continue"
+                        binding.txtIdentifixation.setTextColor(Color.GRAY)
+                        binding.txtIdentifixation.background = null // Remove capsule background
+
+                        binding.imgIdentification.visibility = View.VISIBLE
+                        binding.imgIdentification.setImageDrawable(
+                                ContextCompat.getDrawable(
+                                        requireContext(),
+                                        R.drawable.ic_credit_card_error
+                                )
+                        )
+                        binding.imgIdentification.background = null // No square bg
+                        binding.imgIdentification.imageTintList =
+                                ColorStateList.valueOf(Color.parseColor("#FF9800")) // Orange Tint
+
+                        binding.btnReport.visibility = View.GONE
+
+                        setButtonState(
+                                ScanButtonState.FAILED
+                        ) // To show Retry/Action button? iOS shows "Buy Credits"?
+                        // User request: "exact same function design". iOS likely blocks or offers
+                        // buy.
+                        // StartButtonState.FAILED shows "Retry" which calls verify again.
+                        // Maybe we need a "BUY" button state? For now, FAILED allows retrying.
                     }
                 }
             }
         }
-        
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.creditConsumedFlow.collect {
                 val currentCredits = preferenceHelper.getCreditRemaining()
@@ -747,19 +925,19 @@ class MediaFragment : Fragment() {
                 Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
-        
-
     }
 
     private fun setButtonState(state: ScanButtonState) {
         buttonState = state
-        
+
         // Button Logic:
         // VERIFY: Visible
         // SCANNING: Hidden (User requirement)
-        // DONE: Hidden (User requirement implied, or shows "Test Another" on top button) -> Wait, user says "Select Media button text changes to Test Another". Verify button usually hidden on Done?
+        // DONE: Hidden (User requirement implied, or shows "Test Another" on top button) -> Wait,
+        // user says "Select Media button text changes to Test Another". Verify button usually
+        // hidden on Done?
         // FAILED: Visible (Shows "Retry")
-        
+
         when (state) {
             ScanButtonState.VERIFY -> {
                 binding.btnAction.visibility = View.VISIBLE
@@ -799,24 +977,29 @@ class MediaFragment : Fragment() {
         binding.btnReport.visibility = View.GONE
         updateStatus("", false)
         selectedMediaUri = null
-        
+
         setSelectMediaButtonText(false)
 
         // Reset button to initial state
         setButtonState(ScanButtonState.VERIFY)
         binding.btnAction.visibility = View.GONE // Initially hidden until media selected
     }
-    
+
     private fun setSelectMediaButtonText(isTestAnother: Boolean) {
         val tv = binding.btnSelectMedia.getChildAt(1) as? android.widget.TextView
         tv?.text = if (isTestAnother) "Test another?" else "Select Media File"
-        
+
         if (isTestAnother) {
             // Apply blue background from drawables
-            binding.btnSelectMedia.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_ios_blue_button)
+            binding.btnSelectMedia.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bg_ios_blue_button)
         } else {
             // Revert to original green if resetting
-            binding.btnSelectMedia.background = ContextCompat.getDrawable(requireContext(), R.drawable.drawable_verify_background_green)
+            binding.btnSelectMedia.background =
+                    ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.drawable_verify_background_green
+                    )
         }
     }
 
@@ -832,12 +1015,12 @@ class MediaFragment : Fragment() {
         val bottomSheet = CropBottomSheetFragment.newInstance(uri)
         bottomSheet.onImageResult = { resultUri, _ ->
             selectedMediaUri = resultUri
-            
+
             // Centralized UI update and preview logic
             showPreview(resultUri)
             updateMediaStatsForCurrentMedia()
             setButtonState(ScanButtonState.VERIFY)
-            
+
             // Reset result-specific views
             binding.layoutInfoStatus.visibility = View.GONE
             binding.btnReport.visibility = View.GONE
@@ -853,20 +1036,24 @@ class MediaFragment : Fragment() {
     //              STATS UPDATE LOGIC
     // ────────────────────────────────────────────────
 
-    private fun updateMediaStatsForCurrentMedia(forcedScore: com.verifylabs.ai.core.util.QualityScore? = null) {
+    private fun updateMediaStatsForCurrentMedia(
+            forcedScore: com.verifylabs.ai.core.util.QualityScore? = null
+    ) {
         val uri = selectedMediaUri ?: return
 
         viewLifecycleOwner.lifecycleScope.launch {
-             val score = forcedScore ?: if (mediaType == MediaType.IMAGE) {
-                 MediaQualityAnalyzer.analyzeImage(requireContext(), uri)
-             } else {
-                 MediaQualityAnalyzer.analyzeVideo(requireContext(), uri)
-             }
-             
-             if (forcedScore == null) currentQualityScore = score
+            val score =
+                    forcedScore
+                            ?: if (mediaType == MediaType.IMAGE) {
+                                MediaQualityAnalyzer.analyzeImage(requireContext(), uri)
+                            } else {
+                                MediaQualityAnalyzer.analyzeVideo(requireContext(), uri)
+                            }
 
-             val sizeKb = getFileSizeKb(uri)
-             val resolution =
+            if (forcedScore == null) currentQualityScore = score
+
+            val sizeKb = getFileSizeKb(uri)
+            val resolution =
                     when (mediaType) {
                         MediaType.IMAGE -> getImageResolution(uri)
                         MediaType.VIDEO -> getVideoResolution(uri) ?: "?"
@@ -889,7 +1076,13 @@ class MediaFragment : Fragment() {
             qualityScore: com.verifylabs.ai.core.util.QualityScore
     ) {
         binding.apply {
-            tvSizeValue.text = if (fileSizeKb > 1024) "${String.format("%.1f", fileSizeKb / 1024.0)} MB" else "$fileSizeKb KB"
+            if (fileSizeKb > 1024) {
+                tvSizeValue.text = String.format("%.1f", fileSizeKb / 1024.0)
+                tvSizeUnit.text = "MB"
+            } else {
+                tvSizeValue.text = fileSizeKb.toString()
+                tvSizeUnit.text = "KB"
+            }
             tvResolutionValue.text = resolution
 
             tvTypeValue?.text = mediaTypeStr
@@ -898,21 +1091,45 @@ class MediaFragment : Fragment() {
             qualityProgressBar.progress = percent
             tvQualityValue.text = percent.toString()
 
-            val tintColor =
-                    when {
-                        percent >= 85 -> Color.parseColor("#4CAF50")
-                        percent >= 65 -> Color.parseColor("#FF9800")
-                        else -> Color.RED
-                    }
+            val tintColor = getQualityColor(percent)
             qualityProgressBar.progressTintList =
                     android.content.res.ColorStateList.valueOf(tintColor)
+            tvQualityValue.setTextColor(tintColor)
 
             // Quality Advice shown in Dialog on click now
-            // tvQualityAdvice.text = com.verifylabs.ai.core.util.MediaQualityAnalyzer.getQualityImprovementAdvice(percent)
+            // tvQualityAdvice.text =
+            // com.verifylabs.ai.core.util.MediaQualityAnalyzer.getQualityImprovementAdvice(percent)
             tvQualityAdvice.visibility = View.GONE
 
             if (buttonState == ScanButtonState.VERIFY) {
                 statsLayout.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun getQualityColor(score: Int): Int {
+        val value = score.coerceIn(0, 100).toDouble()
+
+        return when {
+            value < 50 -> {
+                // Red to Orange (0-50%)
+                val ratio = value / 50.0
+                android.graphics.Color.rgb(255, (255 * (ratio * 0.5)).toInt(), 0)
+            }
+            value < 70 -> {
+                // Orange to Yellow (50-70%)
+                val ratio = (value - 50) / 20.0
+                android.graphics.Color.rgb(255, (255 * (0.5 + (ratio * 0.5))).toInt(), 0)
+            }
+            value < 85 -> {
+                // Yellow to Yellow-Green (70-85%)
+                val ratio = (value - 70) / 15.0
+                android.graphics.Color.rgb((255 * (1.0 - (ratio * 0.5))).toInt(), 255, 0)
+            }
+            else -> {
+                // Yellow-Green to Green (85-100%)
+                val ratio = (value - 85) / 15.0
+                android.graphics.Color.rgb((255 * (0.5 - (ratio * 0.5))).toInt(), 255, 0)
             }
         }
     }
@@ -996,10 +1213,14 @@ class MediaFragment : Fragment() {
 
     private fun getBandDescription(band: Int): String {
         return when (band) {
-            1 -> "There’s a high probability that this was created by a human and has not been altered by AI."
-            2 -> "This was likely created by a human, but may have been improved by photo apps or a phone's automated software."
-            3 -> "This result can't be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information."
-            4 -> "This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results."
+            1 ->
+                    "There’s a high probability that this was created by a human and has not been altered by AI."
+            2 ->
+                    "This was likely created by a human, but may have been improved by photo apps or a phone's automated software."
+            3 ->
+                    "This result can't be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information."
+            4 ->
+                    "This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results."
             5 -> "There’s a high probability that this is deepfake or AI-generated."
             else -> ""
         }
@@ -1007,15 +1228,18 @@ class MediaFragment : Fragment() {
 
     private fun showQualityTipsDialog(score: Int) {
         val advice = MediaQualityAnalyzer.getQualityImprovementAdvice(score)
-        
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_guidelines, null)
+
+        val dialogView =
+                LayoutInflater.from(requireContext()).inflate(R.layout.dialog_guidelines, null)
         val dialogBinding = com.verifylabs.ai.databinding.DialogGuidelinesBinding.bind(dialogView)
 
         // Reuse guidelines layout structure but change content for Tips
         dialogBinding.tvTitle.text = "Media Quality Tips"
-        dialogBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorBlack)) // Title Black
+        dialogBinding.tvTitle.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.colorBlack)
+        ) // Title Black
         dialogBinding.tvDescription.text = advice
-        
+
         // Hide Guidelines specific sections
         dialogBinding.tvImagesLabel.visibility = View.GONE
         dialogBinding.tvImagesText.visibility = View.GONE
@@ -1023,24 +1247,29 @@ class MediaFragment : Fragment() {
         dialogBinding.tvVideosText.visibility = View.GONE
         dialogBinding.tvAudioLabel.visibility = View.GONE
         dialogBinding.tvAudioText.visibility = View.GONE
-        
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-            .setView(dialogView)
-            .create()
 
-        // Ensure transparent background for custom card shape with margins (Match ReportResult style)
+        val dialog =
+                androidx.appcompat.app.AlertDialog.Builder(
+                                requireContext(),
+                                R.style.CustomAlertDialog
+                        )
+                        .setView(dialogView)
+                        .create()
+
+        // Ensure transparent background for custom card shape with margins (Match ReportResult
+        // style)
         val back = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
         val margin = (24 * resources.displayMetrics.density).toInt()
         val inset = android.graphics.drawable.InsetDrawable(back, margin)
         dialog.window?.setBackgroundDrawable(inset)
         dialog.window?.requestFeature(android.view.Window.FEATURE_NO_TITLE)
-            
+
         dialogBinding.btnGotIt.setOnClickListener { dialog.dismiss() }
         dialogBinding.btnClose.setOnClickListener { dialog.dismiss() }
-        
+
         dialog.show()
     }
-    
+
     override fun onPause() {
         super.onPause()
         binding.videoViewMedia.pause()

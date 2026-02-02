@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:text="Select Media File"
+                    android:text="Select media file"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -168,15 +168,15 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp">
 
                         <ProgressBar
                             android:id="@+id/qualityProgressBar"
                             style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
                             android:indeterminate="false"
                             android:max="100"
                             android:progress="100"
@@ -197,7 +197,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Quality"
-                        android:textColor="#757575"
+                        android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -238,7 +238,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Type"
-                        android:textColor="#757575"
+                        android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -268,10 +268,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvSizeUnit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="KB"
-                        android:textColor="#000000"
+                        android:textColor="@color/header_text"
                         android:textSize="13sp" />
 
                     <TextView
@@ -279,7 +280,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Size"
-                        android:textColor="#757575"
+                        android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -321,7 +322,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Resolution"
-                        android:textColor="#757575"
+                        android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
