@@ -548,36 +548,87 @@ class MediaFragment : Fragment() {
                             binding.textStatusMessage.text = getBandDescription(response.band)
                             binding.txtIdentifixation.text = getBandResult(response.band)
 
-                            // Success result logic matching iOS Parity
-                            // ALL successful bands (1-5) use the light green card background per iOS screenshot
-                            binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
+                            // Success result logic matching iOS HistoryDetailView color scheme
                             binding.textStatusMessage.background = null
                             binding.txtIdentifixation.visibility = View.VISIBLE
                             binding.imgIdentification.visibility = View.VISIBLE
                             
                             when (response.band) {
-                                1, 2 -> { // Human (Capsule, Green Text, Traced Green Smile)
+                                1 -> { // Human (VLGreen Card + Capsule)
+                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
+                                    
                                     binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_green)
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
                                     binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
+                                    
                                     binding.imgIdentification.background = null
                                     binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_))
-                                    binding.imgIdentification.imageTintList = null // Use original green from drawable
+                                    binding.imgIdentification.imageTintList = null
                                 }
-                                3 -> { // Unsure (Capsule, Gray Text)
+                                2 -> { // Likely Human (System Green Card + Green Capsule)
+                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_likely_human)
+                                    
+                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_green)
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                    binding.textStatusMessage.setTextColor(Color.parseColor("#2E7D32")) // Dark green
+                                    
+                                    binding.imgIdentification.background = null
+                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_light_grey_rgb_1__traced_))
+                                    binding.imgIdentification.imageTintList = null
+                                }
+                                3 -> { // Unsure (Gray Card + Gray Capsule)
+                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_unsure)
+                                    
                                     binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_capsule_gray)
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
                                     binding.textStatusMessage.setTextColor(Color.parseColor("#616161")) // Dark gray
+                                    
                                     binding.imgIdentification.background = null
                                     binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_question_circle))
                                     binding.imgIdentification.imageTintList = ColorStateList.valueOf(Color.GRAY)
                                 }
-                                4, 5 -> { // AI (Rectangle, Red Text, Red Square Icon with White Robot)
+                                4 -> { // Likely AI (System Red Card + Red Rect)
+                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_likely_ai)
+                                    
                                     binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
                                     binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
-                                    binding.imgIdentification.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_square_red)
+                                    
+                                    binding.imgIdentification.background = null
                                     binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_))
-                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(Color.WHITE) // Tint white on red background
+                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.vl_red))
+                                }
+                                5 -> { // AI (VLRed Card + Red Rect)
+                                    binding.layoutInfoStatus.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_ai)
+                                    
+                                    binding.txtIdentifixation.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_rect_red)
+                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                    binding.textStatusMessage.setTextColor(Color.parseColor("#C62828")) // Dark red
+                                    
+                                    binding.imgIdentification.background = null
+                                    binding.imgIdentification.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_light_grey_rgb_1__traced_))
+                                    binding.imgIdentification.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.vl_red))
                                 }
                             }
+                            
+                            // Overlay Image Logic (Center of Preview)
+                            binding.imageOverlay.visibility = View.VISIBLE
+                            binding.imageOverlay.alpha = 0.7f // Ensure transparency matches typical overlay
+                            when (response.band) {
+                                1, 2 -> { // Human -> Tick
+                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_tick_icon_light_grey_rgb_2__traced___1_))
+                                    binding.imageOverlay.imageTintList = null // Use original colors
+                                }
+                                3 -> { // Unsure -> Warning (Gray)
+                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning))
+                                    binding.imageOverlay.imageTintList = ColorStateList.valueOf(Color.GRAY)
+                                }
+                                4, 5 -> { // AI -> Cross (Red)
+                                    binding.imageOverlay.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_red_cross_tranparent))
+                                    binding.imageOverlay.imageTintList = null // Use original colors
+                                }
+                            }
+                            
                             binding.btnReport.visibility = View.VISIBLE
 
                             setButtonState(ScanButtonState.DONE)

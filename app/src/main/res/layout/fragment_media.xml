@@ -116,6 +116,7 @@
                     android:layout_height="80dp"
                     android:adjustViewBounds="true"
                     android:alpha="0.7"
+                    android:elevation="11dp"
                     android:scaleType="fitCenter"
                     android:visibility="visible"
                     app:layout_constraintTop_toTopOf="parent"
@@ -228,7 +229,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="IMAGE"
-                        android:textColor="#212121"
+                        android:textColor="@color/header_text"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -262,7 +263,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="266"
-                        android:textColor="#000000"
+                        android:textColor="@color/header_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -302,7 +303,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="HD"
-                        android:textColor="#000000"
+                        android:textColor="@color/header_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -312,7 +313,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="1242×1201"
-                        android:textColor="#212121"
+                        android:textColor="@color/header_text"
                         android:textSize="13sp" />
 
                     <TextView

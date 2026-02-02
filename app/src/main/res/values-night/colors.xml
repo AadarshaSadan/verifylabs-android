@@ -119,4 +119,7 @@
     <color name="ios_dialog_title">#FFFFFF</color>
     <color name="ios_dialog_message">#EBEBF5</color>
     <color name="ios_dialog_stroke">#33FFFFFF</color>
+    
+    <!-- Stats Card Background -->
+    <color name="stats_card_bg">#1C1C1E</color>
 </resources>

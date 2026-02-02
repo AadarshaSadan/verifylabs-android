@@ -543,9 +543,9 @@ class HistorySingleFragment : Fragment() {
         (activity as? MainActivity)?.setBottomNavVisibility(false)
         (activity as? MainActivity)?.setAppBarVisibility(false)
 
-        // Sync Status Bar, System Nav Bar, and Root Background to match this fragment's @color/app_background
-        (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
-        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
+        // Sync Status Bar, System Nav Bar, and Root Background to match this fragment's @color/ios_settings_background
+        (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+        (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
     }
 
     override fun onPause() {

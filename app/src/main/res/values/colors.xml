@@ -127,4 +127,28 @@
     <color name="ios_dialog_message">#333333</color>
     <color name="ios_dialog_stroke">#33333333</color>
     <color name="colorPurple">#AF52DE</color>
+    
+    <color name="ios_result_card_bg">#1A34C759</color> 
+    <color name="ios_result_card_stroke">#4D34C759</color>
+    <color name="vl_unsure_gray">#AAB2AA</color>
+    
+    <!-- Dynamic Card Colors (10% Fill, 30% Stroke) -->
+    <!-- Human (VLGreen #38B031) -->
+    <color name="card_bg_human">#1A38B031</color>
+    <color name="card_stroke_human">#4D38B031</color>
+    <!-- Likely Human (System Green #34C759) -->
+    <color name="card_bg_likely_human">#1A34C759</color>
+    <color name="card_stroke_likely_human">#4D34C759</color>
+    <!-- Unsure (Gray #8E8E93) -->
+    <color name="card_bg_unsure">#1A8E8E93</color>
+    <color name="card_stroke_unsure">#4D8E8E93</color>
+    <!-- Likely AI (System Red #FF3B30) -->
+    <color name="card_bg_likely_ai">#1AFF3B30</color>
+    <color name="card_stroke_likely_ai">#4DFF3B30</color>
+    <!-- AI (VLRed #E6070D) -->
+    <color name="card_bg_ai">#1AE6070D</color>
+    <color name="card_stroke_ai">#4DE6070D</color>
+    
+    <!-- Stats Card Background -->
+    <color name="stats_card_bg">#F5F5F5</color>
 </resources>
