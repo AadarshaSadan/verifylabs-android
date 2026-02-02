@@ -1,4 +1,16 @@
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:shape="oval">-->
+<!--    <solid android:color="#BCF80707" />-->
+<!--</shape>-->
+
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="#BCF80707" />
+android:shape="oval">
+
+<gradient
+    android:angle="0"
+    android:startColor="#BCF80707"
+    android:endColor="#F80707"
+    android:type="linear" />
+
 </shape>

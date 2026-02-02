@@ -48,8 +48,8 @@
             <!-- Pulsating Circle -->
             <View
                 android:id="@+id/micPulse"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:background="@drawable/mic_circle_bg"
                 app:layout_constraintTop_toBottomOf="@id/micPulsebtn"
                 app:layout_constraintStart_toStartOf="parent"

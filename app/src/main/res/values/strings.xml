@@ -328,5 +328,6 @@
     <string name="error_title">Error</string>
     <string name="ios_dialog_test_title">iOS Dialog</string>
     <string name="ios_dialog_test_message">This looks like an iOS dialog.</string>
+    <string name="show_analysis">Show analysis</string>
 
 </resources>

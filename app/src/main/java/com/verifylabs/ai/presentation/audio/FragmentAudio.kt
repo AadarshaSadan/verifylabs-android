@@ -931,7 +931,7 @@ class FragmentAudio : Fragment() {
         showMicControls(false)
 
         binding.cardResultStatus.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_red)
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_ai)
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
         )
@@ -941,13 +941,13 @@ class FragmentAudio : Fragment() {
         binding.txtResultTitle.visibility = View.VISIBLE
 
         binding.txtResultMessage.text =
-                "$message\n\nThis usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
+                "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
         binding.txtResultMessage.setTextColor(Color.WHITE)
 
         binding.btnReset.visibility = View.VISIBLE
         binding.btnReset.visibility = View.VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE
-        binding.btnShowAnalysis.text = "Show analysis"
+        binding.btnShowAnalysis.text = getString(R.string.show_analysis)
 
         // Hide charts/stats initially
         binding.cardAudioAnalysis.visibility = View.GONE
@@ -968,7 +968,7 @@ class FragmentAudio : Fragment() {
 
         // Default to Success Green Style
         binding.cardResultStatus.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
         )
@@ -1003,12 +1003,14 @@ class FragmentAudio : Fragment() {
         when (response.band) {
             1, 2 -> { // Human - Green
                 binding.cardResultStatus.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_green)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
                 binding.imgResultIcon.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_check_circle)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_green_white)
                 )
-                binding.imgResultIcon.imageTintList =
-                        ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+//                binding.imgResultIcon.imageTintList =
+//                        ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+
+                binding.imgResultIcon.imageTintList =null
                 binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50"))
             }
             3 -> { // Unsure - Gray? (Requirement only specified Success/Error layouts, but handling
@@ -1022,12 +1024,15 @@ class FragmentAudio : Fragment() {
             }
             4, 5 -> { // AI - Red (Error Style)
                 binding.cardResultStatus.background =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_red)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
                 binding.imgResultIcon.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_red_white)
                 )
-                binding.imgResultIcon.imageTintList =
-                        ColorStateList.valueOf(Color.parseColor("#FF5252"))
+//                binding.imgResultIcon.imageTintList =
+//                        ColorStateList.valueOf(Color.parseColor("#FF5252"))
+
+
+                binding.imgResultIcon.imageTintList =null
                 binding.txtResultMessage.setTextColor(
                         Color.WHITE
                 ) // White text on Red card usually? Or Red text?
@@ -1096,7 +1101,7 @@ class FragmentAudio : Fragment() {
                                 0.5f
                         )
                         .apply {
-                            duration = 600
+                            duration = 1200
                             repeatCount = Animation.INFINITE
                             repeatMode = Animation.REVERSE
                         }
