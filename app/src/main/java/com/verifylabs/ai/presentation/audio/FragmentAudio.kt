@@ -629,6 +629,13 @@ class FragmentAudio : Fragment() {
         // Show Blue Analyzing Circle
         binding.layoutAnalyzing.visibility = View.VISIBLE
         binding.layoutAnalyzing.bringToFront() // Ensure it's on top
+        
+        // Show Analyzing Card (Behind Blue Circle)
+        binding.cardAudioAnalysis.visibility = View.VISIBLE
+        binding.layoutAnalyzingStatus.visibility = View.VISIBLE
+        binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE
+        binding.audioAnalysisChart.visibility = View.GONE
+        
         Log.d(TAG, "Analyzing...")
         stopPulseAnimation()
     }
@@ -898,6 +905,8 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalysisPlaceholder.visibility =
                 View.VISIBLE // Should be visible if card were visible, but card is GONE.
         // Actually initial state has placeholder VISIBLE inside hierarchy.
+        
+        binding.layoutAnalyzingStatus.visibility = View.GONE
 
         // Reset Logic State
         binding.audioAnalysisChart.reset()
@@ -924,6 +933,7 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutResultsContainer.visibility = View.VISIBLE
         binding.cardAudioAnalysis.visibility = View.GONE
+        binding.layoutAnalyzingStatus.visibility = View.GONE
 
         // Hide controls and status similar to success state
         Log.d(TAG, "Status: ")
@@ -995,6 +1005,7 @@ class FragmentAudio : Fragment() {
         // They will be shown only when "Show analysis" is clicked.
         binding.layoutStatsRow.visibility = View.GONE
         binding.cardAudioAnalysis.visibility = View.GONE
+        binding.layoutAnalyzingStatus.visibility = View.GONE
 
         // Ensure button is VISIBLE
         binding.btnShowAnalysis.visibility = View.VISIBLE

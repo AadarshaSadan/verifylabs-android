@@ -345,6 +345,32 @@
                         android:layout_marginTop="24dp" />
 
                     <LinearLayout
+                        android:id="@+id/layoutAnalyzingStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <ProgressBar
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:indeterminate="true"
+                            android:indeterminateTint="#4CAF50" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Analyzing..."
+                            android:textColor="#9E9E9E"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/layoutAnalysisPlaceholder"
                         android:visibility="visible"
                         android:layout_width="wrap_content"
