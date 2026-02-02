@@ -382,8 +382,8 @@
                         <ImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:src="@drawable/ic_audio" 
-                            android:alpha="0.5"
+                            android:src="@drawable/ic_audio_with_circle"
+                            android:alpha="0.1"
                             app:tint="@color/secondary_text" />
 
                         <TextView

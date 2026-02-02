@@ -338,6 +338,15 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
     }
 
     private fun showDeleteAccountConfirmation() {
+        val bottomSheet = DeleteAccountBottomSheetFragment.newInstance()
+        bottomSheet.onDeleteConfirmed = {
+            // Show the password confirmation dialog ONLY after they click "Continue to Delete"
+            showPasswordConfirmationDialog()
+        }
+        bottomSheet.show(childFragmentManager, DeleteAccountBottomSheetFragment.TAG)
+    }
+
+    private fun showPasswordConfirmationDialog() {
         val dialogView =
                 LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_account, null)
         val etPassword = dialogView.findViewById<EditText>(R.id.etPasswordConfirm)
@@ -345,7 +354,7 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
         AlertDialog.Builder(requireContext())
                 .setTitle("Delete Account")
                 .setMessage(
-                        "This action cannot be undone. All your data will be permanently deleted."
+                        "Please enter your password to confirm deletion."
                 )
                 .setView(dialogView)
                 .setPositiveButton("Delete") { dialog, _ ->

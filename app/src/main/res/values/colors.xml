@@ -70,7 +70,7 @@
     <!-- Primary Brand / Link -->
     <color name="primary_brand">#00B140</color>
     <!-- Header Text -->
-    <color name="header_text">#1A1C1E</color>
+    <color name="header_text">#000000</color>
     <!-- Secondary Text -->
     <color name="secondary_text">#6F777B</color>
     <!-- Info Card Background -->
@@ -151,4 +151,8 @@
     
     <!-- Stats Card Background -->
     <color name="stats_card_bg">#F5F5F5</color>
+    
+    <!-- Warning Colors (iOS Parity) -->
+    <color name="warning_card_bg">#0DFF3B30</color> <!-- 5% opacity red -->
+    <color name="warning_icon_bg">#1AFF3B30</color> <!-- 10% opacity red -->
 </resources>

@@ -1,16 +1,31 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
+    android:width="120dp"
+    android:height="120dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- Circle background -->
     <path
-        android:fillColor="#FFCCCCCC"
-        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+        android:strokeColor="#8E8E93"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:pathData="M12,21.5C6.75,21.5 2.5,17.25 2.5,12C2.5,6.75 6.75,2.5 12,2.5C17.25,2.5 21.5,6.75 21.5,12C21.5,17.25 17.25,21.5 12,21.5Z" />
 
-    <!-- X mark inside circle -->
     <path
-        android:fillColor="#FF888888"
-        android:pathData="M15.59,8.41L12,12l-3.59,-3.59L7,9l5,5 5,-5-1.41,-1.41z"/>
+        android:strokeColor="#8E8E93"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M7,9.5H17" />
+
+    <path
+        android:strokeColor="#8E8E93"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M9,12.5H15" />
+
+    <path
+        android:strokeColor="#8E8E93"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M10.5,15.5H13.5" />
+
 </vector>

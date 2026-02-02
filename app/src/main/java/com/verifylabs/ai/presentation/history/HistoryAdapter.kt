@@ -32,7 +32,7 @@ class HistoryAdapter(private val onItemClick: (HistoryItem) -> Unit) :
                         when (item.type) {
                                 "Image" -> R.drawable.verifylabs_logo
                                 "Video" -> android.R.drawable.ic_menu_slideshow
-                                "Audio" -> R.drawable.ic_audio
+                                "Audio" -> R.drawable.ic_audio_inside_square
                                 else -> R.drawable.ic_mic
                         }
 

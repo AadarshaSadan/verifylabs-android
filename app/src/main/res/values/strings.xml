@@ -258,6 +258,8 @@
     <string name="tab_audio">Audio</string>
     <string name="no_items_title">No Items</string>
     <string name="no_items_subtitle">Try selecting a different filter</string>
+    <string name="no_history_yet">No History Yet</string>
+    <string name="no_history_desc">Your verification history will appear here</string>
     <string name="verification_details_title">Verification Details</string>
     <string name="media_section_title">Media</string>
     <string name="quick_record_audio_label">Quick record audio</string>

@@ -1,6 +1,5 @@
 package com.verifylabs.ai.presentation.history
 
-import com.verifylabs.ai.presentation.MainActivity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.verifylabs.ai.R
 import com.verifylabs.ai.databinding.FragmentHistoryBinding
+import com.verifylabs.ai.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -45,10 +45,29 @@ class HistoryFragment : Fragment() {
         return binding.root
     }
 
+    private var isGlobalEmpty = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this)[HistoryViewModel::class.java]
+
+        // Observe global history to determine if "No History Yet" should be shown
+        viewModel.allHistory.observe(viewLifecycleOwner) { historyList ->
+            isGlobalEmpty = historyList.isEmpty()
+            val currentTab =
+                    binding.tabLayout
+                            .getTabAt(binding.tabLayout.selectedTabPosition)
+                            ?.text
+                            .toString()
+            if (currentTab == "All" || isGlobalEmpty) {
+                updateEmptyState(
+                        if (currentTab == "All") historyList.isEmpty()
+                        else (binding.recyclerView.adapter?.itemCount == 0),
+                        currentTab
+                )
+            }
+        }
 
         setupRecyclerView()
         setupSwipeToDelete()
@@ -287,14 +306,42 @@ class HistoryFragment : Fragment() {
     }
 
     private fun updateEmptyState(isEmpty: Boolean, tabName: String) {
-        if (isEmpty) {
+        if (isGlobalEmpty) {
+            // Global Empty State
+            binding.tabLayout.visibility = View.GONE
             binding.recyclerView.visibility = View.GONE
             binding.emptyState.visibility = View.VISIBLE
-            binding.emptyTitle.text = "No $tabName"
-            binding.emptySubtitle.text = "Try selecting a different filter"
+
+            binding.emptyTitle.text = getString(R.string.no_history_yet)
+            binding.emptySubtitle.text = getString(R.string.no_history_desc)
+            binding.emptyTitle.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.header_text)
+            )
+
+            val icon =
+                    ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_clock_badge_questionmark
+                    )
+            binding.emptyIcon.setImageDrawable(icon)
         } else {
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.emptyState.visibility = View.GONE
+            binding.tabLayout.visibility = View.VISIBLE
+            if (isEmpty) {
+                // Filtered Empty State
+                binding.recyclerView.visibility = View.GONE
+                binding.emptyState.visibility = View.VISIBLE
+                binding.emptyTitle.text = "No $tabName"
+                binding.emptySubtitle.text = getString(R.string.no_items_subtitle)
+                binding.emptyTitle.setTextColor(
+                        ContextCompat.getColor(requireContext(), R.color.header_text)
+                )
+                val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_no_items)
+                binding.emptyIcon.setImageDrawable(icon)
+            } else {
+                // List has items
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.emptyState.visibility = View.GONE
+            }
         }
     }
 
