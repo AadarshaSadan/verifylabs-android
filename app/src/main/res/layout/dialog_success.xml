@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/title"
-        android:text="iOS Dialog"
+        android:text="@string/ios_dialog_test_title"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/message"
-        android:text="This looks like an iOS dialog."
+        android:text="@string/ios_dialog_test_message"
         android:gravity="center"
         android:textColor="@color/colorBlack"
         android:layout_marginTop="10dp"
@@ -33,14 +33,14 @@
 
         <Button
             android:id="@+id/cancel"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <Button
             android:id="@+id/ok"
-            android:text="OK"
+            android:text="@string/ok_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>

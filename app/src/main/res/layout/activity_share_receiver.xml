@@ -77,7 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Audio File"
+                    android:text="@string/audio_file_label"
                     android:textColor="@android:color/black" />
             </LinearLayout>
 
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:padding="6dp"
                         android:gravity="center"
-                        android:text=""
+                        android:text="@string/done"
                         android:textAlignment="center"
                         android:textColor="@color/colorBlack"
                         android:textSize="16sp" />

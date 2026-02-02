@@ -14,7 +14,7 @@
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome, Guest"
+        android:text="@string/welcome_placeholder"
         android:visibility="gone"
         android:textColor="@color/colorBlack"
         android:textSize="16sp"

@@ -21,7 +21,7 @@
             android:id="@+id/tvManualCredentials"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ACCOUNT"
+            android:text="@string/section_account"
             android:textSize="13sp"
             android:textColor="#6E6E73"
             android:layout_marginStart="16dp"
@@ -59,7 +59,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:text="misha"
+                    android:text="@string/username_placeholder"
                     android:textColor="@color/colorBlack"
                     android:textSize="17sp"
                     android:textStyle="bold"
@@ -76,7 +76,7 @@
                     android:layout_marginStart="12dp"
                     android:textColor="#8E8E93"
                     android:textSize="13sp"
-                    android:text="Manage your account"
+                    android:text="@string/manage_account"
                     app:layout_constraintStart_toEndOf="@+id/ivUserIcon"
                     app:layout_constraintEnd_toStartOf="@+id/ivNavigateAccount"
                     app:layout_constraintTop_toBottomOf="@+id/etUsername"
@@ -129,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_ios_blue_button"
-                    android:text="Purchase credits"
+                    android:text="@string/purchase_credits_title"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="17sp"
@@ -180,7 +180,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Credits remaining: 100"
+                                android:text="@string/credits_remaining_placeholder"
                                 android:textColor="@color/colorBlack"
                                 android:textSize="15sp" />
 
@@ -188,7 +188,7 @@
                                 android:id="@+id/tvRefreshCredits"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Refresh"
+                                android:text="@string/refresh"
                                 android:textColor="@color/vl_green"
                                 android:textSize="14sp"
                                 android:padding="8dp" />
@@ -206,7 +206,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Loading credits..."
+                                android:text="@string/loading_credits"
                                 android:textColor="@color/secondary_text"
                                 android:textSize="14sp" />
 
@@ -225,7 +225,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PREFERENCES"
+            android:text="@string/section_preferences"
             android:textSize="13sp"
             android:textColor="#6E6E73"
             android:layout_marginStart="16dp"
@@ -265,7 +265,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:text="Quick record duration"
+                            android:text="@string/quick_record_duration"
                             android:textColor="@color/colorBlack"
                             android:textSize="15sp" />
                     </LinearLayout>
@@ -280,7 +280,7 @@
                             android:id="@+id/textView3"
                             android:layout_width="35dp"
                             android:layout_height="wrap_content"
-                            android:text="40s"
+                            android:text="@string/duration_placeholder_40s"
                             android:textColor="@color/colorRecordingRed"
                             android:textSize="13sp" />
                         <SeekBar
@@ -295,7 +295,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="60s"
+                            android:text="@string/duration_placeholder_60s"
                             android:textColor="#8E8E93"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -304,7 +304,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Duration for quick records button (min 10s, max 60s)"
+                        android:text="@string/quick_record_desc"
                         android:textColor="#8E8E93"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -337,7 +337,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:text="History retention period"
+                            android:text="@string/history_retention_period"
                             android:textColor="@color/colorBlack"
                             android:textSize="15sp" />
                     </LinearLayout>
@@ -352,7 +352,7 @@
                             android:id="@+id/textView5"
                             android:layout_width="35dp"
                             android:layout_height="wrap_content"
-                            android:text="90d"
+                            android:text="@string/duration_placeholder_90d"
                             android:textColor="@color/vl_green"
                             android:textSize="13sp" />
                         <SeekBar
@@ -367,7 +367,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="90d"
+                            android:text="@string/duration_placeholder_90d"
                             android:textColor="#8E8E93"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -376,7 +376,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="How long to retain history records (min 7 days, max 90 days)"
+                        android:text="@string/history_retention_desc"
                         android:textColor="#8E8E93"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -415,14 +415,14 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Purge all history"
+                            android:text="@string/purge_history_title"
                             android:textColor="@color/system_red"
                             android:textSize="15sp" />
                         <TextView
                             android:id="@+id/tvStorageSize"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="908 KB"
+                            android:text="@string/size_placeholder_908kb"
                             android:textColor="#8E8E93"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -433,7 +433,7 @@
                         android:layout_marginStart="38dp"
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Permanently delete all verification history and media files"
+                        android:text="@string/purge_history_desc"
                         android:textColor="#8E8E93"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -471,7 +471,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
-                    android:text="About &amp; legal"
+                    android:text="@string/about_legal_title"
                     android:textColor="@color/colorBlack"
                     android:textSize="17sp" />
 

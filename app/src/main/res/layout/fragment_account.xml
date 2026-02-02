@@ -34,7 +34,7 @@
             android:id="@+id/tvTitleAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account"
+            android:text="@string/account_title"
             android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
@@ -59,7 +59,7 @@
                 android:id="@+id/tvProfileInfoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PROFILE INFORMATION"
+                android:text="@string/profile_information_title"
                 android:textColor="#6E6E73"
                 android:textSize="13sp"
                 android:layout_marginStart="16dp"
@@ -102,7 +102,7 @@
                                 android:id="@+id/tvUsernameLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Username"
+                                android:text="@string/username_label"
                                 android:textColor="#8E8E93"
                                 android:textSize="12sp"/>
 
@@ -119,7 +119,7 @@
                             android:id="@+id/tvUsernameNote"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cannot be changed"
+                            android:text="@string/cannot_be_changed_note"
                             android:textSize="12sp"
                             android:textColor="#8E8E93"/>
                     </LinearLayout>
@@ -155,7 +155,7 @@
                                 android:id="@+id/tvFullNameLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Full name"
+                                android:text="@string/full_name_label"
                                 android:textColor="@color/secondary_text"
                                 android:textSize="12sp"/>
 
@@ -177,7 +177,7 @@
                             android:id="@+id/tvFullNameNote"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Save"
+                            android:text="@string/save_action"
                             android:textSize="12sp"
                             android:textColor="@color/vl_green"
                             android:visibility="gone"/>
@@ -221,7 +221,7 @@
                                 android:id="@+id/tvEmailLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Email address"
+                                android:text="@string/email_address_label"
                                 android:textColor="@color/secondary_text"
                                 android:textSize="12sp"/>
 
@@ -243,7 +243,7 @@
                             android:id="@+id/tvEmailNote"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Save"
+                            android:text="@string/save_action"
                             android:textSize="12sp"
                             android:textColor="@color/vl_green"
                             android:visibility="gone"/>
@@ -263,7 +263,7 @@
                 android:id="@+id/tvSecurityTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SECURITY"
+                android:text="@string/security_title"
                 android:textColor="#6E6E73"
                 android:textSize="13sp"
                 android:layout_marginStart="16dp"
@@ -295,7 +295,7 @@
                         android:id="@+id/tvChangePassword"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Change password"
+                        android:text="@string/change_password_action"
                         android:textSize="17sp"
                         android:textColor="@color/colorBlack"
                         android:layout_marginStart="12dp"/>
@@ -307,7 +307,7 @@
                 android:id="@+id/tvAccountActionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ACCOUNT ACTIONS"
+                android:text="@string/account_actions_title"
                 android:textColor="#6E6E73"
                 android:textSize="13sp"
                 android:layout_marginStart="16dp"
@@ -339,7 +339,7 @@
                         android:id="@+id/tvLogout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Logout"
+                        android:text="@string/logout_action"
                         android:textSize="17sp"
                         android:textColor="@color/colorBlack"
                         android:layout_marginStart="12dp"/>
@@ -351,7 +351,7 @@
                 android:id="@+id/tvDangerZoneTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DANGER ZONE"
+                android:text="@string/danger_zone_title"
                 android:textColor="#6E6E73"
                 android:textSize="13sp"
                 android:layout_marginStart="16dp"
@@ -382,7 +382,7 @@
                         android:id="@+id/tvDeleteAccount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Delete account"
+                        android:text="@string/delete_account_action"
                         android:textSize="17sp"
                         android:textColor="@color/system_red"
                         android:layout_marginStart="12dp"/>

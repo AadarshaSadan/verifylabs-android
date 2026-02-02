@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:text="Select media file"
+                    android:text="@string/select_media_file"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -196,7 +196,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Quality"
+                        android:text="@string/label_quality"
                         android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -228,7 +228,7 @@
                         android:id="@+id/tvTypeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="IMAGE"
+                        android:text="@string/image_type_label"
                         android:textColor="@color/header_text"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -237,7 +237,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Type"
+                        android:text="@string/label_type"
                         android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -271,7 +271,7 @@
                         android:id="@+id/tvSizeUnit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="KB"
+                        android:text="@string/kb_unit"
                         android:textColor="@color/header_text"
                         android:textSize="13sp" />
 
@@ -279,7 +279,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Size"
+                        android:text="@string/label_size"
                         android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -303,7 +303,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="HD"
+                        android:text="@string/hd_quality"
                         android:textColor="@color/header_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -313,7 +313,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="1242×1201"
+                        android:text="@string/resolution_placeholder"
                         android:textColor="@color/header_text"
                         android:textSize="13sp" />
 
@@ -321,7 +321,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Resolution"
+                        android:text="@string/label_resolution"
                         android:textColor="@color/secondary_text"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -377,7 +377,7 @@
                         android:background="@drawable/bg_result_capsule_green"
                         android:paddingHorizontal="24dp"
                         android:paddingVertical="8dp"
-                        android:text="Human made"
+                        android:text="@string/band_human_made"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -397,7 +397,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="There’s a high probability that this was created by a human and has not been altered by AI."
+                    android:text="@string/desc_human_made"
                     android:textColor="#2E7D32"
                     android:textSize="14sp"
                     app:layout_constraintTop_toBottomOf="@id/layoutResultHeader"
@@ -435,7 +435,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="Report result"
+                    android:text="@string/report_result"
                     android:textColor="@android:color/white"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -469,7 +469,7 @@
                     android:id="@+id/txtNoCredit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Insufficient credits. Please upgrade or buy More."
+                    android:text="@string/insufficient_credits_msg"
                     android:textSize="16sp"
                     android:textColor="#ffffff"
                     android:layout_marginStart="15dp"
@@ -487,7 +487,7 @@
                 android:background="@drawable/bg_btn_verify"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:text="✔ Verify Media"
+                android:text="@string/verify_media_button"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
@@ -538,7 +538,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Best results guidelines"
+            android:text="@string/label_best_results_guidelines"
             android:textColor="#757575"
             android:textSize="12sp"
             android:layout_marginStart="4dp" />

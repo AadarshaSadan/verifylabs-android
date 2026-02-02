@@ -85,14 +85,14 @@ class SettingsFragment : Fragment() {
 
         binding.seekBar.max = 60
         binding.seekBar.progress = quickRecordSeconds
-        binding.textView3.text = "${quickRecordSeconds}s"
+        binding.textView3.text = getString(R.string.seconds_format, quickRecordSeconds)
 
         // ---------- HISTORY RETENTION ----------
         val historyDays = preferenceHelper.getHistoryRetentionDays().takeIf { it > 0 } ?: 90
 
         binding.seekBar1.max = 90
         binding.seekBar1.progress = historyDays
-        binding.textView5.text = "${historyDays}d"
+        binding.textView5.text = getString(R.string.days_format, historyDays)
     }
 
     // --------------------------------------------------
@@ -110,7 +110,7 @@ class SettingsFragment : Fragment() {
                             fromUser: Boolean
                     ) {
                         val safeValue = progress.coerceAtLeast(10)
-                        binding.textView3.text = "${safeValue}s"
+                        binding.textView3.text = getString(R.string.seconds_format, safeValue)
                     }
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
@@ -132,7 +132,7 @@ class SettingsFragment : Fragment() {
                             fromUser: Boolean
                     ) {
                         val safeValue = progress.coerceAtLeast(7)
-                        binding.textView5.text = "${safeValue}d"
+                        binding.textView5.text = getString(R.string.days_format, safeValue)
                     }
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
@@ -235,7 +235,7 @@ class SettingsFragment : Fragment() {
         val btnPurge = dialogView.findViewById<android.widget.TextView>(R.id.btnPurge)
 
         tvMessage.text =
-                "This will permanently delete all verification history and associated media files ($sizeKb KB). This action cannot be undone."
+                getString(R.string.purge_confirmation_message, sizeKb)
 
         btnCancel.setOnClickListener { dialog.dismiss() }
 
@@ -250,7 +250,7 @@ class SettingsFragment : Fragment() {
     private fun performPurge() {
         viewLifecycleOwner.lifecycleScope.launch {
             val deleted = verificationRepository.purgeAll()
-            Toast.makeText(requireContext(), "Deleted $deleted items", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.deleted_items_toast, deleted), Toast.LENGTH_SHORT).show()
             updateStorageSize()
         }
     }
@@ -276,7 +276,7 @@ class SettingsFragment : Fragment() {
                 Status.ERROR -> {
                     Toast.makeText(
                                     requireContext(),
-                                    resource.message ?: "Login failed",
+                                    resource.message ?: getString(R.string.login_failed),
                                     Toast.LENGTH_SHORT
                             )
                             .show()
@@ -298,13 +298,13 @@ class SettingsFragment : Fragment() {
                             NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
                     binding.tvCreditsRemaining.text =
                             getString(R.string.credits_remaining, formattedCredits)
-                    Toast.makeText(requireContext(), "Credits updated", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.credits_updated), Toast.LENGTH_SHORT).show()
                 }
             } else if (resource.status == Status.ERROR) {
                 showCreditsLoading(false)
                 Toast.makeText(
                                 requireContext(),
-                                resource.message ?: "Failed to refresh credits",
+                                resource.message ?: getString(R.string.failed_refresh_credits),
                                 Toast.LENGTH_SHORT
                         )
                         .show()
@@ -330,7 +330,7 @@ class SettingsFragment : Fragment() {
     private fun updateStorageSize() {
         viewLifecycleOwner.lifecycleScope.launch {
             val sizeKb = verificationRepository.getTotalSizeKb()
-            binding.tvStorageSize?.text = "$sizeKb KB"
+            binding.tvStorageSize?.text = getString(R.string.size_kb_format, sizeKb)
             Log.d(TAG, "Total history storage: $sizeKb KB")
         }
     }

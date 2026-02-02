@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Purge All History"
+        android:text="@string/purge_history_dialog_title"
         android:textColor="@color/ios_dialog_title"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -28,7 +28,7 @@
         android:layout_marginTop="12dp"
         android:gravity="center"
         android:lineSpacingMultiplier="1.2"
-        android:text="This will permanently delete all verification history and associated media files (764 KB). This action cannot be undone."
+        android:text="@string/purge_history_dialog_message_placeholder"
         android:textColor="@color/ios_dialog_message"
         android:textSize="14sp" />
 
@@ -51,7 +51,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textColor="@color/vl_green"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -67,7 +67,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:text="Purge"
+            android:text="@string/purge"
             android:textColor="@color/vl_red"
             android:textSize="16sp"
             android:textStyle="bold" />

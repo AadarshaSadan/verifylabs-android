@@ -72,10 +72,10 @@ class HomeFragment : Fragment() {
         if (username.isNullOrEmpty() || apiKey.isNullOrEmpty()) {
             binding.llCreditsInfo.progressCredits.visibility = View.GONE
             binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-            binding.llCreditsInfo.tvCreditsRemaining.text = "Credits: Invalid credentials"
+            binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_invalid_credentials)
             Toast.makeText(
                             requireContext(),
-                            "Invalid credentials. Please log in again.",
+                            getString(R.string.invalid_login_toast),
                             Toast.LENGTH_LONG
                     )
                     .show()
@@ -85,7 +85,7 @@ class HomeFragment : Fragment() {
         // Show loading state
         binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
         binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-        binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
+        binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.loading)
 
         loginViewModel.checkCredits(username, apiKey)
     }
@@ -119,7 +119,7 @@ class HomeFragment : Fragment() {
                             getString(R.string.credits_remaining, formattedCredits)
                     Toast.makeText(
                                     requireContext(),
-                                    "Failed to refresh credits",
+                                    getString(R.string.failed_refresh_credits),
                                     Toast.LENGTH_SHORT
                             )
                             .show()
@@ -128,7 +128,7 @@ class HomeFragment : Fragment() {
                     // Handled in apiCheckCredits, but good to keep sync
                     binding.llCreditsInfo.progressCredits.visibility = View.VISIBLE
                     binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-                    binding.llCreditsInfo.tvCreditsRemaining.text = "Loading..."
+                    binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.loading)
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     binding.llCreditsInfo.progressCredits.visibility = View.GONE

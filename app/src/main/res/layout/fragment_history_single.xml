@@ -30,7 +30,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Verification Details"
+            android:text="@string/verification_details_title"
             android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/header_text"
@@ -55,7 +55,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Media"
+                android:text="@string/media_section_title"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="@color/header_text"
@@ -134,7 +134,7 @@
                             android:id="@+id/tvAudioLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Quick record audio"
+                            android:text="@string/quick_record_audio_label"
                             android:textColor="@color/secondary_text"
                             android:textSize="13sp"
                             android:layout_marginBottom="16dp" />
@@ -166,7 +166,7 @@
                                 android:id="@+id/tvCurrentTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0:00"
+                                android:text="@string/time_placeholder"
                                 android:textColor="@color/secondary_text"
                                 android:textSize="10sp" />
                             
@@ -190,7 +190,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Media not available"
+                        android:text="@string/media_not_available"
                         android:textColor="@color/secondary_text"
                         android:visibility="gone" />
                 </FrameLayout>
@@ -200,7 +200,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Original Result"
+                android:text="@string/original_result_section"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="@color/header_text"
@@ -235,7 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Human made"
+                        android:text="@string/report_human_generated"
                         android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/header_text" />
@@ -245,7 +245,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="There's a high probability that this was created by a human and has not been altered by AI."
+                        android:text="@string/human_verification_result_desc"
                         android:textSize="13sp"
                         android:textColor="@color/secondary_text"
                         android:gravity="center"
@@ -256,7 +256,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Verified on 22 Jan 2026 at 9:36 PM"
+                        android:text="@string/verified_on_placeholder"
                         android:textSize="11sp"
                         android:textColor="@color/secondary_text" />
                 </LinearLayout>
@@ -266,7 +266,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Re-verification"
+                android:text="@string/reverification_section"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="@color/header_text"
@@ -276,7 +276,7 @@
                 android:id="@+id/btnVerifyAgain"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:text="Verify Again"
+                android:text="@string/verify_again_button"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -332,7 +332,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:text="Human made"
+                            android:text="@string/report_human_generated"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="@color/header_text" />
@@ -342,7 +342,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Description here"
+                            android:text="@string/description_placeholder"
                             android:textSize="12sp"
                             android:textColor="@color/secondary_text"
                             android:gravity="center" />
@@ -352,7 +352,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:text="Same result as original"
+                            android:text="@string/same_result_as_original"
                             android:textSize="12sp"
                             android:textColor="@color/secondary_text" />
                     </LinearLayout>
@@ -363,7 +363,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:layout_marginTop="16dp"
-                    android:text="Save as New History Entry"
+                    android:text="@string/save_as_new_history_button"
                     android:textAllCaps="false"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -397,7 +397,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Uploading and verifying..."
+                    android:text="@string/uploading_verifying_status"
                     android:textColor="@color/secondary_text"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -406,7 +406,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Details"
+                android:text="@string/details_section"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="@color/header_text"
@@ -437,7 +437,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Media Type"
+                            android:text="@string/media_type_label"
                             android:textColor="@color/secondary_text"
                             android:textSize="15sp" />
                         <View
@@ -448,7 +448,7 @@
                             android:id="@+id/tvTypeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Image"
+                            android:text="@string/image_type_label"
                             android:textColor="@color/header_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -463,7 +463,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Resolution"
+                            android:text="@string/resolution_label"
                             android:textColor="@color/secondary_text"
                             android:textSize="15sp" />
                         <View
@@ -489,7 +489,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Filename"
+                            android:text="@string/filename_label"
                             android:textColor="@color/secondary_text"
                             android:textSize="15sp" />
                         <View
@@ -500,7 +500,7 @@
                             android:id="@+id/tvSizeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="--"
+                            android:text="@string/empty_placeholder"
                             android:textColor="@color/header_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -514,7 +514,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Robot Type"
+                            android:text="@string/robot_type_label"
                             android:textColor="@color/secondary_text"
                             android:textSize="15sp" />
                         <View
@@ -525,7 +525,7 @@
                             android:id="@+id/tvRobotValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="--"
+                            android:text="@string/empty_placeholder"
                             android:textColor="@color/header_text"
                             android:textSize="15sp"
                             android:textStyle="bold" />

@@ -887,7 +887,7 @@ class MediaFragment : Fragment() {
                         ) // Orange
 
                         binding.txtIdentifixation.visibility = View.VISIBLE
-                        binding.txtIdentifixation.text = "Please purchase more credits to continue"
+                        binding.txtIdentifixation.text = getString(R.string.please_purchase_more_credits)
                         binding.txtIdentifixation.setTextColor(Color.GRAY)
                         binding.txtIdentifixation.background = null // Remove capsule background
 
@@ -921,7 +921,7 @@ class MediaFragment : Fragment() {
                 val currentCredits = preferenceHelper.getCreditRemaining()
                 val newCredits = (currentCredits - 1).coerceAtLeast(0)
                 preferenceHelper.setCreditReamaining(newCredits)
-                binding.llCreditsInfo.tvCreditsRemaining.text = "Credits remaining: $newCredits"
+                binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining_format, newCredits)
                 Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
@@ -941,7 +941,7 @@ class MediaFragment : Fragment() {
         when (state) {
             ScanButtonState.VERIFY -> {
                 binding.btnAction.visibility = View.VISIBLE
-                binding.btnAction.text = "✔ Verify Media"
+                binding.btnAction.text = getString(R.string.verify_media_button)
             }
             ScanButtonState.SCANNING -> {
                 binding.btnAction.visibility = View.GONE
@@ -952,7 +952,7 @@ class MediaFragment : Fragment() {
             }
             ScanButtonState.FAILED -> {
                 binding.btnAction.visibility = View.VISIBLE
-                binding.btnAction.text = "Retry"
+                binding.btnAction.text = getString(R.string.retry_button)
             }
         }
         initChangeBtnColor()
@@ -987,7 +987,7 @@ class MediaFragment : Fragment() {
 
     private fun setSelectMediaButtonText(isTestAnother: Boolean) {
         val tv = binding.btnSelectMedia.getChildAt(1) as? android.widget.TextView
-        tv?.text = if (isTestAnother) "Test another?" else "Select Media File"
+        tv?.text = getString(if (isTestAnother) R.string.test_another else R.string.select_media_file)
 
         if (isTestAnother) {
             // Apply blue background from drawables
@@ -1063,7 +1063,7 @@ class MediaFragment : Fragment() {
             updateMediaStats(
                     fileSizeKb = sizeKb,
                     resolution = resolution,
-                    mediaTypeStr = if (mediaType == MediaType.VIDEO) "VIDEO" else "IMAGE",
+                    mediaTypeStr = getString(if (mediaType == MediaType.VIDEO) R.string.media_type_video else R.string.media_type_image),
                     qualityScore = score
             )
         }
@@ -1078,10 +1078,10 @@ class MediaFragment : Fragment() {
         binding.apply {
             if (fileSizeKb > 1024) {
                 tvSizeValue.text = String.format("%.1f", fileSizeKb / 1024.0)
-                tvSizeUnit.text = "MB"
+                tvSizeUnit.text = getString(R.string.unit_mb)
             } else {
                 tvSizeValue.text = fileSizeKb.toString()
-                tvSizeUnit.text = "KB"
+                tvSizeUnit.text = getString(R.string.unit_kb)
             }
             tvResolutionValue.text = resolution
 
@@ -1201,29 +1201,26 @@ class MediaFragment : Fragment() {
     }
 
     private fun getBandResult(band: Int?): String {
-        return when (band) {
-            1 -> "Human made"
-            2 -> "Likely human made"
-            3 -> "Result inconclusive"
-            4 -> "Likely machine made"
-            5 -> "Machine made"
-            else -> "Unknown"
-        }
+        return getString(when (band) {
+            1 -> R.string.band_human_made
+            2 -> R.string.band_likely_human_made
+            3 -> R.string.band_inconclusive
+            4 -> R.string.band_likely_machine_made
+            5 -> R.string.band_machine_made
+            else -> R.string.band_unknown
+        })
     }
 
     private fun getBandDescription(band: Int): String {
-        return when (band) {
-            1 ->
-                    "There’s a high probability that this was created by a human and has not been altered by AI."
-            2 ->
-                    "This was likely created by a human, but may have been improved by photo apps or a phone's automated software."
-            3 ->
-                    "This result can't be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information."
-            4 ->
-                    "This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results."
-            5 -> "There’s a high probability that this is deepfake or AI-generated."
-            else -> ""
+        val resId = when (band) {
+            1 -> R.string.desc_human_made
+            2 -> R.string.desc_likely_human_made
+            3 -> R.string.desc_inconclusive
+            4 -> R.string.desc_likely_machine_made
+            5 -> R.string.desc_machine_made
+            else -> 0
         }
+        return if (resId != 0) getString(resId) else ""
     }
 
     private fun showQualityTipsDialog(score: Int) {
@@ -1234,7 +1231,7 @@ class MediaFragment : Fragment() {
         val dialogBinding = com.verifylabs.ai.databinding.DialogGuidelinesBinding.bind(dialogView)
 
         // Reuse guidelines layout structure but change content for Tips
-        dialogBinding.tvTitle.text = "Media Quality Tips"
+        dialogBinding.tvTitle.text = getString(R.string.media_quality_tips_title)
         dialogBinding.tvTitle.setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.colorBlack)
         ) // Title Black

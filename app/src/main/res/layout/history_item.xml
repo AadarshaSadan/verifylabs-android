@@ -39,7 +39,7 @@
                 android:id="@+id/item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Human made"
+                android:text="@string/report_human_generated"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="@color/header_text" />
@@ -72,7 +72,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AI Score"
+                android:text="@string/ai_score_label"
                 android:textColor="#8E8E93"
                 android:textSize="10sp" />
         </LinearLayout>

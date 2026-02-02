@@ -29,7 +29,7 @@
             android:id="@+id/btnClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Close"
+            android:text="@string/close_button"
             android:textColor="@android:color/holo_red_dark"/>
     </LinearLayout>
 
@@ -64,7 +64,7 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="VerifyLabs"
+                android:text="@string/about_app_title"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textAlignment="center"
-                android:text="AI Content Verification"
+                android:text="@string/app_tagline"
                 android:textColor="@color/colorBlack"
                 android:layout_marginBottom="24dp"/>
 
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textAlignment="center"
-                android:text="Version 1.0.0"
+                android:text="@string/version_placeholder"
                 android:textColor="@color/colorBlack"
                 android:layout_marginBottom="24dp"/>
 
@@ -104,7 +104,7 @@
                 android:id="@+id/tvLegalTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Legal Information"
+                android:text="@string/legal_info_title"
                 android:textSize="14sp"
                 android:textAlignment="center"
                 android:textStyle="bold"
@@ -142,7 +142,7 @@
                         android:id="@+id/tvPrivacyPolicy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Privacy Policy"
+                        android:text="@string/privacy_policy_title"
                         android:textSize="16sp"
                         android:textColor="@color/colorBlack" />
 
@@ -150,7 +150,7 @@
                         android:id="@+id/tvPrivacyPolicySubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How we handle your data"
+                        android:text="@string/privacy_policy_subtitle"
                         android:textSize="12sp"
                         android:textColor="#85858B" />
                 </LinearLayout>
@@ -194,7 +194,7 @@
                         android:id="@+id/tvTerms"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Terms of use"
+                        android:text="@string/terms_of_use_title"
                         android:textSize="16sp"
                         android:textColor="@color/colorBlack" />
 
@@ -202,7 +202,7 @@
                         android:id="@+id/tvTermsSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Terms and conditions"
+                        android:text="@string/terms_subtitle"
                         android:textSize="12sp"
                         android:textColor="#85858B" />
                 </LinearLayout>
@@ -227,7 +227,7 @@
                 android:id="@+id/tvSupportHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Support"
+                android:text="@string/support_title"
                 android:textAlignment="center"
                 android:textColor="@color/colorBlack"
                 android:textSize="14sp"
@@ -265,7 +265,7 @@
                         android:id="@+id/tvVisitWebsite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Visit Website"
+                        android:text="@string/visit_website_title"
                         android:textSize="16sp"
                         android:textColor="@color/colorBlack" />
 
@@ -273,7 +273,7 @@
                         android:id="@+id/tvVisitWebsiteSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="verifylabs.ai"
+                        android:text="@string/website_url_label"
                         android:textSize="12sp"
                         android:textColor="#85858B" />
                 </LinearLayout>
@@ -317,7 +317,7 @@
                         android:id="@+id/tvContactSupport"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Contact Support"
+                        android:text="@string/contact_support_title"
                         android:textSize="16sp"
                         android:textColor="@color/colorBlack" />
 
@@ -325,7 +325,7 @@
                         android:id="@+id/tvContactSupportSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="support@verifylabs.ai"
+                        android:text="@string/support_email_label"
                         android:textSize="12sp"
                         android:textColor="@color/txtGreen" />
                 </LinearLayout>

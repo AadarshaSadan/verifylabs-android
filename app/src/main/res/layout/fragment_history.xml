@@ -34,22 +34,22 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="All" />
+            android:text="@string/tab_all" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Images" />
+            android:text="@string/tab_images" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Videos" />
+            android:text="@string/tab_videos" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Audio" />
+            android:text="@string/tab_audio" />
     </com.google.android.material.tabs.TabLayout>
 
 
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/empty_title"
-                android:text="No Items"
+                android:text="@string/no_items_title"
                 android:textSize="18sp"
                 android:textColor="@color/header_text"
                 android:layout_marginTop="8dp"/>
@@ -98,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/empty_subtitle"
-                android:text="Try selecting a different filter"
+                android:text="@string/no_items_subtitle"
                 android:textSize="14sp"
                 android:textColor="@color/secondary_text"
                 android:layout_marginTop="4dp"/>

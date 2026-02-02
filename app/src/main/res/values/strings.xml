@@ -1,37 +1,64 @@
 <resources>
+    <!-- General Application -->
     <string name="app_name">VerifyLabsAI</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="todo">TODO</string>
-    <string name="next_button">Next</string>
-    <string name="about_legal"><![CDATA[About & legal]]></string>
-    <string name="back_button">Back</string>
-    <string name="back">Back</string>
+    <string name="app_tagline">AI Content Verification</string>
+    <string name="version_placeholder">Version 1.0.0</string>
     <string name="app_icon">App icon</string>
-    <string name="letsgetstarted">Let\'s Get Started!</string>
-    <string name="creating_account">Creating Account…</string>
-    <string name="join_verifylabs">Create an account to VerifyLabs to get all features</string>
-    <string name="full_name">Full Name</string>
-    <string name="enter_full_name">Username*</string>
-    <string name="email">Email</string>
-    <string name="enter_email">Email*</string>
-    <string name="username">Username</string>
-    <string name="choose_username">Full Name*</string>
-    <string name="password">Password</string>
-    <string name="enter_password">Password*</string>
-    <string name="confirm_password">Confirm Password*</string>
-    <string name="confirm_your_password">Confirm Password*</string>
-    <string name="full_name_input">Full name input</string>
-    <string name="email_input">Email input</string>
-    <string name="username_input">Username input</string>
-    <string name="password_input">Password input</string>
-    <string name="confirm_password_input">Confirm password input</string>
-    <string name="create_account_button">Create</string>
-    <string name="already_have_account">Already have an account?</string>
-    <string name="sign_in">Login here</string>
-    <string name="signing_in">SIGNING IN…</string>
-    <string name="sign_in_login">SIGN IN</string>
-    <string name="creating_account_now">CREATING ACCOUNT…</string>
+
+    <!-- Common / Shared Keys -->
+    <string name="ok_button">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="close_button">Close</string>
+    <string name="back">Back</string>
+    <string name="back_button">Back</string>
+    <string name="next_button">Next</string>
+    <string name="done">Done</string>
+    <string name="btn_got_it">Got It</string>
+    <string name="continue_button">Continue</string>
+    <string name="save_action">Save</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading...</string>
+    <string name="todo">TODO</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Units & Formats -->
+    <string name="unit_mb">MB</string>
+    <string name="unit_kb">KB</string>
+    <string name="kb_unit">KB</string>
+    <string name="seconds_format">%ds</string>
+    <string name="days_format">%dd</string>
+    <string name="size_kb_format">%1$d KB</string>
+    <string name="credits_remaining_format">Credits remaining: %1$d</string>
+
+    <!-- Reused Placeholders -->
+    <string name="credits_remaining_placeholder">Credits remaining: 100</string>
+    <string name="credits_placeholder">1000 Credits</string>
+    <string name="price_placeholder">$6.99</string>
+    <string name="balance_placeholder">--</string>
+    <string name="empty_placeholder">--</string>
+    <string name="value_placeholder">0.00</string>
+    <string name="time_placeholder">0:00</string>
+    <string name="timer_placeholder">00:00:00</string>
+    <string name="duration_placeholder_40s">40s</string>
+    <string name="duration_placeholder_60s">60s</string>
+    <string name="duration_placeholder_90d">90d</string>
+    <string name="size_placeholder_908kb">908 KB</string>
+    <string name="resolution_placeholder">1242×1201</string>
+    <string name="error_message_placeholder">Message goes here</string>
+    <string name="description_placeholder">Description here</string>
+    <string name="product_description_placeholder">Product description goes here</string>
+    <string name="test_email_placeholder">test@gmail.com</string>
+    <string name="verified_on_placeholder">Verified on 22 Jan 2026 at 9:36 PM</string>
+    <string name="welcome_placeholder">Welcome</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_media">Media</string>
+    <string name="nav_audio">Audio</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Onboarding -->
     <string name="onboarding_logo">Onboarding Logo</string>
     <string name="protecting_n_people">Protecting \nPeople</string>
     <string name="revealing_n_deepfakes">Revealing\nDeepfakes</string>
@@ -40,19 +67,260 @@
     <string name="in_the_age">In the age</string>
     <string name="of">of</string>
     <string name="ai_n_n_n_n">AI\n\n\n\n</string>
+
+    <!-- Authentication (Login/Sign Up) -->
+    <string name="letsgetstarted">Let\'s Get Started!</string>
+    <string name="sign_up_welcome">Let\'s Get Started!</string>
     <string name="welcome_back">Welcome Back</string>
     <string name="sign_in_to_continue_to_verifylabs">Sign in to continue to VerifyLabs</string>
+    <string name="join_verifylabs">Create an account to VerifyLabs to get all features</string>
+    <string name="sign_up_prompt">Create an account to VerifyLabs to get all features</string>
+    <string name="create_account_button">Create</string>
+    <string name="create_button">CREATE</string>
+    <string name="create">CREATE</string>
+    <string name="sign_in">Login here</string>
+    <string name="login_link_text">Login here</string>
+    <string name="sign_in_login">SIGN IN</string>
+    <string name="sign_in_button">SIGN IN</string>
+    <string name="already_have_account">Already have an account?</string>
     <string name="don_t_have_an_account">Don’t have an account? </string>
     <string name="sign_up_here"> Sign Up Here</string>
+    <string name="signing_in">SIGNING IN…</string>
+    <string name="creating_account_now">CREATING ACCOUNT…</string>
+    <string name="creating_account">Creating Account…</string>
+    <string name="login_failed">Login failed</string>
+    <string name="invalid_login_toast">Invalid credentials. Please log in again.</string>
+
+    <!-- Auth Fields & Hints -->
+    <string name="username">Username</string>
+    <string name="username_label">Username</string>
+    <string name="username_input">Username input</string>
+    <string name="enter_full_name">Username*</string>
+    <string name="username_placeholder">misha</string>
+    <string name="username_required_hint">Username*</string>
+    
+    <string name="password">Password</string>
+    <string name="password_hint">Password</string>
+    <string name="password_input">Password input</string>
+    <string name="enter_password">Password*</string>
+    <string name="password_required_hint">Password*</string>
+    
+    <string name="email">Email</string>
+    <string name="email_address_label">Email address</string>
+    <string name="email_input">Email input</string>
+    <string name="enter_email">Email*</string>
+    <string name="email_required_hint">Email address*</string>
+    
+    <string name="full_name">Full Name</string>
+    <string name="full_name_label">Full name</string>
+    <string name="full_name_input">Full name input</string>
+    <string name="choose_username">Full Name*</string>
+    <string name="full_name_required_hint">Full Name*</string>
+    
+    <string name="confirm_password">Confirm Password*</string>
+    <string name="confirm_your_password">Confirm Password*</string>
+    <string name="confirm_password_input">Confirm password input</string>
+    <string name="confirm_password_required_hint">Confirm Password*</string>
+    <string name="password_mismatch_error">Passwords don\'t match</string>
+
+    <string name="agree_terms_prefix">I agree to the </string>
+    <string name="terms_conditions_link">Terms and \\nConditions</string>
+    <string name="and_connector"> and </string>
+    <string name="privacy_policy_link">Privacy Policy</string>
+
+    <!-- Forgot/Change Password -->
+    <string name="change_password_title">Change Password</string>
+    <string name="change_password_action">Change password</string>
+    <string name="change_password_button">Change Password</string>
+    <string name="current_password_label">Current Password</string>
+    <string name="current_password_hint">Enter current password</string>
+    <string name="new_password_label">New Password</string>
+    <string name="new_password_hint">Enter new password</string>
+    <string name="confirm_password_hint">Confirm new password</string>
+    <string name="password_requirements">Password Requirements</string>
+    <string name="password_requirements_label">Password Requirements:</string>
+    <string name="password_requirements_bullets">• At least 8 characters\n• At least one uppercase letter\n• At least one number</string>
+    <string name="req_8_chars">  At least 8 characters</string>
+    <string name="req_uppercase">  At least one uppercase letter</string>
+    <string name="req_number">  At least one number</string>
+    <string name="req_match">  Passwords match</string>
+
+    <!-- Verify Email -->
+    <string name="verify_email_title">Verify Your Email</string>
+    <string name="verify_email_subtitle">We\'ve sent a verification link to:</string>
+    <string name="verify_email_desc">Please check your email and click the verification link before logging in.</string>
+    <string name="verify_email_important">Important</string>
+    <string name="verify_email_expiry">The link expires in 24 hours</string>
+    <string name="verify_email_must_verify">You must verify before logging in</string>
+    <string name="verify_email_spam">Check your spam folder if not received</string>
+    <string name="open_email_app">Open Email App</string>
+    <string name="verify_later">I\'ll Verify Later</string>
+
+    <!-- Home Fragment -->
+    <string name="section_account">ACCOUNT</string>
+    <string name="section_preferences">PREFERENCES</string>
+    <string name="manage_account">Manage your account</string>
+    <string name="credits_invalid_credentials">Credits: Invalid credentials</string>
+    <string name="loading_credits">Loading credits...</string>
+    
+    <!-- Guidelines (Home) -->
+    <string name="guidelines_title">Guidelines</string>
+    <string name="label_best_results_guidelines">Best results guidelines</string>
+    <string name="best_results_guidelines_link">Best results guidelines</string>
+    <string name="guidelines_desc">This tool requires high-quality media. Low-quality input will give you incorrect results.</string>
+    <string name="guidelines_label_images">Images:</string>
+    <string name="guidelines_text_images">use high resolution only. Anything under 1 megapixel (e.g., 1024×1024 pixels) is too small and will produce unreliable detections. Always use the original, clearest file.</string>
+    <string name="guidelines_label_videos">Videos:</string>
+    <string name="guidelines_text_videos">upload 10 seconds or more. Never upload a still frame taken from a video; the analysis will be inaccurate.</string>
+    <string name="guidelines_label_audio">Audio:</string>
+    <string name="guidelines_text_audio">share 4 seconds or more via the share extension or record straight from the app. The quick record button will record for a given duration and automatically stop. In these two modes, long silences will result in a failure. The long record button will record up to 600 seconds and verify every 10 seconds. Silent segments will be ignored.</string>
+
+    <!-- Media Fragment -->
+    <string name="media_type_video">VIDEO</string>
+    <string name="media_type_image">IMAGE</string>
+    <string name="image_type_label">Image</string>
+    <string name="media_quality_tips_title">Media Quality Tips</string>
+    <string name="select_media_file">Select Media File</string>
+    <string name="verify_media_button">✔ Verify Media</string>
+    <string name="use_full_image_button">Use Full Image</string>
     <string name="if_you_want_to_test_an_audio_file_share">if you want to test an audio file Share</string>
     <string name="the_file_into_the_verifylabs_extension_instead">the file into the verifyLabs extension instead</string>
-    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
-    <string name="about_legal_"><![CDATA[About & Legal]]></string>
-    <string name="_2025_verifylabs_n_nall_rights_reserved">© 2025 VerifyLabs. \n\nAll rights reserved.</string>
+    <string name="test_another">Test another?</string>
+    <string name="retry_button">Retry</string>
+    <string name="hd_quality">HD</string>
+    
+    <!-- Labels (Home/History/Media) -->
+    <string name="label_quality">Quality</string>
+    <string name="label_type">Type</string>
+    <string name="label_size">Size</string>
+    <string name="label_resolution">Resolution</string>
+    <string name="resolution_label">Resolution</string>
+    <string name="filename_label">Filename</string>
+    <string name="media_type_label">Media Type</string>
+    <string name="robot_type_label">Robot Type</string>
+
+    <!-- Audio Fragment -->
+    <string name="audio_analysis_title">Audio Analysis</string>
+    <string name="record_audio_prompt">Record audio to see analysis</string>
+    <string name="audio_file_label">Audio File</string>
+    <string name="start_recording">start_recording\n\n</string>
+    <string name="avg_label">Avg: </string>
+    <string name="min_label">Min: </string>
+    <string name="max_label">Max: </string>
+    <string name="show_analysis_button">Show analysis</string>
+    <string name="reset_button">Reset</string>
+
+    <!-- Verification Results & Bands -->
+    <string name="ai_score_label">AI Score</string>
+    <string name="verification_failed_title">Verification failed</string>
+    <string name="band_human_made">Human made</string>
+    <string name="band_likely_human_made">Likely human made</string>
+    <string name="band_inconclusive">Result inconclusive</string>
+    <string name="band_likely_machine_made">Likely machine made</string>
+    <string name="band_machine_made">Machine made</string>
+    <string name="band_unknown">Unknown</string>
+    <string name="desc_human_made">There’s a high probability that this was created by a human and has not been altered by AI.</string>
+    <string name="human_verification_result_desc">There’s a high probability that this was created by a human and has not been altered by AI.</string>
+    <string name="desc_likely_human_made">This was likely created by a human, but may have been improved by photo apps or a phone\'s automated software.</string>
+    <string name="desc_inconclusive">This result can\'t be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information.</string>
+    <string name="desc_likely_machine_made">This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results.</string>
+    <string name="desc_machine_made">There’s a high probability that this is deepfake or AI-generated.</string>
+
+    <!-- Reporting -->
+    <string name="report_result">Report result</string>
+    <string name="report_result_title">Report result</string>
+    <string name="report_result_desc">Was this result incorrect? Select the type of error:</string>
+    <string name="report_human_generated">Human generated</string>
+    <string name="report_human_desc">Verified as AI but image created by human</string>
+    <string name="report_ai_generated">AI generated</string>
+    <string name="report_ai_desc">Verified as human but image created by AI</string>
+    <string name="loading_submitting_report">Submitting report...</string>
+    <string name="report_submitted_title">Report Submitted</string>
+    <string name="report_submitted_desc">Report submitted successfully</string>
+    <string name="report_failed_title">Report Failed</string>
+    <string name="report_failed_desc">Report failed: The Internet connection appears to be offline.</string>
+
+    <!-- History Fragment -->
+    <string name="tab_all">All</string>
+    <string name="tab_images">Images</string>
+    <string name="tab_videos">Videos</string>
+    <string name="tab_audio">Audio</string>
+    <string name="no_items_title">No Items</string>
+    <string name="no_items_subtitle">Try selecting a different filter</string>
+    <string name="verification_details_title">Verification Details</string>
+    <string name="media_section_title">Media</string>
+    <string name="quick_record_audio_label">Quick record audio</string>
+    <string name="media_not_available">Media not available</string>
+    <string name="original_result_section">Original Result</string>
+    <string name="reverification_section">Re-verification</string>
+    <string name="verify_again_button">Verify Again</string>
+    <string name="save_as_new_history_button">Save as New History Entry</string>
+    <string name="uploading_verifying_status">Uploading and verifying...</string>
+    <string name="details_section">Details</string>
+    <string name="same_result_as_original">Same result as original</string>
+
+    <!-- Account Fragment -->
+    <string name="account_title">Account</string>
+    <string name="profile_information_title">PROFILE INFORMATION</string>
+    <string name="cannot_be_changed_note">Cannot be changed</string>
+    <string name="security_title">SECURITY</string>
+    <string name="account_actions_title">ACCOUNT ACTIONS</string>
+    <string name="logout_action">Logout</string>
+    <string name="logout_button">Log Out</string>
+    <string name="danger_zone_title">DANGER ZONE</string>
+    <string name="delete_account_action">Delete account</string>
+    <string name="delete_account_confirm">Enter your password to confirm account deletion:</string>
+
+    <!-- Detailed Settings -->
+    <string name="quick_record_duration">Quick record duration</string>
+    <string name="quick_record_desc">Duration for quick records button (min 10s, max 60s)</string>
+    <string name="history_retention_period">History retention period</string>
+    <string name="history_retention_desc">How long to retain history records (min 7 days, max 90 days)</string>
+    <string name="purge_history_title">Purge all history</string>
+    <string name="purge_history_desc">Permanently delete all verification history and media files</string>
+    <string name="purge_history_dialog_title">Purge All History</string>
+    <string name="purge_history_dialog_message_placeholder">This will permanently delete all verification history and associated media files (764 KB). This action cannot be undone.</string>
+    <string name="purge">Purge</string>
+    <string name="purge_confirmation_message">This will permanently delete all verification history and associated media files (%1$d KB). This action cannot be undone.</string>
+    <string name="deleted_items_toast">Deleted %1$d items</string>
+
+    <!-- Purchase Credits -->
+    <string name="purchase_credits_title">Purchase credits</string>
+    <string name="purchase_options_title">Purchase options</string>
+    <string name="current_balance_label">Current balance</string>
+    <string name="credits_unit">credits</string>
+    <string name="buy">Buy</string>
     <string name="credits_remaining">Credits Remaining: %1$s</string>
     <string name="credits_remaining_0">Credits Remaining: 2500</string>
+    <string name="credits_updated">Credits updated</string>
+    <string name="failed_refresh_credits">Failed to refresh credits</string>
+    <string name="insufficient_credits_msg">Insufficient credits. Please upgrade or buy More.</string>
     <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
-    <string name="done">Done</string>
-    <string name="start_recording">start_recording\n\n</string>
-    <string name="create">CREATE</string>
+    <string name="please_purchase_more_credits">Please purchase more credits to continue</string>
+    <string name="no_credits_remaining">No credits remaining</string>
+    <string name="restore_purchases_action">Restore Purchases</string>
+
+    <!-- About & Legal -->
+    <string name="about_legal"><![CDATA[About & legal]]></string>
+    <string name="about_legal_"><![CDATA[About & Legal]]></string>
+    <string name="about_legal_title">About &amp; legal</string>
+    <string name="about_app_title">VerifyLabs</string>
+    <string name="legal_info_title">Legal Information</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_subtitle">How we handle your data</string>
+    <string name="terms_of_use_title">Terms of use</string>
+    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="terms_subtitle">Terms and conditions</string>
+    <string name="support_title">Support</string>
+    <string name="visit_website_title">Visit Website</string>
+    <string name="website_url_label">verifylabs.ai</string>
+    <string name="contact_support_title">Contact Support</string>
+    <string name="support_email_label">support@verifylabs.ai</string>
+    <string name="_2025_verifylabs_n_nall_rights_reserved">© 2025 VerifyLabs. \n\nAll rights reserved.</string>
+
+    <!-- Dialogs -->
+    <string name="error_title">Error</string>
+    <string name="ios_dialog_test_title">iOS Dialog</string>
+    <string name="ios_dialog_test_message">This looks like an iOS dialog.</string>
+
 </resources>

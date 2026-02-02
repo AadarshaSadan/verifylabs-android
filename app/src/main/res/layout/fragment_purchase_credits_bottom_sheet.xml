@@ -18,7 +18,7 @@
             android:id="@+id/btnClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Close"
+            android:text="@string/close_button"
             android:visibility="gone"
             android:textSize="16sp"
             android:textColor="@android:color/holo_red_dark"
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="Purchase options"
+                android:text="@string/purchase_options_title"
                 android:textColor="@color/colorBlack"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -97,7 +97,7 @@
                             android:id="@+id/tvBalanceLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Current balance"
+                            android:text="@string/current_balance_label"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp" />
 
@@ -111,7 +111,7 @@
                                 android:id="@+id/tvCurrentBalance"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="--"
+                                android:text="@string/balance_placeholder"
                                 android:textColor="@color/colorBlack"
                                 android:textSize="22sp"
                                 android:textStyle="bold" />
@@ -122,7 +122,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:layout_marginBottom="2dp"
-                                android:text="credits"
+                                android:text="@string/credits_unit"
                                 android:textColor="@android:color/darker_gray"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -176,7 +176,7 @@
                     android:id="@+id/tvRestorePurchase"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Restore Purchases"
+                    android:text="@string/restore_purchases_action"
                     android:textColor="@color/txtBlue"
                     android:textSize="14sp" />
 
