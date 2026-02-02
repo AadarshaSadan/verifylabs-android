@@ -250,7 +250,7 @@ class SettingsFragment : Fragment() {
     private fun performPurge() {
         viewLifecycleOwner.lifecycleScope.launch {
             val deleted = verificationRepository.purgeAll()
-            Toast.makeText(requireContext(), getString(R.string.deleted_items_toast, deleted), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), getString(R.string.deleted_items_toast, deleted), Toast.LENGTH_SHORT).show()
             updateStorageSize()
         }
     }
@@ -298,16 +298,16 @@ class SettingsFragment : Fragment() {
                             NumberFormat.getNumberInstance(Locale.US).format(totalCredits)
                     binding.tvCreditsRemaining.text =
                             getString(R.string.credits_remaining, formattedCredits)
-                    Toast.makeText(requireContext(), getString(R.string.credits_updated), Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(requireContext(), getString(R.string.credits_updated), Toast.LENGTH_SHORT).show()
                 }
             } else if (resource.status == Status.ERROR) {
                 showCreditsLoading(false)
-                Toast.makeText(
-                                requireContext(),
-                                resource.message ?: getString(R.string.failed_refresh_credits),
-                                Toast.LENGTH_SHORT
-                        )
-                        .show()
+//                Toast.makeText(
+//                                requireContext(),
+//                                resource.message ?: getString(R.string.failed_refresh_credits),
+//                                Toast.LENGTH_SHORT
+//                        )
+//                        .show()
             }
         }
     }

@@ -314,15 +314,27 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
     }
 
     private fun showLogoutConfirmation() {
-        AlertDialog.Builder(requireContext())
-                .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Logout") { dialog, _ ->
-                    logout()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-                .show()
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_logout, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
+        )
+
+        val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancel)
+        val btnLogout = dialogView.findViewById<android.widget.TextView>(R.id.btnLogout)
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+
+        btnLogout.setOnClickListener {
+            dialog.dismiss()
+            logout()
+        }
+
+        dialog.show()
     }
 
     private fun showDeleteAccountConfirmation() {
