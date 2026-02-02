@@ -134,7 +134,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         Purchases.sharedInstance.getOfferingsWith(
             onError = { error ->
                 Log.e(TAG, "Failed to load offerings")
-                Toast.makeText(requireContext(), "Network error. Try again.", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(requireContext(), "Network error. Try again.", Toast.LENGTH_SHORT).show()
                 completion?.invoke()
             },
             onSuccess = { offerings ->
@@ -194,7 +194,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
             onError = { error ->
                 // Even if restore fails, we try to reload offerings? 
                 // Or just stop here. RevenueCat says restore error usually means network.
-                Toast.makeText(requireContext(), "Restore failed: ${error.message}", Toast.LENGTH_SHORT).show()
+            //    Toast.makeText(requireContext(), "Restore failed: ${error.message}", Toast.LENGTH_SHORT).show()
                 
                 // Still try to refresh plans as user requested "fetch same api"
                 loadOfferings {
@@ -203,7 +203,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
                 }
             },
             onSuccess = { customerInfo ->
-                Toast.makeText(requireContext(), "Purchases restored!", Toast.LENGTH_SHORT).show()
+            //    Toast.makeText(requireContext(), "Purchases restored!", Toast.LENGTH_SHORT).show()
                 // Now fetch plans as requested
                 loadOfferings {
                     binding.progressBar.visibility = View.GONE

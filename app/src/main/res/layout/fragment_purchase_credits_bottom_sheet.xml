@@ -85,14 +85,19 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <ImageView
-                        android:id="@+id/imgCoin"
-                        android:layout_width="54dp"
-                        android:layout_height="54dp"
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_marginEnd="16dp"
-                        android:contentDescription="Coin icon"
-                        android:src="@drawable/verifylabs_circle_square_icon" />
+                        android:gravity="center">
 
+                        <ImageView
+                            android:id="@+id/imgCoin"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/verifylabs_circle_square_icon"
+                            android:scaleType="fitCenter" />
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
