@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -161,10 +160,23 @@ class HistoryFragment : Fragment() {
                             ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete)
                     private val intrinsicWidth = deleteIcon?.intrinsicWidth ?: 0
                     private val intrinsicHeight = deleteIcon?.intrinsicHeight ?: 0
-                    private val background = ColorDrawable()
-                    private val backgroundColor = Color.parseColor("#f44336")
+                    private val backgroundColor = Color.parseColor("#FF3B30") // iOS System Red
                     private val clearPaint =
                             Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+                    private val textPaint =
+                            Paint().apply {
+                                color = Color.WHITE
+                                textSize = 32f // Reduced slightly for better fit
+                                isAntiAlias = true
+                                textAlign = Paint.Align.CENTER
+                                typeface =
+                                        android.graphics.Typeface.create(
+                                                "sans-serif-medium",
+                                                android.graphics.Typeface.NORMAL
+                                        )
+                            }
+                    private val boxCornerRadius = 32f // More rounded for pill shape
+                    private val boxMargin = 24f // Initial margin
 
                     override fun onMove(
                             recyclerView: RecyclerView,
@@ -173,11 +185,15 @@ class HistoryFragment : Fragment() {
                     ): Boolean = false
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                        val position = viewHolder.adapterPosition
-                        val item = adapter.currentList[position]
-                        viewModel.deleteHistoryItem(item.id)
-                        // The LiveData observation in loadDataForTab will automatically update the
-                        // adapter
+                        val position = viewHolder.bindingAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+                            val item = adapter.currentList[position]
+                            viewModel.deleteHistoryItem(item.id)
+                            // Provide haptic feedback
+                            view?.performHapticFeedback(
+                                    android.view.HapticFeedbackConstants.CONTEXT_CLICK
+                            )
+                        }
                     }
 
                     override fun onChildDraw(
@@ -190,7 +206,6 @@ class HistoryFragment : Fragment() {
                             isCurrentlyActive: Boolean
                     ) {
                         val itemView = viewHolder.itemView
-                        val itemHeight = itemView.bottom - itemView.top
                         val isCanceled = dX == 0f && !isCurrentlyActive
 
                         if (isCanceled) {
@@ -213,37 +228,85 @@ class HistoryFragment : Fragment() {
                             return
                         }
 
-                        // Draw the red delete background
-                        background.color = backgroundColor
-                        background.setBounds(
-                                itemView.right + dX.toInt(),
-                                itemView.top,
-                                itemView.right,
-                                itemView.bottom
-                        )
-                        background.draw(c)
+                        val isLeftSwipe = dX < 0
+                        if (isLeftSwipe) {
+                            val swipeWidth = kotlin.math.abs(dX)
 
-                        // Calculate position of delete icon
-                        // Fix: Force 24dp size instead of using intrinsic width/height which is too
-                        // large (800dp)
-                        val iconSize =
-                                (24 * requireContext().resources.displayMetrics.density).toInt()
+                            // Define button bounds with margins
+                            // We want the button to appear "behind" or "following" but with gaps
+                            // to look like a floating pill.
+                            // Left boundary moves with swipe. Right boundary is fixed (minus
+                            // margin).
+                            val buttonLeft = itemView.right + dX + boxMargin
+                            val buttonTop = itemView.top + boxMargin
+                            val buttonRight = itemView.right - boxMargin
+                            val buttonBottom = itemView.bottom - boxMargin
 
-                        val deleteIconTop = itemView.top + (itemHeight - iconSize) / 2
-                        val deleteIconMargin = (itemHeight - iconSize) / 2
-                        val deleteIconLeft = itemView.right - deleteIconMargin - iconSize
-                        val deleteIconRight = itemView.right - deleteIconMargin
-                        val deleteIconBottom = deleteIconTop + iconSize
+                            // Only draw if we have positive width
+                            if (buttonLeft < buttonRight) {
+                                val rect =
+                                        android.graphics.RectF(
+                                                buttonLeft,
+                                                buttonTop,
+                                                buttonRight,
+                                                buttonBottom
+                                        )
+                                val paint =
+                                        Paint().apply {
+                                            color = backgroundColor
+                                            isAntiAlias = true
+                                        }
+                                c.drawRoundRect(rect, boxCornerRadius, boxCornerRadius, paint)
 
-                        // Draw the delete icon
-                        deleteIcon?.setBounds(
-                                deleteIconLeft,
-                                deleteIconTop,
-                                deleteIconRight,
-                                deleteIconBottom
-                        )
-                        deleteIcon?.setTint(Color.WHITE)
-                        deleteIcon?.draw(c)
+                                // Draw Icon & Text if wide enough
+                                if (swipeWidth > 120) {
+                                    val iconMarginBottom = 8f
+
+                                    // Calculate total content height to center it vertically
+                                    val text = "Delete"
+                                    val textBounds = android.graphics.Rect()
+                                    textPaint.getTextBounds(text, 0, text.length, textBounds)
+                                    val textHeight = textBounds.height()
+
+                                    val totalContentHeight =
+                                            intrinsicHeight + iconMarginBottom + textHeight
+
+                                    // Center coordinates
+                                    val centerX = (buttonLeft + buttonRight) / 2
+                                    val centerY = (buttonTop + buttonBottom) / 2
+
+                                    // Icon Position
+                                    val iconTop = centerY - (totalContentHeight / 2)
+                                    val iconBottom = iconTop + intrinsicHeight
+                                    val iconLeft = centerX - (intrinsicWidth / 2)
+                                    val iconRight = iconLeft + intrinsicWidth
+
+                                    deleteIcon?.setBounds(
+                                            iconLeft.toInt(),
+                                            iconTop.toInt(),
+                                            iconRight.toInt(),
+                                            iconBottom.toInt()
+                                    )
+                                    deleteIcon?.setTint(Color.WHITE)
+
+                                    // Fade in effect
+                                    val alpha =
+                                            kotlin.math.min(255f, (swipeWidth - 120) * 2).toInt()
+                                    deleteIcon?.alpha = alpha
+                                    textPaint.alpha = alpha
+
+                                    if (alpha > 0) {
+                                        deleteIcon?.draw(c)
+                                        // Text Position: below icon
+                                        // Draw text centered at centerX. Y is baseline.
+                                        val textY =
+                                                iconBottom + iconMarginBottom + textHeight -
+                                                        textBounds.bottom
+                                        c.drawText(text, centerX, textY, textPaint)
+                                    }
+                                }
+                            }
+                        }
 
                         super.onChildDraw(
                                 c,
