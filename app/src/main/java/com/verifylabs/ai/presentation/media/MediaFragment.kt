@@ -394,80 +394,37 @@ class MediaFragment : Fragment() {
         binding.statsLayout.visibility = View.GONE
         setButtonState(ScanButtonState.SCANNING)
 
-        // Show \"Please wait\" message with Blue background (iOS style)
-        binding.layoutInfoStatus.visibility = View.VISIBLE
-        binding.layoutInfoStatus.background =
-                ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.drawable_verify_background_blue_light
-                )
-
-        binding.txtIdentifixation.visibility = View.GONE // Hide specific result views
-        binding.imgIdentification.visibility = View.GONE
-        binding.btnReport.visibility = View.GONE
-
-        binding.textStatusMessage.visibility = View.VISIBLE
-        binding.textStatusMessage.text = "Please wait while we analyze your media"
-        binding.textStatusMessage.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.colorBlack)
-        )
-        // Background is now on layoutInfoStatus (the card)
-        binding.textStatusMessage.background = null
+        // Show iOS-style status
+        updateStatusView(ScanButtonState.SCANNING)
 
         viewLifecycleOwner.lifecycleScope.launch {
             // 1. Check Internet (Ping)
             val isConnected = internetHelper.isInternetAvailable()
             if (!isConnected) {
-                // Manually set background for error on the card
-                binding.layoutInfoStatus.background =
-                        ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.drawable_verify_background_red_light
-                        )
-                binding.textStatusMessage.text = "An error occurred during verification"
-                binding.textStatusMessage.setTextColor(Color.RED)
-
-                binding.statsLayout.visibility = View.GONE
+                updateStatusView(ScanButtonState.FAILED)
                 setButtonState(ScanButtonState.FAILED) // Shows Retry
                 return@launch
             }
 
-            // 2. Check Credits (Local + potentially refreshing via VM, but for now blocking on
-            // local info or proceeding to upload which handles backend check)
-            // User says: "proceeds to check the user’s available credits".
-            // We can do a quick check here if needed, or rely on the fact that upload/verify will
-            // check backend.
-            // Given the UI requirement "While the credit check... is in progress", we flow
-            // naturally.
+            // 2. Local Credit Check (Optional, but keeping flow)
             val totalCredits = preferenceHelper.getCreditRemaining() ?: 0
-            /* If we wanted to enforce backend check first:
-            if (totalCredits <= 0) {
-                 binding.layoutNoCreditStatus.visibility = View.VISIBLE
-                 updateStatus("", false)
-                 setButtonState(ScanButtonState.VERIFY)
-                 return@launch
-            }
-            */
+            // if (totalCredits <= 0) ... handled elsewhere or rely on backend
 
             // 3. Prepare File
-            val uri =
-                    selectedMediaUri
-                            ?: run {
-                                updateStatus("No media selected", true)
-                                setButtonState(ScanButtonState.FAILED)
-                                return@launch
-                            }
+            val uri = selectedMediaUri ?: run {
+                updateStatusView(ScanButtonState.FAILED, "No media selected")
+                setButtonState(ScanButtonState.FAILED)
+                return@launch
+            }
 
-            val file =
-                    getFileFromUri(requireContext(), uri)
-                            ?: run {
-                                updateStatus("Cannot prepare file", true)
-                                setButtonState(ScanButtonState.FAILED)
-                                return@launch
-                            }
+            val file = getFileFromUri(requireContext(), uri) ?: run {
+                updateStatusView(ScanButtonState.FAILED, "Cannot prepare file")
+                setButtonState(ScanButtonState.FAILED)
+                return@launch
+            }
 
             if (file.length() > 100 * 1024 * 1024) {
-                updateStatus("File too large (max 100MB)", true)
+                updateStatusView(ScanButtonState.FAILED, "File too large (max 100MB)")
                 setButtonState(ScanButtonState.FAILED)
                 return@launch
             }
@@ -475,6 +432,64 @@ class MediaFragment : Fragment() {
             // 4. Start Upload
             viewModel.uploadMedia(file.absolutePath, mediaType)
         }
+    }
+
+    private fun updateStatusView(state: ScanButtonState, errorMessage: String? = null) {
+        binding.layoutInfoStatus.visibility = View.VISIBLE
+        binding.textStatusMessage.visibility = View.VISIBLE
+        binding.txtIdentifixation.visibility = View.GONE
+        binding.imgIdentification.visibility = View.GONE
+        binding.btnReport.visibility = View.GONE
+
+        // Default Background & Text Color
+        binding.textStatusMessage.background = null
+
+        when (state) {
+            ScanButtonState.SCANNING -> {
+                binding.layoutInfoStatus.background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.drawable_verify_background_blue_light
+                )
+                binding.textStatusMessage.text = "Please wait while we analyze your media"
+                binding.textStatusMessage.setTextColor(
+                     ContextCompat.getColor(requireContext(), R.color.secondary_text)
+                )
+            }
+            ScanButtonState.FAILED -> {
+                binding.layoutInfoStatus.background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.drawable_verify_background_red_light
+                )
+                // Use custom error if provided, else default to generic
+                binding.textStatusMessage.text = errorMessage ?: "An error occurred during verification"
+                binding.textStatusMessage.setTextColor(Color.RED)
+            }
+            // For DONE, we usually have specific band logic, but if a generic "DONE" is called:
+            ScanButtonState.DONE -> {
+                 // logic handled in verify success usually
+            }
+            ScanButtonState.VERIFY -> {
+                binding.layoutInfoStatus.visibility = View.GONE
+            }
+        }
+    }
+
+    // Helper to handle INSUFFICIENT_CREDITS specifically if needed as a separate visual state
+    private fun showInsufficientCreditsStatus() {
+        binding.layoutInfoStatus.visibility = View.VISIBLE
+        binding.statsLayout.visibility = View.GONE
+        
+        binding.layoutInfoStatus.background = ContextCompat.getDrawable(
+             requireContext(),
+             R.drawable.drawable_verify_background_orange // or red light if preferred
+        )
+        binding.textStatusMessage.text = "Please purchase more credits to continue"
+        binding.textStatusMessage.setTextColor(
+             ContextCompat.getColor(requireContext(), R.color.vl_red) // or orange
+        )
+        
+        binding.txtIdentifixation.visibility = View.GONE
+        binding.imgIdentification.visibility = View.GONE
     }
 
     private fun getFileFromUri(context: Context, uri: Uri): File? {
@@ -513,11 +528,11 @@ class MediaFragment : Fragment() {
                     val uploadedUrl =
                             resource.data?.get("uploadedUrl")?.asString
                                     ?: run {
-                                        updateStatus("Upload succeeded but no URL received", true)
+                                        updateStatusView(ScanButtonState.FAILED, "Upload succeeded but no URL received")
                                         setButtonState(ScanButtonState.FAILED)
                                         return@observe
                                     }
-                    updateStatus("Verifying media...", false)
+                    updateStatusView(ScanButtonState.SCANNING)
                     // Button stays SCANNING during verification
                     viewModel.verifyMedia(
                             username = preferenceHelper.getUserName().toString(),
@@ -527,11 +542,11 @@ class MediaFragment : Fragment() {
                     )
                 }
                 Status.ERROR -> {
-                    updateStatus("Upload failed: ${resource.message}", true)
+                    updateStatusView(ScanButtonState.FAILED, resource.message)
                     setButtonState(ScanButtonState.FAILED)
                 }
                 Status.INSUFFICIENT_CREDITS -> {
-                    updateStatus("Insufficient credits for upload", true)
+                    showInsufficientCreditsStatus()
                     setButtonState(ScanButtonState.FAILED)
                 }
             }
@@ -541,8 +556,9 @@ class MediaFragment : Fragment() {
             viewModel.verifyResponseFlow.collect { resource ->
                 when (resource.status) {
                     Status.LOADING -> {
-                        // StartUpload handles SCANNING state, but we ensure stats are hidden
                         binding.statsLayout.visibility = View.GONE
+                        // Ensure scanning state visual if coming specifically from verify step
+                        // updateStatusView(ScanButtonState.SCANNING) 
                     }
                     Status.SUCCESS -> {
                         val response =
@@ -557,17 +573,12 @@ class MediaFragment : Fragment() {
                         binding.statsLayout.visibility = View.GONE
 
                         if (response.error != null) {
-                            binding.layoutInfoStatus.background =
-                                    ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.drawable_verify_background_red_light
-                                    )
-                            binding.textStatusMessage.text = response.error
-                            binding.textStatusMessage.setTextColor(Color.RED)
-                            binding.txtIdentifixation.visibility = View.GONE
-                            binding.imgIdentification.visibility = View.GONE
+                            updateStatusView(ScanButtonState.FAILED, response.error)
                             setButtonState(ScanButtonState.FAILED)
                         } else {
+                            // Band logic handles the "DONE" state visualization
+                            // which effectively shows "Analysis results are displayed above"
+                            // by showing the result description instead (as per iOS logic)
                             binding.textStatusMessage.text = getBandDescription(response.band)
                             binding.txtIdentifixation.text = getBandResult(response.band)
 
@@ -856,7 +867,7 @@ class MediaFragment : Fragment() {
                                         Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        updateStatus("Verification failed: ${resource.message}", true)
+                        updateStatusView(ScanButtonState.FAILED, "Verification failed: ${resource.message}")
                         setButtonState(ScanButtonState.FAILED)
                     }
                     Status.INSUFFICIENT_CREDITS -> {
@@ -887,7 +898,8 @@ class MediaFragment : Fragment() {
                         ) // Orange
 
                         binding.txtIdentifixation.visibility = View.VISIBLE
-                        binding.txtIdentifixation.text = getString(R.string.please_purchase_more_credits)
+                        binding.txtIdentifixation.text =
+                                getString(R.string.please_purchase_more_credits)
                         binding.txtIdentifixation.setTextColor(Color.GRAY)
                         binding.txtIdentifixation.background = null // Remove capsule background
 
@@ -921,7 +933,8 @@ class MediaFragment : Fragment() {
                 val currentCredits = preferenceHelper.getCreditRemaining()
                 val newCredits = (currentCredits - 1).coerceAtLeast(0)
                 preferenceHelper.setCreditReamaining(newCredits)
-                binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_remaining_format, newCredits)
+                binding.llCreditsInfo.tvCreditsRemaining.text =
+                        getString(R.string.credits_remaining_format, newCredits)
                 Log.d(TAG, "Credit consumed. New balance: $newCredits")
             }
         }
@@ -958,13 +971,7 @@ class MediaFragment : Fragment() {
         initChangeBtnColor()
     }
 
-    private fun updateStatus(message: String, isError: Boolean) {
-        binding.textStatusMessage.text = message
-        binding.textStatusMessage.setTextColor(
-                if (isError) Color.RED
-                else ContextCompat.getColor(requireContext(), R.color.colorBlack)
-        )
-    }
+
 
     private fun resetUI() {
         binding.imageViewMedia2.visibility = View.VISIBLE
@@ -975,7 +982,7 @@ class MediaFragment : Fragment() {
         binding.statsLayout.visibility = View.GONE
         binding.btnCrop.visibility = View.GONE
         binding.btnReport.visibility = View.GONE
-        updateStatus("", false)
+
         selectedMediaUri = null
 
         setSelectMediaButtonText(false)
@@ -987,7 +994,8 @@ class MediaFragment : Fragment() {
 
     private fun setSelectMediaButtonText(isTestAnother: Boolean) {
         val tv = binding.btnSelectMedia.getChildAt(1) as? android.widget.TextView
-        tv?.text = getString(if (isTestAnother) R.string.test_another else R.string.select_media_file)
+        tv?.text =
+                getString(if (isTestAnother) R.string.test_another else R.string.select_media_file)
 
         if (isTestAnother) {
             // Apply blue background from drawables
@@ -1063,7 +1071,11 @@ class MediaFragment : Fragment() {
             updateMediaStats(
                     fileSizeKb = sizeKb,
                     resolution = resolution,
-                    mediaTypeStr = getString(if (mediaType == MediaType.VIDEO) R.string.media_type_video else R.string.media_type_image),
+                    mediaTypeStr =
+                            getString(
+                                    if (mediaType == MediaType.VIDEO) R.string.media_type_video
+                                    else R.string.media_type_image
+                            ),
                     qualityScore = score
             )
         }
@@ -1201,25 +1213,28 @@ class MediaFragment : Fragment() {
     }
 
     private fun getBandResult(band: Int?): String {
-        return getString(when (band) {
-            1 -> R.string.band_human_made
-            2 -> R.string.band_likely_human_made
-            3 -> R.string.band_inconclusive
-            4 -> R.string.band_likely_machine_made
-            5 -> R.string.band_machine_made
-            else -> R.string.band_unknown
-        })
+        return getString(
+                when (band) {
+                    1 -> R.string.band_human_made
+                    2 -> R.string.band_likely_human_made
+                    3 -> R.string.band_inconclusive
+                    4 -> R.string.band_likely_machine_made
+                    5 -> R.string.band_machine_made
+                    else -> R.string.band_unknown
+                }
+        )
     }
 
     private fun getBandDescription(band: Int): String {
-        val resId = when (band) {
-            1 -> R.string.desc_human_made
-            2 -> R.string.desc_likely_human_made
-            3 -> R.string.desc_inconclusive
-            4 -> R.string.desc_likely_machine_made
-            5 -> R.string.desc_machine_made
-            else -> 0
-        }
+        val resId =
+                when (band) {
+                    1 -> R.string.desc_human_made
+                    2 -> R.string.desc_likely_human_made
+                    3 -> R.string.desc_inconclusive
+                    4 -> R.string.desc_likely_machine_made
+                    5 -> R.string.desc_machine_made
+                    else -> 0
+                }
         return if (resId != 0) getString(resId) else ""
     }
 

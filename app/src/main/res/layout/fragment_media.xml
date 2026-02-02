@@ -351,11 +351,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_result_card_green"
                 app:layout_constraintTop_toBottomOf="@id/statsLayout"
-                app:layout_goneMarginTop="10dp"
+                app:layout_goneMarginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -375,18 +376,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_result_capsule_green"
-                        android:paddingHorizontal="24dp"
-                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp"
                         android:text="@string/band_human_made"
                         android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/imgIdentification"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
                         android:src="@drawable/ic_smile_transparent" />
                 </LinearLayout>
 
@@ -394,12 +395,12 @@
                     android:id="@+id/textStatusMessage"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:text="@string/desc_human_made"
                     android:textColor="#2E7D32"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@id/layoutResultHeader"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

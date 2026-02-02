@@ -5,7 +5,11 @@
     <string name="version_placeholder">Version 1.0.0</string>
     <string name="app_icon">App icon</string>
 
-    <!-- Common / Shared Keys -->
+    <!-- ============================================== -->
+    <!--          SHARED & COMMON RESOURCES             -->
+    <!-- ============================================== -->
+
+    <!-- Actions (Buttons, Menus, Navigation) -->
     <string name="ok_button">OK</string>
     <string name="cancel">Cancel</string>
     <string name="close_button">Close</string>
@@ -17,20 +21,24 @@
     <string name="continue_button">Continue</string>
     <string name="save_action">Save</string>
     <string name="refresh">Refresh</string>
-    <string name="loading">Loading...</string>
     <string name="todo">TODO</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- Common Labels & Status -->
+    <string name="loading">Loading...</string>
+    <string name="label_quality">Quality</string>
+    <string name="label_type">Type</string>
+    <string name="label_size">Size</string>
+    <string name="label_resolution">Resolution</string>
+    <string name="resolution_label">Resolution</string>
+    <string name="filename_label">Filename</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_media">Media</string>
+    <string name="nav_audio">Audio</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
 
-    <!-- Units & Formats -->
-    <string name="unit_mb">MB</string>
-    <string name="unit_kb">KB</string>
-    <string name="kb_unit">KB</string>
-    <string name="seconds_format">%ds</string>
-    <string name="days_format">%dd</string>
-    <string name="size_kb_format">%1$d KB</string>
-    <string name="credits_remaining_format">Credits remaining: %1$d</string>
-
-    <!-- Reused Placeholders -->
+    <!-- Placeholders & Generics -->
     <string name="credits_remaining_placeholder">Credits remaining: 100</string>
     <string name="credits_placeholder">1000 Credits</string>
     <string name="price_placeholder">$6.99</string>
@@ -51,12 +59,55 @@
     <string name="verified_on_placeholder">Verified on 22 Jan 2026 at 9:36 PM</string>
     <string name="welcome_placeholder">Welcome</string>
 
-    <!-- Navigation -->
-    <string name="nav_home">Home</string>
-    <string name="nav_media">Media</string>
-    <string name="nav_audio">Audio</string>
-    <string name="nav_history">History</string>
-    <string name="nav_settings">Settings</string>
+    <!-- Units & Formats -->
+    <string name="unit_mb">MB</string>
+    <string name="unit_kb">KB</string>
+    <string name="kb_unit">KB</string>
+    <string name="seconds_format">%ds</string>
+    <string name="days_format">%dd</string>
+    <string name="size_kb_format">%1$d KB</string>
+    <string name="credits_remaining_format">Credits remaining: %1$d</string>
+
+    <!-- ============================================== -->
+    <!--            FEATURE SPECIFIC SECTIONS           -->
+    <!-- ============================================== -->
+
+    <!-- Media Fragment (Grouped by User Request) -->
+    <string name="media_type_video">VIDEO</string>
+    <string name="media_type_image">IMAGE</string>
+    <string name="image_type_label">Image</string>
+    <string name="media_quality_tips_title">Media Quality Tips</string>
+    <string name="select_media_file">Select Media File</string>
+    <string name="verify_media_button">✔ Verify Media</string>
+    <string name="use_full_image_button">Use Full Image</string>
+    <string name="test_another">Test another?</string>
+    <string name="retry_button">Retry</string>
+    <string name="hd_quality">HD</string>
+    <string name="media_type_label">Media Type</string>
+    <string name="robot_type_label">Robot Type</string>
+    <string name="credits_remaining">Credits Remaining: %1$s</string>
+    <string name="credits_remaining_0">Credits Remaining: 2500</string>
+    <string name="insufficient_credits_msg">Insufficient credits. Please upgrade or buy More.</string>
+    <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
+    <string name="please_purchase_more_credits">Please purchase more credits to continue</string>
+    <string name="if_you_want_to_test_an_audio_file_share">if you want to test an audio file Share</string>
+    <string name="the_file_into_the_verifylabs_extension_instead">the file into the verifyLabs extension instead</string>
+    
+    <!-- Media Verification Results & Bands -->
+    <string name="ai_score_label">AI Score</string>
+    <string name="verification_failed_title">Verification failed</string>
+    <string name="band_human_made">Human made</string>
+    <string name="band_likely_human_made">Likely human made</string>
+    <string name="band_inconclusive">Result inconclusive</string>
+    <string name="band_likely_machine_made">Likely machine made</string>
+    <string name="band_machine_made">Machine made</string>
+    <string name="band_unknown">Unknown</string>
+    <string name="desc_human_made">There’s a high probability that this was created by a human and has not been altered by AI.</string>
+    <string name="human_verification_result_desc">There’s a high probability that this was created by a human and has not been altered by AI.</string>
+    <string name="desc_likely_human_made">This was likely created by a human, but may have been improved by photo apps or a phone\'s automated software.</string>
+    <string name="desc_inconclusive">This result can\'t be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information.</string>
+    <string name="desc_likely_machine_made">This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results.</string>
+    <string name="desc_machine_made">There’s a high probability that this is deepfake or AI-generated.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_logo">Onboarding Logo</string>
@@ -175,30 +226,6 @@
     <string name="guidelines_label_audio">Audio:</string>
     <string name="guidelines_text_audio">share 4 seconds or more via the share extension or record straight from the app. The quick record button will record for a given duration and automatically stop. In these two modes, long silences will result in a failure. The long record button will record up to 600 seconds and verify every 10 seconds. Silent segments will be ignored.</string>
 
-    <!-- Media Fragment -->
-    <string name="media_type_video">VIDEO</string>
-    <string name="media_type_image">IMAGE</string>
-    <string name="image_type_label">Image</string>
-    <string name="media_quality_tips_title">Media Quality Tips</string>
-    <string name="select_media_file">Select Media File</string>
-    <string name="verify_media_button">✔ Verify Media</string>
-    <string name="use_full_image_button">Use Full Image</string>
-    <string name="if_you_want_to_test_an_audio_file_share">if you want to test an audio file Share</string>
-    <string name="the_file_into_the_verifylabs_extension_instead">the file into the verifyLabs extension instead</string>
-    <string name="test_another">Test another?</string>
-    <string name="retry_button">Retry</string>
-    <string name="hd_quality">HD</string>
-    
-    <!-- Labels (Home/History/Media) -->
-    <string name="label_quality">Quality</string>
-    <string name="label_type">Type</string>
-    <string name="label_size">Size</string>
-    <string name="label_resolution">Resolution</string>
-    <string name="resolution_label">Resolution</string>
-    <string name="filename_label">Filename</string>
-    <string name="media_type_label">Media Type</string>
-    <string name="robot_type_label">Robot Type</string>
-
     <!-- Audio Fragment -->
     <string name="audio_analysis_title">Audio Analysis</string>
     <string name="record_audio_prompt">Record audio to see analysis</string>
@@ -209,22 +236,6 @@
     <string name="max_label">Max: </string>
     <string name="show_analysis_button">Show analysis</string>
     <string name="reset_button">Reset</string>
-
-    <!-- Verification Results & Bands -->
-    <string name="ai_score_label">AI Score</string>
-    <string name="verification_failed_title">Verification failed</string>
-    <string name="band_human_made">Human made</string>
-    <string name="band_likely_human_made">Likely human made</string>
-    <string name="band_inconclusive">Result inconclusive</string>
-    <string name="band_likely_machine_made">Likely machine made</string>
-    <string name="band_machine_made">Machine made</string>
-    <string name="band_unknown">Unknown</string>
-    <string name="desc_human_made">There’s a high probability that this was created by a human and has not been altered by AI.</string>
-    <string name="human_verification_result_desc">There’s a high probability that this was created by a human and has not been altered by AI.</string>
-    <string name="desc_likely_human_made">This was likely created by a human, but may have been improved by photo apps or a phone\'s automated software.</string>
-    <string name="desc_inconclusive">This result can\'t be determined due to quality or testing suitability. This could be because it is partly machine-made, low resolution or too dark. Check FAQs on VerifyLabs.AI for more information.</string>
-    <string name="desc_likely_machine_made">This was likely created by a machine. Partly AI-generated content or deepfakes can often give these results.</string>
-    <string name="desc_machine_made">There’s a high probability that this is deepfake or AI-generated.</string>
 
     <!-- Reporting -->
     <string name="report_result">Report result</string>
@@ -290,13 +301,8 @@
     <string name="current_balance_label">Current balance</string>
     <string name="credits_unit">credits</string>
     <string name="buy">Buy</string>
-    <string name="credits_remaining">Credits Remaining: %1$s</string>
-    <string name="credits_remaining_0">Credits Remaining: 2500</string>
     <string name="credits_updated">Credits updated</string>
     <string name="failed_refresh_credits">Failed to refresh credits</string>
-    <string name="insufficient_credits_msg">Insufficient credits. Please upgrade or buy More.</string>
-    <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
-    <string name="please_purchase_more_credits">Please purchase more credits to continue</string>
     <string name="no_credits_remaining">No credits remaining</string>
     <string name="restore_purchases_action">Restore Purchases</string>
 
