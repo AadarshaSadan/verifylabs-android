@@ -384,7 +384,7 @@ class MediaFragment : Fragment() {
                 /* TODO if needed */
             }
         }
-        binding.imageOverlay.visibility = View.GONE
+        binding.resultOverlay.visibility = View.GONE
         binding.btnAction.visibility = View.VISIBLE
         binding.btnCrop.visibility = if (mediaType == MediaType.IMAGE) View.VISIBLE else View.GONE
     }
@@ -569,7 +569,7 @@ class MediaFragment : Fragment() {
 
                         binding.layoutInfoStatus.visibility = View.VISIBLE
                         binding.textStatusMessage.visibility = View.VISIBLE
-                        binding.imageOverlay.visibility = View.VISIBLE
+                        binding.resultOverlay.visibility = View.VISIBLE
                         binding.statsLayout.visibility = View.GONE
 
                         if (response.error != null) {
@@ -610,7 +610,7 @@ class MediaFragment : Fragment() {
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable
-                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                                        .verifylabs_smile_icon_green_white
                                             )
                                     )
                                     binding.imgIdentification.imageTintList = null
@@ -637,7 +637,7 @@ class MediaFragment : Fragment() {
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable
-                                                            .verifylabs_smile_icon_light_grey_rgb_1__traced_
+                                                            .verifylabs_smile_icon_green_white
                                             )
                                     )
                                     binding.imgIdentification.imageTintList = null
@@ -670,11 +670,18 @@ class MediaFragment : Fragment() {
                                             ColorStateList.valueOf(Color.GRAY)
                                 }
                                 4 -> { // Likely AI (System Red Card + Red Rect)
+//                                    binding.layoutInfoStatus.background =
+//                                            ContextCompat.getDrawable(
+//                                                    requireContext(),
+//                                                    R.drawable.bg_result_card_likely_ai
+//                                            )
+
+
                                     binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_likely_ai
-                                            )
+                                        ContextCompat.getDrawable(
+                                            requireContext(),
+                                            R.drawable.bg_result_card_likely_human
+                                        )
 
                                     binding.txtIdentifixation.background =
                                             ContextCompat.getDrawable(
@@ -691,22 +698,25 @@ class MediaFragment : Fragment() {
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable
-                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                                            .verifylabs_robot_icon_red_white
                                             )
                                     )
-                                    binding.imgIdentification.imageTintList =
-                                            ColorStateList.valueOf(
-                                                    ContextCompat.getColor(
-                                                            requireContext(),
-                                                            R.color.vl_red
-                                                    )
-                                            )
+//                                    binding.imgIdentification.imageTintList =
+//                                            ColorStateList.valueOf(
+//                                                    ContextCompat.getColor(
+//                                                            requireContext(),
+//                                                            R.color.vl_red
+//                                                    )
+//                                            )
+
+
+                                    binding.imgIdentification.imageTintList = null
                                 }
                                 5 -> { // AI (VLRed Card + Red Rect)
                                     binding.layoutInfoStatus.background =
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable.bg_result_card_ai
+                                                    R.drawable.bg_result_card_likely_human
                                             )
 
                                     binding.txtIdentifixation.background =
@@ -724,52 +734,54 @@ class MediaFragment : Fragment() {
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable
-                                                            .verifylabs_robot_icon_light_grey_rgb_1__traced_
+                                                            .verifylabs_robot_icon_red_white
                                             )
                                     )
-                                    binding.imgIdentification.imageTintList =
-                                            ColorStateList.valueOf(
-                                                    ContextCompat.getColor(
-                                                            requireContext(),
-                                                            R.color.vl_red
-                                                    )
-                                            )
+//                                    binding.imgIdentification.imageTintList =
+//                                            ColorStateList.valueOf(
+//                                                    ContextCompat.getColor(
+//                                                            requireContext(),
+//                                                            R.color.vl_red
+//                                                    )
+//                                            )
+
+                                    binding.imgIdentification.imageTintList = null
                                 }
                             }
 
                             // Overlay Image Logic (Center of Preview)
-                            binding.imageOverlay.visibility = View.VISIBLE
-                            binding.imageOverlay.alpha =
+                            binding.resultOverlay.visibility = View.VISIBLE
+                            binding.resultOverlay.alpha =
                                     0.7f // Ensure transparency matches typical overlay
                             when (response.band) {
                                 1, 2 -> { // Human -> Tick
-                                    binding.imageOverlay.setImageDrawable(
+                                    binding.resultOverlay.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable
                                                             .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
                                             )
                                     )
-                                    binding.imageOverlay.imageTintList = null // Use original colors
+                                    binding.resultOverlay.imageTintList = null // Use original colors
                                 }
                                 3 -> { // Unsure -> Warning (Gray)
-                                    binding.imageOverlay.setImageDrawable(
+                                    binding.resultOverlay.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable.ic_warning
                                             )
                                     )
-                                    binding.imageOverlay.imageTintList =
+                                    binding.resultOverlay.imageTintList =
                                             ColorStateList.valueOf(Color.GRAY)
                                 }
                                 4, 5 -> { // AI -> Cross (Red)
-                                    binding.imageOverlay.setImageDrawable(
+                                    binding.resultOverlay.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
                                                     R.drawable.ic_red_cross_tranparent
                                             )
                                     )
-                                    binding.imageOverlay.imageTintList = null // Use original colors
+                                    binding.resultOverlay.imageTintList = null // Use original colors
                                 }
                             }
 
@@ -873,7 +885,7 @@ class MediaFragment : Fragment() {
                     Status.INSUFFICIENT_CREDITS -> {
                         binding.layoutInfoStatus.visibility = View.VISIBLE
                         binding.textStatusMessage.visibility = View.VISIBLE
-                        binding.imageOverlay.visibility = View.VISIBLE
+                        binding.resultOverlay.visibility = View.VISIBLE
                         binding.statsLayout.visibility = View.GONE
 
                         // Orange configuration matching iOS
@@ -977,7 +989,7 @@ class MediaFragment : Fragment() {
         binding.imageViewMedia2.visibility = View.VISIBLE
         binding.imageViewMedia.visibility = View.GONE
         binding.videoViewMedia.visibility = View.GONE
-        binding.imageOverlay.visibility = View.GONE
+        binding.resultOverlay.visibility = View.GONE
         binding.layoutInfoStatus.visibility = View.GONE
         binding.statsLayout.visibility = View.GONE
         binding.btnCrop.visibility = View.GONE

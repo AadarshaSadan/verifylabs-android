@@ -111,9 +111,9 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <ImageView
-                    android:id="@+id/imageOverlay"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:id="@+id/resultOverlay"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:adjustViewBounds="true"
                     android:alpha="0.7"
                     android:elevation="11dp"
@@ -385,8 +385,8 @@
 
                     <ImageView
                         android:id="@+id/imgIdentification"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/ic_smile_transparent" />
                 </LinearLayout>
