@@ -45,13 +45,17 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
         viewModelScope.launch(exceptionHandler) {
             try {
                 val response = repository.uploadMedia(filePath, mediaType)
-                if (response.isSuccessful) {
-                     lastUploadedS3Url = response.body()?.get("uploadedUrl")?.asString
+                if (response.isSuccessful && response.body()?.has("uploadedUrl") == true) {
+                    lastUploadedS3Url = response.body()?.get("uploadedUrl")?.asString
+                    _uploadResponse.postValue(Resource.success(response.body()))
+                } else {
+                    val errorMsg = "Upload failed: ${response.message()}"
+                    _uploadResponse.postValue(Resource.error(errorMsg, null))
+                    errorMessage.postValue(errorMsg)
                 }
-                _uploadResponse.postValue(Resource.success(response.body()))
             } catch (e: Exception) {
-                _uploadResponse.postValue(Resource.error(e.message ?: "Unknown error", null))
-                errorMessage.postValue(e.message ?: "Unknown error")
+                _uploadResponse.postValue(Resource.error(e.message ?: "Unknown upload error", null))
+                errorMessage.postValue(e.message ?: "Unknown upload error")
             } finally {
                 loading.postValue(false)
             }
@@ -67,42 +71,57 @@ class MediaViewModel @Inject constructor(private val repository: ApiRepository) 
 
         _reportResponse.postValue(Resource.loading(null))
         viewModelScope.launch(exceptionHandler) {
-             try {
-                 val response = repository.reportToFalsies(s3Url, localFilePath, reportType)
-                 if (response.isSuccessful) {
-                     _reportResponse.postValue(Resource.success(response.body()))
-                 } else {
-                     _reportResponse.postValue(Resource.error(response.message(), null))
-                 }
-             } catch (e: Exception) {
-                 _reportResponse.postValue(Resource.error(e.message ?: "Report failed", null))
-             }
+            try {
+                val response = repository.reportToFalsies(s3Url, localFilePath, reportType)
+                if (response.isSuccessful) {
+                    _reportResponse.postValue(Resource.success(response.body()))
+                } else {
+                    _reportResponse.postValue(Resource.error(response.message(), null))
+                }
+            } catch (e: Exception) {
+                _reportResponse.postValue(Resource.error(e.message ?: "Report failed", null))
+            }
         }
     }
 
     fun verifyMedia(username: String, apiKey: String, mediaType: String, mediaUrl: String) {
-        // _verifyResponse.postValue(Resource.loading(null)) // Optional for parallel
+        if (username.isEmpty() || apiKey.isEmpty()) {
+            onError("Authentication missing. Please log in again.")
+            viewModelScope.launch {
+                _verifyResponse.emit(Resource.error("Authentication missing", null))
+            }
+            return
+        }
+
         viewModelScope.launch(exceptionHandler) {
             try {
                 val response = repository.verifyMedia(username, apiKey, mediaType, mediaUrl)
                 if (response.isSuccessful) {
                     _verifyResponse.emit(Resource.success(response.body()))
-                    
+
                     // Consume credit automatically (Parity with iOS)
                     consumeCredit(apiKey)
                 } else {
-                    if (response.code() == 402) {
-                         _verifyResponse.emit(Resource(com.verifylabs.ai.core.util.Status.INSUFFICIENT_CREDITS, null, "Insufficient Credits"))
+                    val code = response.code()
+                    val msg = response.message()
+                    if (code == 402) {
+                        _verifyResponse.emit(
+                                Resource(
+                                        com.verifylabs.ai.core.util.Status.INSUFFICIENT_CREDITS,
+                                        null,
+                                        "Insufficient Credits"
+                                )
+                        )
                     } else {
-                        _verifyResponse.emit(Resource.error(response.message(), null))
-                        onError("Verification failed: ${response.message()}")
+                        val fullError = "Verification failed (Code $code): $msg"
+                        _verifyResponse.emit(Resource.error(fullError, null))
+                        onError(fullError)
                     }
                 }
             } catch (e: Exception) {
-                _verifyResponse.emit(Resource.error(e.message ?: "Unknown error", null))
-                onError(e.message ?: "Unknown error")
-            } finally {
-                // loading.postValue(false)
+                val errorMsg = e.message ?: "Unknown verification error"
+                _verifyResponse.emit(Resource.error(errorMsg, null))
+                onError(errorMsg)
             }
         }
     }

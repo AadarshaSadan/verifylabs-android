@@ -62,7 +62,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/ic_smile_transparent" />
+            android:src="@drawable/verifylabs_smile_icon_green_white" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -106,7 +106,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/ic_robot_transparent" />
+            android:src="@drawable/verifylabs_robot_icon_red_white" />
 
         <LinearLayout
             android:layout_width="match_parent"

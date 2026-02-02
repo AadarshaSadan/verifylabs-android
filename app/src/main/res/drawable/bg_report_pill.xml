@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#FF9800" /> <!-- Orange for report button -->
-    <corners android:radius="10dp" />
+    <solid android:color="#CCFF9800" /> <!-- Orange with 0.8 opacity -->
+    <corners android:radius="8dp" />
 </shape>

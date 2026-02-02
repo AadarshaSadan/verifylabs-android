@@ -1,6 +1,5 @@
 package com.verifylabs.ai.presentation.audio
 
-import com.verifylabs.ai.presentation.MainActivity
 import android.Manifest
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -28,6 +27,7 @@ import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.data.database.VerificationEntity
 import com.verifylabs.ai.data.repository.VerificationRepository
 import com.verifylabs.ai.databinding.FragmentAudioBinding
+import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.media.GuidelinesDialogFragment
 import com.verifylabs.ai.presentation.media.MediaType
 import com.verifylabs.ai.presentation.media.VerificationResponse
@@ -647,13 +647,13 @@ class FragmentAudio : Fragment() {
             when (resource.status) {
                 Status.LOADING -> {
                     Log.d(TAG, "Upload: LOADING")
-//                    binding.txtStatus.text = "Uploading audio..."
+                    //                    binding.txtStatus.text = "Uploading audio..."
                     Log.d(TAG, "Uploading audio...")
                 }
                 Status.SUCCESS -> {
                     val url = resource.data?.get("uploadedUrl")?.asString.orEmpty()
                     Log.d(TAG, "Upload SUCCESS - URL: $url")
-//                    binding.txtStatus.text = "Verifying audio..."
+                    //                    binding.txtStatus.text = "Verifying audio..."
                     Log.d(TAG, "Verifying audio...")
                     viewModel.verifyMedia(
                             username = preferenceHelper.getUserName().orEmpty(),
@@ -668,7 +668,7 @@ class FragmentAudio : Fragment() {
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
-//                    binding.txtStatus.text = "Insufficient credits for upload"
+                    //                    binding.txtStatus.text = "Insufficient credits for upload"
                     Log.d(TAG, "Insufficient credits for upload")
                     resetMicButton()
                 }
@@ -740,7 +740,7 @@ class FragmentAudio : Fragment() {
                     }
                     Status.INSUFFICIENT_CREDITS -> {
                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
-//                        binding.txtStatus.text = "Insufficient Credits"
+                        //                        binding.txtStatus.text = "Insufficient Credits"
                         Log.d(TAG, "Insufficient Credits")
                         Toast.makeText(
                                         requireContext(),
@@ -868,7 +868,7 @@ class FragmentAudio : Fragment() {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to merge chunks", e)
                 withContext(Dispatchers.Main) {
-//                    binding.txtStatus.text = "Merge failed"
+                    //                    binding.txtStatus.text = "Merge failed"
                     Log.e(TAG, "Merge failed")
                     resetMicButton()
                 }
@@ -886,8 +886,8 @@ class FragmentAudio : Fragment() {
         binding.txtTimer.visibility = View.GONE
 
         // Reset Status Text
-//        binding.txtStatus.text = ""
-//        binding.txtStatus.visibility = View.VISIBLE
+        //        binding.txtStatus.text = ""
+        //        binding.txtStatus.visibility = View.VISIBLE
         Log.d(TAG, "Resetting Mic Button Status")
 
         // Hide Analysis/Results
@@ -941,7 +941,7 @@ class FragmentAudio : Fragment() {
         binding.txtResultTitle.visibility = View.VISIBLE
 
         binding.txtResultMessage.text =
-                "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
+                "$message\n\nThis usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
         binding.txtResultMessage.setTextColor(Color.WHITE)
 
         binding.btnReset.visibility = View.VISIBLE

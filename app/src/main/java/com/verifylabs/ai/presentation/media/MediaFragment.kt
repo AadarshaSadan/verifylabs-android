@@ -385,8 +385,7 @@ class MediaFragment : Fragment() {
             }
         }
         binding.resultOverlay.visibility = View.GONE
-        binding.btnAction.visibility = View.VISIBLE
-        binding.btnCrop.visibility = if (mediaType == MediaType.IMAGE) View.VISIBLE else View.GONE
+        // Visibility managed by setButtonState
     }
 
     private fun startUpload() {
@@ -963,6 +962,13 @@ class MediaFragment : Fragment() {
         // hidden on Done?
         // FAILED: Visible (Shows "Retry")
 
+        // Crop Button Visibility: Only show when image is selected (VERIFY state)
+        binding.btnCrop.visibility = if (state == ScanButtonState.VERIFY && mediaType == MediaType.IMAGE) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
         when (state) {
             ScanButtonState.VERIFY -> {
                 binding.btnAction.visibility = View.VISIBLE
@@ -1002,6 +1008,7 @@ class MediaFragment : Fragment() {
         // Reset button to initial state
         setButtonState(ScanButtonState.VERIFY)
         binding.btnAction.visibility = View.GONE // Initially hidden until media selected
+        binding.btnCrop.visibility = View.GONE // Ensure crop is also hidden
     }
 
     private fun setSelectMediaButtonText(isTestAnother: Boolean) {

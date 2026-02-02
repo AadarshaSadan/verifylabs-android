@@ -3,13 +3,20 @@
     android:height="64dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-  <!-- Green Circle -->
+
   <path
       android:fillColor="#00C800"
       android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
-  
-  <!-- White Checkmark -->
-  <path
-      android:fillColor="#FFFFFF"
-      android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41-1.41z"/>
+
+  <group
+      android:pivotX="12"
+      android:pivotY="12"
+      android:scaleX="0.75"
+      android:scaleY="0.75">
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41-1.41z"/>
+  </group>
+
 </vector>

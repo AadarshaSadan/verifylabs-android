@@ -412,23 +412,22 @@
             <LinearLayout
                 android:id="@+id/btnReport"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_report_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="12dp"
+                android:paddingHorizontal="14dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutInfoStatus">
 
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/ic_flag"
                     app:tint="@android:color/white" />
 
@@ -480,14 +479,17 @@
                     app:layout_constraintBottom_toBottomOf="@id/icNoCredits"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Verify Button -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnAction"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="36dp"
                 android:background="@drawable/bg_btn_verify"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:drawableStart="@drawable/ic_tick_icon"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:drawablePadding="8dp"
                 android:text="@string/verify_media_button"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
@@ -499,7 +501,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutNoCreditStatus"
                 app:layout_constraintVertical_bias="0.085" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
