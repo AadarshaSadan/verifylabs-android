@@ -20,6 +20,9 @@ import com.revenuecat.purchases.getOfferingsWith
 import com.revenuecat.purchases.purchasePackageWith
 import com.revenuecat.purchases.restorePurchasesWith
 import dagger.hilt.android.AndroidEntryPoint
+import com.verifylabs.ai.data.network.ApiRepository
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,6 +32,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     @Inject lateinit var preferenceHelper: PreferenceHelper
+    @Inject lateinit var repository: ApiRepository
     private var adapter: CreditPackageAdapter? = null
     private val TAG = "PurchaseCreditsBS"
 
@@ -50,6 +54,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         setupUI()
         setupRecyclerView()
         loadOfferings()
+        refreshBalance()
 
 //        (dialog as? BottomSheetDialog)?.apply {
 //            behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -72,8 +77,34 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setupUI() {
-        binding.tvCurrentBalance.text = "${preferenceHelper.getCreditRemaining() ?: 0}"
+        val initialBalance = preferenceHelper.getCreditRemaining()
+        binding.tvCurrentBalance.text = if (initialBalance == 0) "--" else "$initialBalance"
         binding.tvRestorePurchase.setOnClickListener { restorePurchases() }
+    }
+
+    private fun refreshBalance() {
+        val username = preferenceHelper.getUserName() ?: return
+        val apiKey = preferenceHelper.getApiKey() ?: return
+
+        binding.balanceProgressBar.visibility = View.VISIBLE
+        
+        lifecycleScope.launch {
+            try {
+                val response = repository.checkCredits(username, apiKey)
+                if (response.isSuccessful && response.body() != null) {
+                    val credits = response.body()!!.get("credits")?.asInt ?: 0
+                    val creditsMonthly = response.body()!!.get("credits_monthly")?.asInt ?: 0
+                    val totalCredits = credits + creditsMonthly
+                    
+                    preferenceHelper.setCreditReamaining(totalCredits)
+                    binding.tvCurrentBalance.text = "$totalCredits"
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to refresh balance: ${e.message}")
+            } finally {
+                binding.balanceProgressBar.visibility = View.GONE
+            }
+        }
     }
 
     private fun setupRecyclerView() {

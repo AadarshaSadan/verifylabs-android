@@ -1,103 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:background="@drawable/drawable_verify_background_white_radius"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/colorWhite"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
 
-    <!-- Main horizontal item -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="6dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Coin image with badge -->
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="12dp">
-
-            <ImageView
-                android:id="@+id/imgCoins"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="Coins icon"
-                android:src="@drawable/verifylabs_circle_square_icon" />
-
-            <TextView
-                android:id="@+id/tvBadge"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="top|end"
-                android:background="@drawable/drawable_verify_background_btn_blue"
-                android:gravity="center"
-                android:padding="2dp"
-                android:text="250"
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
-                android:visibility="gone" />
-        </FrameLayout>
-
-        <!-- Credit info -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvCreditsname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1000 Credits"
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$6.99"
-                android:textColor="@color/txtBlue"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnBuyCredits"
-            android:layout_width="120dp"
-            android:layout_height="30dp"
-            android:background="@drawable/drawable_buy_in_app_purchase"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvBuyCredits"
-                android:layout_width="wrap_content"
+            <!-- Product Icon (iOS Style) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="#F2F2F7"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/imgCoins"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/verifylabs_circle_square_icon"
+                    android:scaleType="fitCenter"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Product details -->
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Buy"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvCreditsname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1000 Credits"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="$6.99"
+                    android:textColor="@color/txtBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!-- Capsule Button -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnBuyCredits"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="80dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/txtBlue"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <TextView
+                    android:id="@+id/tvBuyCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="16dp"
+                    android:text="Buy"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-    </LinearLayout>
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvExtraText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Product description goes here"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"/>
 
-    <!-- Extra text below the main item -->
-    <TextView
-        android:id="@+id/tvExtraText"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text=""
-        android:textColor="#AAB2AA"
-        android:textSize="14sp" />
-</LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

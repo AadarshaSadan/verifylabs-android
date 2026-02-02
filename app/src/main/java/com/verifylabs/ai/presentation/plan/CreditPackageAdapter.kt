@@ -34,18 +34,17 @@ class CreditPackageAdapter(
             tvPrice.text = item.formattedPrice
             tvExtraText.text = item.description
 
-            // Best Value Badge
-            tvBadge.visibility =  View.GONE
+            // Best Value Badge (Not used in this design)
+            // tvBadge.visibility = View.GONE
 
             // Button Style: Buy vs Subscribe
             tvBuyCredits.text = item.buttonText
+            
+            // Apply capsule colors
             if (item.isSubscription) {
-
-                btnBuyCredits.setBackground(ContextCompat.getDrawable(context, R.drawable.drawable_subscribe_in_app_purchase))
-
-
+                btnBuyCredits.setCardBackgroundColor(ContextCompat.getColor(context, R.color.colorPurple))
             } else {
-                btnBuyCredits.setBackground(ContextCompat.getDrawable(context, R.drawable.drawable_buy_in_app_purchase))
+                btnBuyCredits.setCardBackgroundColor(ContextCompat.getColor(context, R.color.txtBlue))
             }
 
             root.setOnClickListener { onPackageClick(item) }

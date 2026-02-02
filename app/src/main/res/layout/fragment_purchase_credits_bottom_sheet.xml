@@ -61,73 +61,88 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:text="Purchase options"
-                android:layout_marginBottom="30dp"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/colorBlack"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-
-            <!-- Current Balance Section -->
-            <LinearLayout
-                android:padding="10dp"
-                android:id="@+id/layoutBalance"
+            <!-- Current Balance Section (iOS Style Card) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBalance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@color/colorWhite"
-                android:gravity="center_vertical"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/colorWhite"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <ImageView
-                    android:id="@+id/imgCoin"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/verifylabs_circle_square_icon"
-                    android:contentDescription="Coin icon"
-                    android:layout_marginEnd="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/imgCoin"
+                        android:layout_width="54dp"
+                        android:layout_height="54dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Coin icon"
+                        android:src="@drawable/verifylabs_circle_square_icon" />
 
-                    <TextView
-                        android:id="@+id/tvBalanceLabel"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Current Balance"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="16sp"
-                        android:textStyle="normal"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvCurrentBalance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="x"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toBottomOf="@id/tvBalanceLabel"
-                        app:layout_constraintStart_toStartOf="parent"/>
+                        <TextView
+                            android:id="@+id/tvBalanceLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current balance"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="14sp" />
 
-                    <TextView
-                        android:id="@+id/tvBalanceAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="credits"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="16sp"
-                        android:textStyle="normal"
-                        app:layout_constraintBaseline_toBaselineOf="@id/tvCurrentBalance"
-                        app:layout_constraintStart_toEndOf="@id/tvCurrentBalance" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="bottom">
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
+                            <TextView
+                                android:id="@+id/tvCurrentBalance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="--"
+                                android:textColor="@color/colorBlack"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvBalanceAmountLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:text="credits"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/balanceProgressBar"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Restore Purchases -->
             <TextView
