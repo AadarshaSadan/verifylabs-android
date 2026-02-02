@@ -375,6 +375,8 @@ class MediaFragment : Fragment() {
                     // Silent autoplay for preview
                     mp.setVolume(0f, 0f)
                     binding.videoViewMedia.start()
+                    // Force re-layout to respect aspect ratio with constraints
+                    binding.videoViewMedia.requestLayout() 
                 }
             }
             MediaType.AUDIO -> {
