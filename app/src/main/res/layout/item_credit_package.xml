@@ -6,7 +6,7 @@
     android:layout_marginBottom="12dp"
     app:cardBackgroundColor="@color/colorWhite"
     app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
+    app:cardElevation="0.01dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/credits_placeholder"
                     android:textColor="@color/colorBlack"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -87,6 +87,9 @@
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="16dp"
                     android:text="@string/buy"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />

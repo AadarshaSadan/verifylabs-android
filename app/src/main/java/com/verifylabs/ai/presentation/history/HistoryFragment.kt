@@ -240,13 +240,11 @@ class HistoryFragment : Fragment() {
                         val isLeftSwipe = dX < 0
                         if (isLeftSwipe) {
                             val swipeWidth = kotlin.math.abs(dX)
+                            
+                            // The minimal swipe width needed before the red box appears (due to margins)
+                            val startAppearance = boxMargin * 2
 
                             // Define button bounds with margins
-                            // We want the button to appear "behind" or "following" but with gaps
-                            // to look like a floating pill.
-                            // Left boundary moves with swipe. Right boundary is fixed (minus
-                            // margin).
-                            // boxVerticalMargin is now defined in configuration block
                             val buttonLeft = itemView.right + dX + boxMargin
                             val buttonTop = itemView.top + boxVerticalMargin
                             val buttonRight = itemView.right - boxMargin
@@ -254,37 +252,60 @@ class HistoryFragment : Fragment() {
 
                             // Only draw if we have positive width
                             if (buttonLeft < buttonRight) {
+                                // ANIMATION LOGIC
+                                // Calculate progress based on swipe width relative to visibilityThreshold
+                                // We offset by startAppearance so animation starts smoothly when box appears
+                                val animationRange = visibilityThreshold - startAppearance
+                                val safeRange = if (animationRange > 0) animationRange else 1f // avoid div/0
+                                
+                                val rawProgress = (swipeWidth - startAppearance) / safeRange
+                                val progress = rawProgress.coerceIn(0f, 1f)
+
+                                // Calculate Scale for Background
+                                // We want the background to grow from center.
+                                val maxButtonHeight = buttonBottom - buttonTop
+                                val currentButtonHeight = maxButtonHeight * progress
+                                
+                                // Recalculate Top/Bottom to center it
+                                val centerY = (buttonTop + buttonBottom) / 2
+                                val currentTop = centerY - (currentButtonHeight / 2)
+                                val currentBottom = centerY + (currentButtonHeight / 2)
+                                
                                 val rect =
                                         android.graphics.RectF(
                                                 buttonLeft,
-                                                buttonTop,
+                                                currentTop,
                                                 buttonRight,
-                                                buttonBottom
+                                                currentBottom
                                         )
-                                // Calculate radius: Use custom if set, otherwise dynamic pill shape
-                                val buttonHeight = buttonBottom - buttonTop
-                                val dynamicRadius = if (customCornerRadius > 0) customCornerRadius else buttonHeight / 2f
+                                // Calculate radius: Use custom if set, otherwise dynamic pill shape based on current height
+                                val dynamicRadius = if (customCornerRadius > 0) customCornerRadius else currentButtonHeight / 2f
+                                
+                                // Calculate Background Alpha
+                                val bgAlpha = (255 * progress).toInt()
                                 
                                 val paint =
                                         Paint().apply {
                                             color = backgroundColor
+                                            alpha = bgAlpha // Apply Fade In
                                             isAntiAlias = true
                                         }
-                                c.drawRoundRect(rect, dynamicRadius, dynamicRadius, paint)
+                                
+                                // Only draw if visible
+                                if (currentButtonHeight > 0 && bgAlpha > 0) {
+                                    c.drawRoundRect(rect, dynamicRadius, dynamicRadius, paint)
+                                }
 
-                                // Draw Icon & Text if wide enough
-                                if (swipeWidth > visibilityThreshold) {
+                                // Icon Animation: Scale and Fade
+                                // Scale: 0 -> iconScale
+                                // Alpha: 0 -> 255
+                                val currentScale = iconScale * progress
+                                val currentAlpha = (255 * progress).toInt()
+
+                                if (currentAlpha > 0) {
+                                    val iconW = (intrinsicWidth * currentScale).toInt()
+                                    val iconH = (intrinsicHeight * currentScale).toInt()
                                     val iconMarginBottom = 8f
-
-                                    // Calculate total content height to center it vertically
-                                    val text = "Delete"
-                                    val textBounds = android.graphics.Rect()
-                                    textPaint.getTextBounds(text, 0, text.length, textBounds)
-                                    val textHeight = textBounds.height()
-
-                                    // Scale Icon
-                                    val iconW = (intrinsicWidth * iconScale).toInt()
-                                    val iconH = (intrinsicHeight * iconScale).toInt()
 
                                     // Center coordinates
                                     val centerX = (buttonLeft + buttonRight) / 2
@@ -303,46 +324,39 @@ class HistoryFragment : Fragment() {
                                             iconBottom.toInt()
                                     )
                                     deleteIcon?.setTint(Color.WHITE)
+                                    deleteIcon?.alpha = currentAlpha
+                                    deleteIcon?.draw(c)
+                                    
+                                    // Text Animation: Fade in
+                                    // Start fading text slightly later, e.g., when icon is 50% visible
+                                    val textStartProgress = 0.5f
+                                    val textRawProgress = (rawProgress - textStartProgress) / (1f - textStartProgress)
+                                    val textProgress = textRawProgress.coerceIn(0f, 1f)
+                                    val textAlpha = (255 * textProgress).toInt()
 
-                                    // Fade in effect
-                                    val alpha =
-                                            kotlin.math.min(255f, (swipeWidth - visibilityThreshold) * 2).toInt()
-                                    deleteIcon?.alpha = alpha
-                                    textPaint.alpha = alpha
-
-                                    if (alpha > 0) {
-                                        deleteIcon?.draw(c)
+                                    if (textAlpha > 0) {
+                                        val text = "Delete"
+                                        val textBounds = android.graphics.Rect()
+                                        textPaint.getTextBounds(text, 0, text.length, textBounds)
+                                        val textHeight = textBounds.height()
                                         
                                         // Text Position: OUTSIDE and BELOW the background
-                                        // We use the space provided by boxVerticalMargin
                                         val textTopMargin = 8f
                                         val textY = buttonBottom + textTopMargin + textHeight
                                         
-                                        // Change text color to Gray or Black if it's on white background? 
-                                        // User didn't specify, but assuming white background of row, white text won't be visible.
-                                        // Assuming dark mode or checking contrast? 
-                                        // The original text was White on Red. Now it's on the row background.
-                                        // Let's use a visible color (e.g., Light Gray or match previous style if it was overlay).
-                                        // Ideally, we should check theme. For now, let's keep it White if the row is dark, or Gray if light.
-                                        // Current app seems to have dark theme references (ios_settings_background).
-                                        // But wait, if we draw on top of the row, and the row is white, white text is invisible.
-                                        // Let's use a safe color like Color.GRAY or specific deletion red color for text too?
-                                        // For now, I will use Color.GRAY to be safe, or re-use the textPaint color if it was already appropriate.
-                                        // Previous textPaint was White.
-                                        
-                                        // Let's create a temporary paint for this or modify textPaint color just for this draw
                                         val originalColor = textPaint.color
+                                        val originalAlpha = textPaint.alpha
                                         
-                                        // Use Configurable Color
                                         try {
                                             textPaint.color = Color.parseColor(textColorHex)
                                         } catch (e: Exception) {
-                                            textPaint.color = Color.GRAY // Fallback
+                                            textPaint.color = Color.GRAY 
                                         }
+                                        textPaint.alpha = textAlpha
                                         
                                         c.drawText(text, centerX, textY, textPaint)
                                         
-                                        // Restore color
+                                        // Restore 
                                         textPaint.color = originalColor
                                     }
                                 }

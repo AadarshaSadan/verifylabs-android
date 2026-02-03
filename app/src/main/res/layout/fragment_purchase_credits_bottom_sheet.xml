@@ -143,19 +143,19 @@
                 android:id="@+id/restoreContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="16dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <FrameLayout
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_marginEnd="8dp">
 
                     <ImageView
@@ -178,7 +178,86 @@
                     android:layout_height="wrap_content"
                     android:text="@string/restore_purchases_action"
                     android:textColor="@color/txtBlue"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- Error State Layout -->
+
+
+
+            <LinearLayout
+                android:id="@+id/layoutLoadingState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="24dp">
+                <!-- Loading Spinner -->
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:layout_marginBottom="20dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loading products"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/colorBlack"
+              />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/layoutErrorState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_warning"
+                    android:layout_marginBottom="4dp"
+                    app:tint="@android:color/holo_red_dark"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Error"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginBottom="1dp"/>
+
+                <TextView
+                    android:id="@+id/tvErrorMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Failed to load products. Please check your internet connection."
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="24dp"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnRetry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="Retry"
+                    android:textColor="@color/colorWhite"
+                    android:background="@drawable/bg_ios_green_button"
+                    android:paddingStart="3dp"
+                    android:paddingEnd="3dp"
+                    android:textAllCaps="false"/>
 
             </LinearLayout>
 
@@ -194,13 +273,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Loading Spinner -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_marginBottom="20dp"/>
+>
 
 </LinearLayout>

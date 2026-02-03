@@ -87,14 +87,17 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
         val initialBalance = preferenceHelper.getCreditRemaining()
         binding.tvCurrentBalance.text = if (initialBalance == 0) "--" else "$initialBalance"
         binding.restoreContainer.setOnClickListener { restorePurchases() }
-        
+
         binding.restoreContainer.setOnTouchListener { v, event ->
             when (event.action) {
                 android.view.MotionEvent.ACTION_DOWN -> v.alpha = 0.5f
-                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> v.animate().alpha(1f).setDuration(150).start()
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL ->
+                        v.animate().alpha(1f).setDuration(150).start()
             }
             false
         }
+
+        binding.btnRetry.setOnClickListener { loadOfferings() }
     }
 
     private fun refreshBalance() {
@@ -144,6 +147,7 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
                                         Toast.LENGTH_SHORT
                                 )
                                 .show()
+                        refreshBalance() // Refresh balance after purchase
                         dismiss()
                     }
             )
@@ -156,17 +160,33 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun loadOfferings(completion: (() -> Unit)? = null) {
+        binding.layoutLoadingState.visibility = View.VISIBLE
+        binding.layoutErrorState.visibility = View.GONE
+        // Keep RecyclerView visible if it has content? Or hide it to show loading?
+        // Better to show loading spinner over it or hide it. Let's hide it for specific loading
+        // state.
+        binding.rvCreditPackages.visibility = View.GONE
+
         Purchases.sharedInstance.getOfferingsWith(
                 onError = { error ->
-                    Log.e(TAG, "Failed to load offerings")
-                    //  Toast.makeText(requireContext(), "Network error. Try again.",
-                    // Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "Failed to load offerings: ${error.message}")
+                    binding.layoutLoadingState.visibility = View.GONE
+
+                    // Show Error State
+                    binding.layoutErrorState.visibility = View.VISIBLE
+                    binding.tvErrorMessage.text = "Failed to load products: ${error.message}"
+
                     completion?.invoke()
                 },
                 onSuccess = { offerings ->
+                    binding.layoutLoadingState.visibility = View.GONE
                     val current =
                             offerings.current
                                     ?: run {
+                                        // Empty offerings might also be an error or just empty
+                                        binding.layoutErrorState.visibility = View.VISIBLE
+                                        binding.tvErrorMessage.text =
+                                                "No products available at the moment."
                                         completion?.invoke()
                                         return@getOfferingsWith
                                     }
@@ -213,7 +233,14 @@ class PurchaseCreditsBottomSheet : BottomSheetDialogFragment() {
 
                     val finalList = packages.map { it.copy(isBestValue = it == bestValue) }
 
-                    adapter?.submitList(finalList)
+                    if (finalList.isEmpty()) {
+                        binding.layoutErrorState.visibility = View.VISIBLE
+                        binding.tvErrorMessage.text = "No packages found."
+                    } else {
+                        binding.rvCreditPackages.visibility = View.VISIBLE
+                        adapter?.submitList(finalList)
+                    }
+
                     completion?.invoke()
                 }
         )
