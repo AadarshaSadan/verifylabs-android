@@ -52,7 +52,7 @@ class FragmentAudio : Fragment() {
     private val binding
         get() = _binding!!
 
-    private val TAG = "FragmentAudio" // Log TAG
+    private val TAG = "FragmentAudio"
 
     @Inject lateinit var preferenceHelper: PreferenceHelper
 
@@ -77,6 +77,7 @@ class FragmentAudio : Fragment() {
     }
 
     private var isVerificationPending = false
+    private var isFinalizing = false // Set to true only for the result that should save to history
 
     // Segmented Recording (Long Record)
     private var isLongRecording = false
@@ -180,12 +181,19 @@ class FragmentAudio : Fragment() {
                         .get("AudioScope", MediaViewModel::class.java)
 
         binding.micButton.setOnClickListener {
-            Log.d(TAG, "Mic button clicked | isRecording: $isRecording")
+            Log.d(TAG, "Interaction: Regular Mic (Long Recording) clicked. Current RecordingState: $isRecording")
+            if (binding.layoutAnalyzing.visibility == View.VISIBLE) {
+                Log.d(TAG, "Interaction: Mic click blocked (Analyzing state)")
+                return@setOnClickListener
+            }
             if (isRecording) {
+                Log.d(TAG, "Interaction: Stopping regular recording.")
                 stopRecording()
             } else {
+                Log.d(TAG, "Interaction: Starting long recording session.")
                 isLongRecording = true
                 isQuickRecording = false
+                isFinalizing = false
                 allChunkFiles.clear()
                 temporalScores.clear()
                 requestRecordPermission()
@@ -193,20 +201,25 @@ class FragmentAudio : Fragment() {
         }
 
         binding.micPulsebtn.setOnClickListener {
-            Log.d(
-                    TAG,
-                    "Quick mic button clicked | isRecording: $isRecording, isQuickRecording: $isQuickRecording"
-            )
+            Log.d(TAG, "Interaction: Quick Mic clicked. Current RecordingState: $isRecording, IsQuickExecuting: $isQuickRecording")
+            if (binding.layoutAnalyzing.visibility == View.VISIBLE) {
+                Log.d(TAG, "Interaction: Quick mic click blocked (Analyzing state)")
+                return@setOnClickListener
+            }
             if (isRecording && !isQuickRecording) {
+                Log.d(TAG, "Interaction: Quick mic click ignored (manual recording in progress)")
                 Toast.makeText(requireContext(), "Manual recording in progress", Toast.LENGTH_SHORT)
                         .show()
                 return@setOnClickListener
             }
             if (isQuickRecording) {
+                Log.d(TAG, "Interaction: Stopping quick recording.")
                 stopRecording()
             } else {
+                Log.d(TAG, "Interaction: Starting quick recording session.")
                 isLongRecording = false
                 isQuickRecording = true
+                isFinalizing = false
                 allChunkFiles.clear()
                 temporalScores.clear()
                 startQuickRecordingWithPermission()
@@ -232,9 +245,13 @@ class FragmentAudio : Fragment() {
         observeUploadAndVerify()
 
         // New Result Buttons Logic
-        binding.btnReset.setOnClickListener { resetMicButton() }
+        binding.btnReset.setOnClickListener {
+            Log.d(TAG, "Interaction: Reset button clicked")
+            resetMicButton()
+        }
 
         binding.btnShowAnalysis.setOnClickListener {
+            Log.d(TAG, "Interaction: Show Analysis button clicked")
             // Show Analysis & Stats
             binding.cardAudioAnalysis.visibility = View.VISIBLE
             binding.layoutStatsRow.visibility = View.VISIBLE
@@ -248,6 +265,17 @@ class FragmentAudio : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        updateSystemUI()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            updateSystemUI()
+        }
+    }
+
+    private fun updateSystemUI() {
         (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
         // Restore standard elevation
         (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
@@ -351,7 +379,10 @@ class FragmentAudio : Fragment() {
                     start()
                 }
 
-        quickRecordStopHandler.postDelayed(quickRecordStopRunnable, durationSeconds * 1000L)
+        quickRecordStopHandler.postDelayed({
+            Log.d(TAG, "Internal Event: Quick record timer expired ($durationSeconds s)")
+            stopRecording()
+        }, durationSeconds * 1000L)
     }
 
     // ========== CREDIT CHECK ==========
@@ -475,21 +506,21 @@ class FragmentAudio : Fragment() {
 
             recorder =
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                        MediaRecorder(requireContext())
-                    } else {
-                        @Suppress("DEPRECATION")
-                        MediaRecorder()
-                    }.apply {
-                        setAudioSource(MediaRecorder.AudioSource.MIC)
-                        // Use AAC_ADTS container which supports binary concatenation
-                        setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
-                        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                        setOutputFile(outputFile.absolutePath)
-                        prepare()
-                        start()
-                    }
+                                MediaRecorder(requireContext())
+                            } else {
+                                @Suppress("DEPRECATION") MediaRecorder()
+                            }
+                            .apply {
+                                setAudioSource(MediaRecorder.AudioSource.MIC)
+                                // Use AAC_ADTS container which supports binary concatenation
+                                setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
+                                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                                setOutputFile(outputFile.absolutePath)
+                                prepare()
+                                start()
+                            }
 
-            Log.d(TAG, "Recording started")
+            Log.d(TAG, "Recording started. Output: ${outputFile.name}, IsQuick: $isQuickRecording, IsLong: $isLongRecording")
             binding.micButton.setImageResource(R.drawable.ic_audio)
             binding.txtTimer.visibility = View.VISIBLE
             Log.d(
@@ -595,6 +626,27 @@ class FragmentAudio : Fragment() {
 
             val file = currentRecordedFile
             val segmentDuration = System.currentTimeMillis() - currentChunkStartTime
+            val totalDuration = System.currentTimeMillis() - startTime
+            
+            Log.d(TAG, "Recording stop details: TotalDuration=${totalDuration}ms, SegmentDuration=${segmentDuration}ms, Chunks=${allChunkFiles.size}")
+
+            if (totalDuration <= 4000) {
+                Log.w(TAG, "Recording too short (<= 4s). Rejecting.")
+                isRecording = false
+                isQuickRecording = false
+                isLongRecording = false
+                
+                // Cleanup current file and chunks
+                file?.delete()
+                allChunkFiles.forEach { it.delete() }
+                allChunkFiles.clear()
+                currentRecordedFile = null
+                
+                // Show error state
+                showErrorResult("short recording")
+                return
+            }
+
             if (file != null && file.exists()) {
                 if (segmentDuration < 5000 && allChunkFiles.size > 1) {
                     Log.w(
@@ -614,14 +666,16 @@ class FragmentAudio : Fragment() {
 
             if (isLongRecording) {
                 // Post-process: Merge all chunks into one for history
+                Log.d(TAG, "Long Recording Stopped. Chunks Collected: ${allChunkFiles.size}. Starting Merge...")
                 isLongRecording = false
+                // Final verification for long recording will set isFinalizing = true in mergeAndSaveChunks
                 mergeAndSaveChunks()
             } else if (currentRecordedFile == null) {
-                Log.w(TAG, "Audio file not found after recording")
-                Log.e(TAG, "File not found")
+                Log.e(TAG, "StopRecording Error: Audio file not found")
             } else {
                 // Final Verification State for regular/quick recording
-                Log.d(TAG, "Starting Quick/Regular Verification Flow")
+                Log.d(TAG, "Quick/Regular Recording Stopped. File: ${currentRecordedFile?.name}. Starting Final Verification...")
+                isFinalizing = true // THIS is the final result for short sessions
                 binding.root.post { showAnalyzingState() }
             }
         } catch (e: Exception) {
@@ -634,9 +688,21 @@ class FragmentAudio : Fragment() {
 
     private fun showAnalyzingState() {
         Log.d(TAG, "showAnalyzingState() - Showing Blue Circle Layout")
-        // Hide Mic & Pulse
-        binding.micButton.visibility = View.INVISIBLE
+        // Disable Mic buttons but keep them VISIBLE as requested earlier
+        binding.micButton.isEnabled = false
+        binding.micPulsebtn.isEnabled = false
+
+        binding.micButton.visibility = View.VISIBLE
+        binding.micPulsebtn.visibility = View.VISIBLE
+
+        // Hide extra recording UI (pulses, timer text) but keep icons visible
+        binding.micTimer.visibility = View.VISIBLE
         binding.micPulse.visibility = View.INVISIBLE
+        binding.txtTimer.visibility = View.INVISIBLE
+
+        // Ensure no red from quick record
+        binding.micPulsebtn.clearAnimation()
+        binding.micPulsebtn.background.clearColorFilter()
 
         // Show Blue Analyzing Circle
         binding.layoutAnalyzing.visibility = View.VISIBLE
@@ -654,7 +720,7 @@ class FragmentAudio : Fragment() {
 
     // ========== UPLOAD ==========
     private fun uploadAudio(file: File) {
-        Log.d(TAG, "uploadAudio() - Uploading: ${file.name} (${file.length()} bytes)")
+        Log.d(TAG, "Upload: Starting upload for ${file.name} (Size: ${file.length()} bytes)")
         isVerificationPending = true
         viewModel.uploadMedia(file.absolutePath, MediaType.AUDIO)
     }
@@ -672,10 +738,10 @@ class FragmentAudio : Fragment() {
                 }
                 Status.SUCCESS -> {
                     val url = resource.data?.get("uploadedUrl")?.asString.orEmpty()
-                    Log.d(TAG, "Upload SUCCESS - URL: $url")
+                    Log.d(TAG, "Upload Success: Media URL received -> $url")
                     
                     if (isVerificationPending) {
-                        Log.d(TAG, "Verifying audio...")
+                        Log.d(TAG, "Verification: Triggering verification API for uploaded media...")
                         viewModel.verifyMedia(
                                 username = preferenceHelper.getUserName().orEmpty(),
                                 apiKey = preferenceHelper.getApiKey().orEmpty(),
@@ -683,7 +749,7 @@ class FragmentAudio : Fragment() {
                                 mediaUrl = url
                         )
                     } else {
-                        Log.d(TAG, "Skipping verify - not pending")
+                        Log.w(TAG, "Verification: Skipped (not pending)")
                     }
                 }
                 Status.ERROR -> {
@@ -709,105 +775,115 @@ class FragmentAudio : Fragment() {
 
                     when (res.status) {
                         Status.LOADING -> {
-                        Log.d(TAG, "Verify: LOADING")
-                        // binding.txtStatus.text = "Verifying audio..."
-                    }
-                    Status.SUCCESS -> {
-                        if (isVerificationCompleted) {
-                            // Already completed locally? Sync with ViewModel state to be sure
-                            // But we want to allow UI to update if it's a restore.
-                            // Falling through...
+                            Log.d(TAG, "Verify: LOADING")
+                            // binding.txtStatus.text = "Verifying audio..."
                         }
+                        Status.SUCCESS -> {
+                            if (isVerificationCompleted) {
+                                // Already completed locally? Sync with ViewModel state to be sure
+                                // But we want to allow UI to update if it's a restore.
+                                // Falling through...
+                            }
 
-                        if (!isVerificationPending) {
-                             Log.d(TAG, "Ignoring stale verify success")
-                             return@collect
-                        }
-                        isVerificationPending = false // Consumed
+                            if (!isVerificationPending) {
+                                Log.d(TAG, "Ignoring stale verify success")
+                                return@collect
+                            }
+                            isVerificationPending = false // Consumed
 
-                        Log.d(TAG, "Verify: SUCCESS")
-                        val response =
-                                Gson().fromJson(
-                                                res.data.toString(),
-                                                VerificationResponse::class.java
-                                        )
+                            Log.d(TAG, "Verify: SUCCESS")
+                            val response =
+                                    Gson().fromJson(
+                                                    res.data.toString(),
+                                                    VerificationResponse::class.java
+                                            )
 
-                        Log.d(TAG, "Band: ${response.band}, Score: ${response.score}")
+                            Log.d(TAG, "Verification Success: Band=${response.band}, Score=${response.score}")
 
-                        // Thread-safe update to temporal scores
-                        synchronized(temporalScores) {
-                            if (isLongRecording || temporalScores.isNotEmpty()) {
-                                temporalScores.add(response.score)
-                                temporalScores.add(response.score)
-                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
-                                // auto-show
-                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
-                                // auto-show
-                                binding.layoutAnalysisPlaceholder.visibility =
-                                        View.GONE // Hide placeholder
-                                binding.audioAnalysisChart.setChronologicalScores(
-                                        ArrayList(temporalScores)
-                                )
+                            // Thread-safe update to temporal scores
+                            synchronized(temporalScores) {
+                                if (isLongRecording || temporalScores.isNotEmpty()) {
+                                    temporalScores.add(response.score)
+                                    temporalScores.add(response.score)
+                                    // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
+                                    // auto-show
+                                    // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
+                                    // auto-show
+                                    binding.layoutAnalysisPlaceholder.visibility =
+                                            View.GONE // Hide placeholder
+                                    binding.audioAnalysisChart.setChronologicalScores(
+                                            ArrayList(temporalScores)
+                                    )
 
-                                if (!isRecording && !isLongRecording) {
-                                    if (!viewModel.isResultHandled) {
+                                    if (!isRecording && !isLongRecording && isFinalizing) {
+                                        if (!viewModel.isResultHandled) {
+                                            viewModel.isResultHandled = true
+                                            // Only save if no error
+                                            if (response.error == null) {
+                                                Log.d(TAG, "Verification: Finalizing history for session.")
+                                                finalizeAndSaveHistory(response)
+                                            } else {
+                                                showErrorResult(response.error)
+                                            }
+                                        } else {
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Verification: Temporal chunk result collected (Recording=${isRecording}, Long=${isLongRecording}, Finalizing=${isFinalizing})")
+                                    }
+                                } else {
+                                    // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
+                                    // auto-show
+                                    // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
+                                    // auto-show
+                                    binding.layoutAnalysisPlaceholder.visibility =
+                                            View.GONE // Hide placeholder
+                                    binding.audioAnalysisChart.setScore(response.score)
+                                    if (!viewModel.isResultHandled && isFinalizing) {
                                         viewModel.isResultHandled = true
                                         // Only save if no error
                                         if (response.error == null) {
+                                            Log.d(TAG, "Verification: Finalizing history for session.")
                                             finalizeAndSaveHistory(response)
                                         } else {
                                             showErrorResult(response.error)
                                         }
-                                    }
-                                }
-                            } else {
-                                // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
-                                // auto-show
-                                // binding.audioAnalysisChart.visibility = View.VISIBLE // Don't
-                                // auto-show
-                                binding.layoutAnalysisPlaceholder.visibility =
-                                        View.GONE // Hide placeholder
-                                binding.audioAnalysisChart.setScore(response.score)
-                                if (!viewModel.isResultHandled) {
-                                    viewModel.isResultHandled = true
-                                    // Only save if no error
-                                    if (response.error == null) {
-                                        finalizeAndSaveHistory(response)
+                                    } else if (!isFinalizing) {
+                                        Log.d(TAG, "Verification: Ignoring intermediate result for short recording (Finalizing=false)")
                                     } else {
-                                        showErrorResult(response.error)
+
                                     }
                                 }
                             }
+
+                            // if (!isRecording) {
+                            //     resetMicButton()
+                            // }
+
+                            // Auto-refresh credits
+                            checkCredits()
                         }
-
-                        // if (!isRecording) {
-                        //     resetMicButton()
-                        // }
-
-                        // Auto-refresh credits
-                        checkCredits()
-                    }
-                    Status.ERROR -> {
-                        Log.e(TAG, "Verify FAILED: ${resource.message}")
-                        showErrorResult(resource.message ?: "Verification failed")
-                        resetMicButton()
-                    }
-                    Status.INSUFFICIENT_CREDITS -> {
-                        Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
-                        //                        binding.txtStatus.text = "Insufficient Credits"
-                        Log.d(TAG, "Insufficient Credits")
-                        Toast.makeText(
-                                        requireContext(),
-                                        "Top up your credits to continue verifying audio",
-                                        Toast.LENGTH_LONG
-                                )
-                                .show()
-                        resetMicButton()
+                        Status.ERROR -> {
+                            Log.e(TAG, "Verify FAILED: ${resource.message}")
+                            showErrorResult(resource.message ?: "Verification failed")
+                            resetMicButton()
+                        }
+                        Status.INSUFFICIENT_CREDITS -> {
+                            Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
+                            //                        binding.txtStatus.text = "Insufficient
+                            // Credits"
+                            Log.d(TAG, "Insufficient Credits")
+                            Toast.makeText(
+                                            requireContext(),
+                                            "Top up your credits to continue verifying audio",
+                                            Toast.LENGTH_LONG
+                                    )
+                                    .show()
+                            resetMicButton()
+                        }
                     }
                 }
             }
         }
-    }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.creditConsumedFlow.collect {
@@ -839,7 +915,7 @@ class FragmentAudio : Fragment() {
                         } else {
                             currentRecordedFile
                         }
-                
+
                 if (sourceFile == null || !sourceFile.exists() || sourceFile.length() == 0L) {
                     Log.e(TAG, "Source file missing or empty, cannot save history")
                     return@launch
@@ -878,13 +954,14 @@ class FragmentAudio : Fragment() {
                                         else null
                         )
                 verificationRepository.saveVerification(entity)
-                Log.d(TAG, "Full session saved to history with ID: ${entity.id}")
+                Log.d(TAG, "History: Session saved successfully with ID: ${entity.id}. Source: ${sourceFile?.name}")
 
                 // Cleanup
                 allChunkFiles.forEach { it.delete() }
                 File(context.externalCacheDir, "merged_audio.aac").delete()
-                
-                // Critical: Delete the source file to prevent "ghost" re-saves on fragment recreation
+
+                // Critical: Delete the source file to prevent "ghost" re-saves on fragment
+                // recreation
                 if (sourceFile?.exists() == true) {
                     sourceFile.delete()
                 }
@@ -926,7 +1003,10 @@ class FragmentAudio : Fragment() {
                 }
                 fos.close()
                 // fos.close() was already called above
-                Log.d(TAG, "Merged file created at: ${mergedFile.absolutePath}")
+                Log.d(TAG, "Merge Success: Created merged file at ${mergedFile.absolutePath} (Size: ${mergedFile.length()} bytes)")
+                
+                currentRecordedFile = mergedFile // CRITICAL: Update so finalizeAndSaveHistory finds it
+                isFinalizing = true // CRITICAL: Mark that the upcoming result is the ONE to save
 
                 // Final Verification for Long Recording
                 withContext(Dispatchers.Main) {
@@ -951,6 +1031,7 @@ class FragmentAudio : Fragment() {
         showMicControls(true)
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
+        binding.micPulsebtn.isEnabled = true
         binding.txtTimer.visibility = View.GONE
 
         // Reset Status Text
@@ -974,6 +1055,7 @@ class FragmentAudio : Fragment() {
         isLongRecording = false
         isQuickRecording = false
         isVerificationCompleted = false
+        isFinalizing = false
         allChunkFiles.clear()
         temporalScores.clear()
     }
@@ -1191,16 +1273,6 @@ class FragmentAudio : Fragment() {
     private fun stopPulseAnimation() {
         Log.d(TAG, "stopPulseAnimation()")
         binding.micPulse.clearAnimation()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (!hidden) {
-            (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
-            (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
-            (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
-            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
-        }
     }
 
     // ========== CLEANUP ==========

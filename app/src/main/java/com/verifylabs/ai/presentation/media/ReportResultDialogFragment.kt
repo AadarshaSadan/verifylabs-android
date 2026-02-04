@@ -48,9 +48,12 @@ class ReportResultDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // Connect to shared ViewModel (scoped to Parent Fragment)
-        // Since we show this via childFragmentManager, requireParentFragment() returns MediaFragment
-        viewModel = ViewModelProvider(requireParentFragment())[MediaViewModel::class.java]
+        // Connect to shared ViewModel (scoped to Activity with specific key for persistence)
+        viewModel = ViewModelProvider(
+            requireActivity().viewModelStore,
+            requireActivity().defaultViewModelProviderFactory,
+            requireActivity().defaultViewModelCreationExtras
+        ).get("MediaScope", MediaViewModel::class.java)
         internetHelper = InternetHelper(requireContext())
 
         setupClickListeners()

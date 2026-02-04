@@ -1,6 +1,5 @@
 package com.verifylabs.ai.presentation.home
 
-import com.verifylabs.ai.presentation.MainActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +12,7 @@ import com.verifylabs.ai.R
 import com.verifylabs.ai.core.util.Status
 import com.verifylabs.ai.data.base.PreferenceHelper
 import com.verifylabs.ai.databinding.FragmentHomeBinding
+import com.verifylabs.ai.presentation.MainActivity
 import com.verifylabs.ai.presentation.auth.login.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -72,7 +72,8 @@ class HomeFragment : Fragment() {
         if (username.isNullOrEmpty() || apiKey.isNullOrEmpty()) {
             binding.llCreditsInfo.progressCredits.visibility = View.GONE
             binding.llCreditsInfo.tvCreditsRemaining.visibility = View.VISIBLE
-            binding.llCreditsInfo.tvCreditsRemaining.text = getString(R.string.credits_invalid_credentials)
+            binding.llCreditsInfo.tvCreditsRemaining.text =
+                    getString(R.string.credits_invalid_credentials)
             Toast.makeText(
                             requireContext(),
                             getString(R.string.invalid_login_toast),
@@ -145,13 +146,24 @@ class HomeFragment : Fragment() {
         }
 
         // Observe loading state
-        loginViewModel.getLoading().observe(viewLifecycleOwner) { isLoading ->
+        loginViewModel.getLoading().observe(viewLifecycleOwner) { _ ->
             // handled by status
         }
     }
 
     override fun onResume() {
         super.onResume()
+        updateSystemUI()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            updateSystemUI()
+        }
+    }
+
+    private fun updateSystemUI() {
         (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
         // Restore standard elevation for Home
         (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)

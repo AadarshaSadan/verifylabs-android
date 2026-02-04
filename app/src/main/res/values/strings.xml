@@ -85,8 +85,8 @@
     <string name="hd_quality">HD</string>
     <string name="media_type_label">Media Type</string>
     <string name="robot_type_label">Robot Type</string>
-    <string name="credits_remaining">Credits Remaining: %1$s</string>
-    <string name="credits_remaining_0">Credits Remaining: 2500</string>
+    <string name="credits_remaining">Credits remaining: %1$s</string>
+    <string name="credits_remaining_0">Credits remaining: 2500</string>
     <string name="insufficient_credits_msg">Insufficient credits. Please upgrade or buy More.</string>
     <string name="insufficient_credits_please_upgrade_or_buy_more">Insufficient credits. Please upgrade or buy more.</string>
     <string name="please_purchase_more_credits">Please purchase more credits to continue</string>

@@ -182,8 +182,13 @@ class MediaFragment : Fragment() {
             val reportDialog = ReportResultDialogFragment.newInstance()
             reportDialog.onReportSelected = { reportType ->
                 selectedMediaUri?.let { uri ->
-                    val path = if (uri.scheme == "file") uri.path else uri.toString()
-                    viewModel.reportResult(reportType, path ?: "")
+                    // Resolve URI to a local file path for reporting
+                    val file = getFileFromUri(requireContext(), uri)
+                    if (file != null && file.exists()) {
+                        viewModel.reportResult(reportType, file.absolutePath)
+                    } else {
+                        Toast.makeText(requireContext(), "Error accessing media for report", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             reportDialog.show(childFragmentManager, ReportResultDialogFragment.TAG)
@@ -219,6 +224,17 @@ class MediaFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        updateSystemUI()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            updateSystemUI()
+        }
+    }
+
+    private fun updateSystemUI() {
         (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
         // Restore standard elevation
         (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
@@ -580,405 +596,418 @@ class MediaFragment : Fragment() {
                 resource?.let { res ->
                     when (res.status) {
                         Status.LOADING -> {
-                        binding.statsLayout.visibility = View.GONE
-                        // Ensure scanning state visual if coming specifically from verify step
-                        // updateStatusView(ScanButtonState.SCANNING)
-                    }
-                    Status.SUCCESS -> {
-                        val response =
-                                Gson().fromJson(
-                                                res.data.toString(),
-                                                VerificationResponse::class.java
-                                        )
-
-                        binding.layoutInfoStatus.visibility = View.VISIBLE
-                        binding.textStatusMessage.visibility = View.VISIBLE
-                        binding.resultOverlay.visibility = View.VISIBLE
-                        binding.statsLayout.visibility = View.GONE
-
-                        if (response.error != null) {
-                            updateStatusView(ScanButtonState.FAILED, response.error)
-                            setButtonState(ScanButtonState.FAILED)
-                        } else {
-                            // Band logic handles the "DONE" state visualization
-                            // which effectively shows "Analysis results are displayed above"
-                            // by showing the result description instead (as per iOS logic)
-                            binding.textStatusMessage.text = getBandDescription(response.band)
-                            binding.txtIdentifixation.text = getBandResult(response.band)
-
-                            // Success result logic matching iOS HistoryDetailView color scheme
-                            binding.textStatusMessage.background = null
-                            binding.txtIdentifixation.visibility = View.VISIBLE
-                            binding.imgIdentification.visibility = View.VISIBLE
-
-                            when (response.band) {
-                                1 -> { // Human (VLGreen Card + Capsule)
-                                    binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_human
+                            binding.statsLayout.visibility = View.GONE
+                            // Ensure scanning state visual if coming specifically from verify step
+                            // updateStatusView(ScanButtonState.SCANNING)
+                        }
+                        Status.SUCCESS -> {
+                            val response =
+                                    Gson().fromJson(
+                                                    res.data.toString(),
+                                                    VerificationResponse::class.java
                                             )
 
-                                    binding.txtIdentifixation.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_capsule_green
-                                            )
-                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(
-                                            Color.parseColor("#2E7D32")
-                                    ) // Dark green
-
-                                    binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.verifylabs_smile_icon_green_white
-                                            )
-                                    )
-                                    binding.imgIdentification.imageTintList = null
-                                }
-                                2 -> { // Likely Human (System Green Card + Green Capsule)
-                                    binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_likely_human
-                                            )
-
-                                    binding.txtIdentifixation.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_capsule_green
-                                            )
-                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(
-                                            Color.parseColor("#2E7D32")
-                                    ) // Dark green
-
-                                    binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.verifylabs_smile_icon_green_white
-                                            )
-                                    )
-                                    binding.imgIdentification.imageTintList = null
-                                }
-                                3 -> { // Unsure (Gray Card + Gray Capsule)
-                                    binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_unsure
-                                            )
-
-                                    binding.txtIdentifixation.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_capsule_gray
-                                            )
-                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(
-                                            Color.parseColor("#616161")
-                                    ) // Dark gray
-
-                                    binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.ic_question_circle
-                                            )
-                                    )
-                                    binding.imgIdentification.imageTintList =
-                                            ColorStateList.valueOf(Color.GRAY)
-                                }
-                                4 -> { // Likely AI (System Red Card + Red Rect)
-                                    //
-                                    // binding.layoutInfoStatus.background =
-                                    //
-                                    // ContextCompat.getDrawable(
-                                    //
-                                    // requireContext(),
-                                    //
-                                    // R.drawable.bg_result_card_likely_ai
-                                    //                                            )
-
-                                    binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_likely_human
-                                            )
-
-                                    binding.txtIdentifixation.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_rect_red
-                                            )
-                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(
-                                            Color.parseColor("#C62828")
-                                    ) // Dark red
-
-                                    binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.verifylabs_robot_icon_red_white
-                                            )
-                                    )
-                                    //
-                                    // binding.imgIdentification.imageTintList =
-                                    //
-                                    // ColorStateList.valueOf(
-                                    //
-                                    // ContextCompat.getColor(
-                                    //
-                                    // requireContext(),
-                                    //
-                                    // R.color.vl_red
-                                    //                                                    )
-                                    //                                            )
-
-                                    binding.imgIdentification.imageTintList = null
-                                }
-                                5 -> { // AI (VLRed Card + Red Rect)
-                                    binding.layoutInfoStatus.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_card_likely_human
-                                            )
-
-                                    binding.txtIdentifixation.background =
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.bg_result_rect_red
-                                            )
-                                    binding.txtIdentifixation.setTextColor(Color.WHITE)
-                                    binding.textStatusMessage.setTextColor(
-                                            Color.parseColor("#C62828")
-                                    ) // Dark red
-
-                                    binding.imgIdentification.background = null
-                                    binding.imgIdentification.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.verifylabs_robot_icon_red_white
-                                            )
-                                    )
-                                    //
-                                    // binding.imgIdentification.imageTintList =
-                                    //
-                                    // ColorStateList.valueOf(
-                                    //
-                                    // ContextCompat.getColor(
-                                    //
-                                    // requireContext(),
-                                    //
-                                    // R.color.vl_red
-                                    //                                                    )
-                                    //                                            )
-
-                                    binding.imgIdentification.imageTintList = null
-                                }
-                            }
-
-                            // Overlay Image Logic (Center of Preview)
+                            binding.layoutInfoStatus.visibility = View.VISIBLE
+                            binding.textStatusMessage.visibility = View.VISIBLE
                             binding.resultOverlay.visibility = View.VISIBLE
-                            binding.resultOverlay.alpha =
-                                    0.7f // Ensure transparency matches typical overlay
-                            when (response.band) {
-                                1, 2 -> { // Human -> Tick
-                                    binding.resultOverlay.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
-                                            )
-                                    )
-                                    binding.resultOverlay.imageTintList =
-                                            null // Use original colors
-                                }
-                                3 -> { // Unsure -> Warning (Gray)
-                                    binding.resultOverlay.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.ic_warning
-                                            )
-                                    )
-                                    binding.resultOverlay.imageTintList =
-                                            ColorStateList.valueOf(Color.GRAY)
-                                }
-                                4, 5 -> { // AI -> Cross (Red)
-                                    binding.resultOverlay.setImageDrawable(
-                                            ContextCompat.getDrawable(
-                                                    requireContext(),
-                                                    R.drawable.ic_red_cross_tranparent
-                                            )
-                                    )
-                                    binding.resultOverlay.imageTintList =
-                                            null // Use original colors
-                                }
-                            }
+                            binding.statsLayout.visibility = View.GONE
 
-                            binding.btnReport.visibility = View.VISIBLE
+                            if (response.error != null) {
+                                updateStatusView(ScanButtonState.FAILED, response.error)
+                                setButtonState(ScanButtonState.FAILED)
+                            } else {
+                                // Band logic handles the "DONE" state visualization
+                                // which effectively shows "Analysis results are displayed above"
+                                // by showing the result description instead (as per iOS logic)
+                                binding.textStatusMessage.text = getBandDescription(response.band)
+                                binding.txtIdentifixation.text = getBandResult(response.band)
 
-                            setButtonState(ScanButtonState.DONE)
+                                // Success result logic matching iOS HistoryDetailView color scheme
+                                binding.textStatusMessage.background = null
+                                binding.txtIdentifixation.visibility = View.VISIBLE
+                                binding.imgIdentification.visibility = View.VISIBLE
 
-                            // Save verification result to database
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                if (viewModel.isResultHandled) return@launch
-                                viewModel.isResultHandled = true
-                                try {
-                                    val entity =
-                                            VerificationEntity(
-                                                    mediaType =
-                                                            if (mediaType == MediaType.IMAGE)
-                                                                    "Image"
-                                                            else "Video",
-                                                    mediaUri =
-                                                            selectedMediaUri?.let { uri ->
-                                                                // Save to internal storage for
-                                                                // persistence
-                                                                val savedPath =
-                                                                        com.verifylabs.ai.core.util
-                                                                                .HistoryFileManager
-                                                                                .saveMedia(
-                                                                                        requireContext(),
-                                                                                        uri,
-                                                                                        if (mediaType ==
-                                                                                                        MediaType
-                                                                                                                .IMAGE
-                                                                                        )
-                                                                                                "image"
-                                                                                        else "video"
+                                when (response.band) {
+                                    1 -> { // Human (VLGreen Card + Capsule)
+                                        binding.layoutInfoStatus.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_card_human
+                                                )
+
+                                        binding.txtIdentifixation.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_capsule_green
+                                                )
+                                        binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                        binding.textStatusMessage.setTextColor(
+                                                Color.parseColor("#2E7D32")
+                                        ) // Dark green
+
+                                        binding.imgIdentification.background = null
+                                        binding.imgIdentification.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.verifylabs_smile_icon_green_white
+                                                )
+                                        )
+                                        binding.imgIdentification.imageTintList = null
+                                    }
+                                    2 -> { // Likely Human (System Green Card + Green Capsule)
+                                        binding.layoutInfoStatus.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_card_likely_human
+                                                )
+
+                                        binding.txtIdentifixation.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_capsule_green
+                                                )
+                                        binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                        binding.textStatusMessage.setTextColor(
+                                                Color.parseColor("#2E7D32")
+                                        ) // Dark green
+
+                                        binding.imgIdentification.background = null
+                                        binding.imgIdentification.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.verifylabs_smile_icon_green_white
+                                                )
+                                        )
+                                        binding.imgIdentification.imageTintList = null
+                                    }
+                                    3 -> { // Unsure (Gray Card + Gray Capsule)
+                                        binding.layoutInfoStatus.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_card_unsure
+                                                )
+
+                                        binding.txtIdentifixation.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_capsule_gray
+                                                )
+                                        binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                        binding.textStatusMessage.setTextColor(
+                                                Color.parseColor("#616161")
+                                        ) // Dark gray
+
+                                        binding.imgIdentification.background = null
+                                        binding.imgIdentification.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.ic_question_circle
+                                                )
+                                        )
+                                        binding.imgIdentification.imageTintList =
+                                                ColorStateList.valueOf(Color.GRAY)
+                                    }
+                                    4 -> { // Likely AI (System Red Card + Red Rect)
+                                        //
+                                        // binding.layoutInfoStatus.background =
+                                        //
+                                        // ContextCompat.getDrawable(
+                                        //
+                                        // requireContext(),
+                                        //
+                                        // R.drawable.bg_result_card_likely_ai
+                                        //                                            )
+
+                                        binding.layoutInfoStatus.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_card_likely_human
+                                                )
+
+                                        binding.txtIdentifixation.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_rect_red
+                                                )
+                                        binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                        binding.textStatusMessage.setTextColor(
+                                                Color.parseColor("#C62828")
+                                        ) // Dark red
+
+                                        binding.imgIdentification.background = null
+                                        binding.imgIdentification.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.verifylabs_robot_icon_red_white
+                                                )
+                                        )
+                                        //
+                                        // binding.imgIdentification.imageTintList =
+                                        //
+                                        // ColorStateList.valueOf(
+                                        //
+                                        // ContextCompat.getColor(
+                                        //
+                                        // requireContext(),
+                                        //
+                                        // R.color.vl_red
+                                        //                                                    )
+                                        //                                            )
+
+                                        binding.imgIdentification.imageTintList = null
+                                    }
+                                    5 -> { // AI (VLRed Card + Red Rect)
+                                        binding.layoutInfoStatus.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_card_likely_human
+                                                )
+
+                                        binding.txtIdentifixation.background =
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.bg_result_rect_red
+                                                )
+                                        binding.txtIdentifixation.setTextColor(Color.WHITE)
+                                        binding.textStatusMessage.setTextColor(
+                                                Color.parseColor("#C62828")
+                                        ) // Dark red
+
+                                        binding.imgIdentification.background = null
+                                        binding.imgIdentification.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.verifylabs_robot_icon_red_white
+                                                )
+                                        )
+                                        //
+                                        // binding.imgIdentification.imageTintList =
+                                        //
+                                        // ColorStateList.valueOf(
+                                        //
+                                        // ContextCompat.getColor(
+                                        //
+                                        // requireContext(),
+                                        //
+                                        // R.color.vl_red
+                                        //                                                    )
+                                        //                                            )
+
+                                        binding.imgIdentification.imageTintList = null
+                                    }
+                                }
+
+                                // Overlay Image Logic (Center of Preview)
+                                binding.resultOverlay.visibility = View.VISIBLE
+                                binding.resultOverlay.alpha =
+                                        0.7f // Ensure transparency matches typical overlay
+                                when (response.band) {
+                                    1, 2 -> { // Human -> Tick
+                                        binding.resultOverlay.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable
+                                                                .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
+                                                )
+                                        )
+                                        binding.resultOverlay.imageTintList =
+                                                null // Use original colors
+                                    }
+                                    3 -> { // Unsure -> Warning (Gray)
+                                        binding.resultOverlay.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.ic_warning
+                                                )
+                                        )
+                                        binding.resultOverlay.imageTintList =
+                                                ColorStateList.valueOf(Color.GRAY)
+                                    }
+                                    4, 5 -> { // AI -> Cross (Red)
+                                        binding.resultOverlay.setImageDrawable(
+                                                ContextCompat.getDrawable(
+                                                        requireContext(),
+                                                        R.drawable.ic_red_cross_tranparent
+                                                )
+                                        )
+                                        binding.resultOverlay.imageTintList =
+                                                null // Use original colors
+                                    }
+                                }
+
+                                binding.btnReport.visibility = View.VISIBLE
+
+                                setButtonState(ScanButtonState.DONE)
+
+                                // Save verification result to database
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    if (viewModel.isResultHandled) return@launch
+                                    viewModel.isResultHandled = true
+                                    try {
+                                        val entity =
+                                                VerificationEntity(
+                                                        mediaType =
+                                                                if (mediaType == MediaType.IMAGE)
+                                                                        "Image"
+                                                                else "Video",
+                                                        mediaUri =
+                                                                selectedMediaUri?.let { uri ->
+                                                                    // Save to internal storage for
+                                                                    // persistence
+                                                                    val savedPath =
+                                                                            com.verifylabs.ai.core
+                                                                                    .util
+                                                                                    .HistoryFileManager
+                                                                                    .saveMedia(
+                                                                                            requireContext(),
+                                                                                            uri,
+                                                                                            if (mediaType ==
+                                                                                                            MediaType
+                                                                                                                    .IMAGE
+                                                                                            )
+                                                                                                    "image"
+                                                                                            else
+                                                                                                    "video"
+                                                                                    )
+                                                                    // Return file URI string if
+                                                                    // saved,
+                                                                    // else original URI
+                                                                    if (savedPath != null)
+                                                                            Uri.fromFile(
+                                                                                            File(
+                                                                                                    savedPath
+                                                                                            )
+                                                                                    )
+                                                                                    .toString()
+                                                                    else uri.toString()
+                                                                },
+                                                        mediaThumbnail =
+                                                                if (mediaType == MediaType.IMAGE)
+                                                                        selectedMediaUri?.toString()
+                                                                else null,
+                                                        band = response.band,
+                                                        bandName = response.bandName,
+                                                        bandDescription = response.bandDescription,
+                                                        aiScore = response.score,
+                                                        fileSizeKb =
+                                                                selectedMediaUri?.let {
+                                                                    getFileSizeKb(it)
+                                                                },
+                                                        resolution =
+                                                                when (mediaType) {
+                                                                    MediaType.IMAGE ->
+                                                                            selectedMediaUri?.let {
+                                                                                getImageResolution(
+                                                                                        it
                                                                                 )
-                                                                // Return file URI string if saved,
-                                                                // else original URI
-                                                                if (savedPath != null)
-                                                                        Uri.fromFile(
-                                                                                        File(
-                                                                                                savedPath
-                                                                                        )
+                                                                            }
+                                                                    MediaType.VIDEO ->
+                                                                            selectedMediaUri?.let {
+                                                                                getVideoResolution(
+                                                                                        it
                                                                                 )
-                                                                                .toString()
-                                                                else uri.toString()
-                                                            },
-                                                    mediaThumbnail =
-                                                            if (mediaType == MediaType.IMAGE)
-                                                                    selectedMediaUri?.toString()
-                                                            else null,
-                                                    band = response.band,
-                                                    bandName = response.bandName,
-                                                    bandDescription = response.bandDescription,
-                                                    aiScore = response.score,
-                                                    fileSizeKb =
-                                                            selectedMediaUri?.let {
-                                                                getFileSizeKb(it)
-                                                            },
-                                                    resolution =
-                                                            when (mediaType) {
-                                                                MediaType.IMAGE ->
-                                                                        selectedMediaUri?.let {
-                                                                            getImageResolution(it)
-                                                                        }
-                                                                MediaType.VIDEO ->
-                                                                        selectedMediaUri?.let {
-                                                                            getVideoResolution(it)
-                                                                        }
-                                                                else -> null
-                                                            },
-                                                    // Save Percentage
-                                                    quality = currentQualityScore?.percentage,
-                                                    timestamp = System.currentTimeMillis(),
-                                                    username = preferenceHelper.getUserName() ?: ""
-                                            )
-                                    verificationRepository.saveVerification(entity)
-                                    Log.d(
-                                            TAG,
-                                            "Verification saved to database with ID: ${entity.id}"
-                                    )
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "Failed to save verification to database", e)
+                                                                            }
+                                                                    else -> null
+                                                                },
+                                                        // Save Percentage
+                                                        quality = currentQualityScore?.percentage,
+                                                        timestamp = System.currentTimeMillis(),
+                                                        username = preferenceHelper.getUserName()
+                                                                        ?: ""
+                                                )
+                                        verificationRepository.saveVerification(entity)
+                                        Log.d(
+                                                TAG,
+                                                "Verification saved to database with ID: ${entity.id}"
+                                        )
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "Failed to save verification to database", e)
+                                    }
                                 }
-                            }
 
-                            // Auto-refresh credits
-                            viewModel.checkCredits(
-                                    preferenceHelper.getUserName() ?: "",
-                                    preferenceHelper.getApiKey() ?: ""
+                                // Auto-refresh credits
+                                viewModel.checkCredits(
+                                        preferenceHelper.getUserName() ?: "",
+                                        preferenceHelper.getApiKey() ?: ""
+                                )
+                            }
+                        }
+                        Status.ERROR -> {
+                            Toast.makeText(
+                                            requireContext(),
+                                            resource.message ?: "Verification failed",
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            updateStatusView(
+                                    ScanButtonState.FAILED,
+                                    "Verification failed: ${resource.message}"
                             )
+                            setButtonState(ScanButtonState.FAILED)
                         }
-                    }
-                    Status.ERROR -> {
-                        Toast.makeText(
-                                        requireContext(),
-                                        resource.message ?: "Verification failed",
-                                        Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        updateStatusView(
-                                ScanButtonState.FAILED,
-                                "Verification failed: ${resource.message}"
-                        )
-                        setButtonState(ScanButtonState.FAILED)
-                    }
-                    Status.INSUFFICIENT_CREDITS -> {
-                        binding.layoutInfoStatus.visibility = View.VISIBLE
-                        binding.textStatusMessage.visibility = View.VISIBLE
-                        binding.resultOverlay.visibility = View.VISIBLE
-                        binding.statsLayout.visibility = View.GONE
+                        Status.INSUFFICIENT_CREDITS -> {
+                            binding.layoutInfoStatus.visibility = View.VISIBLE
+                            binding.textStatusMessage.visibility = View.VISIBLE
+                            binding.resultOverlay.visibility = View.VISIBLE
+                            binding.statsLayout.visibility = View.GONE
 
-                        // Orange configuration matching iOS
-                        binding.layoutInfoStatus.background =
-                                ContextCompat.getDrawable(
-                                        requireContext(),
-                                        R.drawable.bg_result_card_orange
-                                )
+                            // Orange configuration matching iOS
+                            binding.layoutInfoStatus.background =
+                                    ContextCompat.getDrawable(
+                                            requireContext(),
+                                            R.drawable.bg_result_card_orange
+                                    )
 
-                        // Fallback if drawable missing (though we just created it):
-                        if (ContextCompat.getDrawable(
-                                        requireContext(),
-                                        R.drawable.bg_result_card_orange
-                                ) == null
-                        ) {
-                            binding.layoutInfoStatus.setBackgroundColor(Color.parseColor("#FFF3E0"))
+                            // Fallback if drawable missing (though we just created it):
+                            if (ContextCompat.getDrawable(
+                                            requireContext(),
+                                            R.drawable.bg_result_card_orange
+                                    ) == null
+                            ) {
+                                binding.layoutInfoStatus.setBackgroundColor(
+                                        Color.parseColor("#FFF3E0")
+                                )
+                            }
+
+                            binding.textStatusMessage.text = "Insufficient Credits"
+                            binding.textStatusMessage.setTextColor(
+                                    Color.parseColor("#FF9800")
+                            ) // Orange
+
+                            binding.txtIdentifixation.visibility = View.VISIBLE
+                            binding.txtIdentifixation.text =
+                                    getString(R.string.please_purchase_more_credits)
+                            binding.txtIdentifixation.setTextColor(Color.GRAY)
+                            binding.txtIdentifixation.background = null // Remove capsule background
+
+                            binding.imgIdentification.visibility = View.VISIBLE
+                            binding.imgIdentification.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                            requireContext(),
+                                            R.drawable.ic_credit_card_error
+                                    )
+                            )
+                            binding.imgIdentification.background = null // No square bg
+                            binding.imgIdentification.imageTintList =
+                                    ColorStateList.valueOf(
+                                            Color.parseColor("#FF9800")
+                                    ) // Orange Tint
+
+                            binding.btnReport.visibility = View.GONE
+
+                            setButtonState(
+                                    ScanButtonState.FAILED
+                            ) // To show Retry/Action button? iOS shows "Buy Credits"?
+                            // User request: "exact same function design". iOS likely blocks or
+                            // offers
+                            // buy.
+                            // StartButtonState.FAILED shows "Retry" which calls verify again.
+                            // Maybe we need a "BUY" button state? For now, FAILED allows retrying.
                         }
-
-                        binding.textStatusMessage.text = "Insufficient Credits"
-                        binding.textStatusMessage.setTextColor(
-                                Color.parseColor("#FF9800")
-                        ) // Orange
-
-                        binding.txtIdentifixation.visibility = View.VISIBLE
-                        binding.txtIdentifixation.text =
-                                getString(R.string.please_purchase_more_credits)
-                        binding.txtIdentifixation.setTextColor(Color.GRAY)
-                        binding.txtIdentifixation.background = null // Remove capsule background
-
-                        binding.imgIdentification.visibility = View.VISIBLE
-                        binding.imgIdentification.setImageDrawable(
-                                ContextCompat.getDrawable(
-                                        requireContext(),
-                                        R.drawable.ic_credit_card_error
-                                )
-                        )
-                        binding.imgIdentification.background = null // No square bg
-                        binding.imgIdentification.imageTintList =
-                                ColorStateList.valueOf(Color.parseColor("#FF9800")) // Orange Tint
-
-                        binding.btnReport.visibility = View.GONE
-
-                        setButtonState(
-                                ScanButtonState.FAILED
-                        ) // To show Retry/Action button? iOS shows "Buy Credits"?
-                        // User request: "exact same function design". iOS likely blocks or offers
-                        // buy.
-                        // StartButtonState.FAILED shows "Retry" which calls verify again.
-                        // Maybe we need a "BUY" button state? For now, FAILED allows retrying.
                     }
                 }
             }
         }
-    }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.creditConsumedFlow.collect {
@@ -1339,16 +1368,6 @@ class MediaFragment : Fragment() {
         dialogBinding.btnClose.setOnClickListener { dialog.dismiss() }
 
         dialog.show()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (!hidden) {
-            (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
-            (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
-            (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
-            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
-        }
     }
 
     override fun onPause() {

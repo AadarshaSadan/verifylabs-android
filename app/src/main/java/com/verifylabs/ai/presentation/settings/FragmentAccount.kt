@@ -74,6 +74,17 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
 
     override fun onResume() {
         super.onResume()
+        updateSystemUI()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            updateSystemUI()
+        }
+    }
+
+    private fun updateSystemUI() {
         (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
         // Pass 0f elevation to remove the white surface tint in dark mode
         (activity as? MainActivity)?.updateBottomNavColor(R.color.ios_settings_background, 0f)
@@ -315,13 +326,14 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
 
     private fun showLogoutConfirmation() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_logout, null)
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val dialog =
+                AlertDialog.Builder(requireContext())
+                        .setView(dialogView)
+                        .setCancelable(true)
+                        .create()
 
         dialog.window?.setBackgroundDrawable(
-            android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
+                android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
         )
 
         val btnCancel = dialogView.findViewById<android.widget.TextView>(R.id.btnCancel)
@@ -353,9 +365,7 @@ class FragmentAccount : Fragment(), ChangePasswordBottomSheet.ChangePasswordCall
 
         AlertDialog.Builder(requireContext())
                 .setTitle("Delete Account")
-                .setMessage(
-                        "Please enter your password to confirm deletion."
-                )
+                .setMessage("Please enter your password to confirm deletion.")
                 .setView(dialogView)
                 .setPositiveButton("Delete") { dialog, _ ->
                     val password = etPassword.text.toString()
