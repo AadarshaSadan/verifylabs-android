@@ -1341,6 +1341,16 @@ class MediaFragment : Fragment() {
         dialog.show()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
+            (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
+            (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
+            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         binding.videoViewMedia.pause()

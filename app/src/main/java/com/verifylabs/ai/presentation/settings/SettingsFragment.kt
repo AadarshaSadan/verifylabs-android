@@ -322,6 +322,20 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            // Restore Settings colors
+            (activity as? MainActivity)?.setAppBarVisibility(true)
+            (activity as? MainActivity)?.setBottomNavVisibility(true)
+
+            (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+            (activity as? MainActivity)?.updateBottomNavColor(R.color.ios_settings_background, 0f)
+            (activity as? MainActivity)?.updateAppBarColor(R.color.ios_settings_background)
+            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

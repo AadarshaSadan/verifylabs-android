@@ -472,6 +472,16 @@ class HistoryFragment : Fragment() {
         (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
+            (activity as? MainActivity)?.updateBottomNavColor(R.color.ios_settings_background, 0f)
+            (activity as? MainActivity)?.updateAppBarColor(R.color.ios_settings_background)
+            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

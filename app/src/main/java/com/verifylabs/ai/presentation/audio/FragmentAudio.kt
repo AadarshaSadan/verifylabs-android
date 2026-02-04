@@ -1193,6 +1193,16 @@ class FragmentAudio : Fragment() {
         binding.micPulse.clearAnimation()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            (activity as? MainActivity)?.updateStatusBarColor(R.color.app_background)
+            (activity as? MainActivity)?.updateBottomNavColor(R.color.app_background_3, 8f)
+            (activity as? MainActivity)?.updateAppBarColor(R.color.app_background)
+            (activity as? MainActivity)?.updateMainBackgroundColor(R.color.app_background)
+        }
+    }
+
     // ========== CLEANUP ==========
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView() - Cleaning up")
