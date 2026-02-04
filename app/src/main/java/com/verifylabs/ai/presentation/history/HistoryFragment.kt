@@ -146,7 +146,7 @@ class HistoryFragment : Fragment() {
                             R.anim.fade_in, // pop enter
                             R.anim.slide_out_right // pop exit
                     )
-                    .replace(R.id.container, fragment)
+                    .add(R.id.container, fragment)
                     .addToBackStack("HistorySingleFragment")
                     .commit()
         }

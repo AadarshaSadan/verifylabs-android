@@ -120,7 +120,13 @@ class MediaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[MediaViewModel::class.java]
+        viewModel =
+                ViewModelProvider(
+                                requireActivity().viewModelStore,
+                                requireActivity().defaultViewModelProviderFactory,
+                                requireActivity().defaultViewModelCreationExtras
+                        )
+                        .get("MediaScope", MediaViewModel::class.java)
         internetHelper = InternetHelper(requireContext())
 
         val savedPath = preferenceHelper.getSelectedMediaPath()
@@ -410,17 +416,21 @@ class MediaFragment : Fragment() {
             // if (totalCredits <= 0) ... handled elsewhere or rely on backend
 
             // 3. Prepare File
-            val uri = selectedMediaUri ?: run {
-                updateStatusView(ScanButtonState.FAILED, "No media selected")
-                setButtonState(ScanButtonState.FAILED)
-                return@launch
-            }
+            val uri =
+                    selectedMediaUri
+                            ?: run {
+                                updateStatusView(ScanButtonState.FAILED, "No media selected")
+                                setButtonState(ScanButtonState.FAILED)
+                                return@launch
+                            }
 
-            val file = getFileFromUri(requireContext(), uri) ?: run {
-                updateStatusView(ScanButtonState.FAILED, "Cannot prepare file")
-                setButtonState(ScanButtonState.FAILED)
-                return@launch
-            }
+            val file =
+                    getFileFromUri(requireContext(), uri)
+                            ?: run {
+                                updateStatusView(ScanButtonState.FAILED, "Cannot prepare file")
+                                setButtonState(ScanButtonState.FAILED)
+                                return@launch
+                            }
 
             if (file.length() > 100 * 1024 * 1024) {
                 updateStatusView(ScanButtonState.FAILED, "File too large (max 100MB)")
@@ -445,27 +455,30 @@ class MediaFragment : Fragment() {
 
         when (state) {
             ScanButtonState.SCANNING -> {
-                binding.layoutInfoStatus.background = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.drawable_verify_background_blue_light
-                )
+                binding.layoutInfoStatus.background =
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.drawable_verify_background_blue_light
+                        )
                 binding.textStatusMessage.text = "Please wait while we analyze your media"
                 binding.textStatusMessage.setTextColor(
-                     ContextCompat.getColor(requireContext(), R.color.secondary_text)
+                        ContextCompat.getColor(requireContext(), R.color.secondary_text)
                 )
             }
             ScanButtonState.FAILED -> {
-                binding.layoutInfoStatus.background = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.drawable_verify_background_red_light
-                )
+                binding.layoutInfoStatus.background =
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.drawable_verify_background_red_light
+                        )
                 // Use custom error if provided, else default to generic
-                binding.textStatusMessage.text = errorMessage ?: "An error occurred during verification"
+                binding.textStatusMessage.text =
+                        errorMessage ?: "An error occurred during verification"
                 binding.textStatusMessage.setTextColor(Color.RED)
             }
             // For DONE, we usually have specific band logic, but if a generic "DONE" is called:
             ScanButtonState.DONE -> {
-                 // logic handled in verify success usually
+                // logic handled in verify success usually
             }
             ScanButtonState.VERIFY -> {
                 binding.layoutInfoStatus.visibility = View.GONE
@@ -477,16 +490,17 @@ class MediaFragment : Fragment() {
     private fun showInsufficientCreditsStatus() {
         binding.layoutInfoStatus.visibility = View.VISIBLE
         binding.statsLayout.visibility = View.GONE
-        
-        binding.layoutInfoStatus.background = ContextCompat.getDrawable(
-             requireContext(),
-             R.drawable.drawable_verify_background_orange // or red light if preferred
-        )
+
+        binding.layoutInfoStatus.background =
+                ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.drawable_verify_background_orange // or red light if preferred
+                )
         binding.textStatusMessage.text = "Please purchase more credits to continue"
         binding.textStatusMessage.setTextColor(
-             ContextCompat.getColor(requireContext(), R.color.vl_red) // or orange
+                ContextCompat.getColor(requireContext(), R.color.vl_red) // or orange
         )
-        
+
         binding.txtIdentifixation.visibility = View.GONE
         binding.imgIdentification.visibility = View.GONE
     }
@@ -527,18 +541,28 @@ class MediaFragment : Fragment() {
                     val uploadedUrl =
                             resource.data?.get("uploadedUrl")?.asString
                                     ?: run {
-                                        updateStatusView(ScanButtonState.FAILED, "Upload succeeded but no URL received")
+                                        updateStatusView(
+                                                ScanButtonState.FAILED,
+                                                "Upload succeeded but no URL received"
+                                        )
                                         setButtonState(ScanButtonState.FAILED)
                                         return@observe
                                     }
                     updateStatusView(ScanButtonState.SCANNING)
                     // Button stays SCANNING during verification
-                    viewModel.verifyMedia(
-                            username = preferenceHelper.getUserName().toString(),
-                            apiKey = preferenceHelper.getApiKey().toString(),
-                            mediaType = mediaType.value,
-                            mediaUrl = uploadedUrl
-                    )
+
+                    // Check if verification is already in progress or completed to avoid
+                    // re-triggering
+                    val currentVerifyState = viewModel.verifyResponseFlow.value?.status
+                    if (currentVerifyState != Status.LOADING && currentVerifyState != Status.SUCCESS
+                    ) {
+                        viewModel.verifyMedia(
+                                username = preferenceHelper.getUserName().toString(),
+                                apiKey = preferenceHelper.getApiKey().toString(),
+                                mediaType = mediaType.value,
+                                mediaUrl = uploadedUrl
+                        )
+                    }
                 }
                 Status.ERROR -> {
                     updateStatusView(ScanButtonState.FAILED, resource.message)
@@ -553,16 +577,17 @@ class MediaFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.verifyResponseFlow.collect { resource ->
-                when (resource.status) {
-                    Status.LOADING -> {
+                resource?.let { res ->
+                    when (res.status) {
+                        Status.LOADING -> {
                         binding.statsLayout.visibility = View.GONE
                         // Ensure scanning state visual if coming specifically from verify step
-                        // updateStatusView(ScanButtonState.SCANNING) 
+                        // updateStatusView(ScanButtonState.SCANNING)
                     }
                     Status.SUCCESS -> {
                         val response =
                                 Gson().fromJson(
-                                                resource.data.toString(),
+                                                res.data.toString(),
                                                 VerificationResponse::class.java
                                         )
 
@@ -608,8 +633,7 @@ class MediaFragment : Fragment() {
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                        .verifylabs_smile_icon_green_white
+                                                    R.drawable.verifylabs_smile_icon_green_white
                                             )
                                     )
                                     binding.imgIdentification.imageTintList = null
@@ -635,8 +659,7 @@ class MediaFragment : Fragment() {
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_smile_icon_green_white
+                                                    R.drawable.verifylabs_smile_icon_green_white
                                             )
                                     )
                                     binding.imgIdentification.imageTintList = null
@@ -669,18 +692,21 @@ class MediaFragment : Fragment() {
                                             ColorStateList.valueOf(Color.GRAY)
                                 }
                                 4 -> { // Likely AI (System Red Card + Red Rect)
-//                                    binding.layoutInfoStatus.background =
-//                                            ContextCompat.getDrawable(
-//                                                    requireContext(),
-//                                                    R.drawable.bg_result_card_likely_ai
-//                                            )
-
+                                    //
+                                    // binding.layoutInfoStatus.background =
+                                    //
+                                    // ContextCompat.getDrawable(
+                                    //
+                                    // requireContext(),
+                                    //
+                                    // R.drawable.bg_result_card_likely_ai
+                                    //                                            )
 
                                     binding.layoutInfoStatus.background =
-                                        ContextCompat.getDrawable(
-                                            requireContext(),
-                                            R.drawable.bg_result_card_likely_human
-                                        )
+                                            ContextCompat.getDrawable(
+                                                    requireContext(),
+                                                    R.drawable.bg_result_card_likely_human
+                                            )
 
                                     binding.txtIdentifixation.background =
                                             ContextCompat.getDrawable(
@@ -696,18 +722,21 @@ class MediaFragment : Fragment() {
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_robot_icon_red_white
+                                                    R.drawable.verifylabs_robot_icon_red_white
                                             )
                                     )
-//                                    binding.imgIdentification.imageTintList =
-//                                            ColorStateList.valueOf(
-//                                                    ContextCompat.getColor(
-//                                                            requireContext(),
-//                                                            R.color.vl_red
-//                                                    )
-//                                            )
-
+                                    //
+                                    // binding.imgIdentification.imageTintList =
+                                    //
+                                    // ColorStateList.valueOf(
+                                    //
+                                    // ContextCompat.getColor(
+                                    //
+                                    // requireContext(),
+                                    //
+                                    // R.color.vl_red
+                                    //                                                    )
+                                    //                                            )
 
                                     binding.imgIdentification.imageTintList = null
                                 }
@@ -732,17 +761,21 @@ class MediaFragment : Fragment() {
                                     binding.imgIdentification.setImageDrawable(
                                             ContextCompat.getDrawable(
                                                     requireContext(),
-                                                    R.drawable
-                                                            .verifylabs_robot_icon_red_white
+                                                    R.drawable.verifylabs_robot_icon_red_white
                                             )
                                     )
-//                                    binding.imgIdentification.imageTintList =
-//                                            ColorStateList.valueOf(
-//                                                    ContextCompat.getColor(
-//                                                            requireContext(),
-//                                                            R.color.vl_red
-//                                                    )
-//                                            )
+                                    //
+                                    // binding.imgIdentification.imageTintList =
+                                    //
+                                    // ColorStateList.valueOf(
+                                    //
+                                    // ContextCompat.getColor(
+                                    //
+                                    // requireContext(),
+                                    //
+                                    // R.color.vl_red
+                                    //                                                    )
+                                    //                                            )
 
                                     binding.imgIdentification.imageTintList = null
                                 }
@@ -761,7 +794,8 @@ class MediaFragment : Fragment() {
                                                             .verifylabs_tick_icon_light_grey_rgb_2__traced___1_
                                             )
                                     )
-                                    binding.resultOverlay.imageTintList = null // Use original colors
+                                    binding.resultOverlay.imageTintList =
+                                            null // Use original colors
                                 }
                                 3 -> { // Unsure -> Warning (Gray)
                                     binding.resultOverlay.setImageDrawable(
@@ -780,7 +814,8 @@ class MediaFragment : Fragment() {
                                                     R.drawable.ic_red_cross_tranparent
                                             )
                                     )
-                                    binding.resultOverlay.imageTintList = null // Use original colors
+                                    binding.resultOverlay.imageTintList =
+                                            null // Use original colors
                                 }
                             }
 
@@ -790,6 +825,8 @@ class MediaFragment : Fragment() {
 
                             // Save verification result to database
                             viewLifecycleOwner.lifecycleScope.launch {
+                                if (viewModel.isResultHandled) return@launch
+                                viewModel.isResultHandled = true
                                 try {
                                     val entity =
                                             VerificationEntity(
@@ -878,7 +915,10 @@ class MediaFragment : Fragment() {
                                         Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        updateStatusView(ScanButtonState.FAILED, "Verification failed: ${resource.message}")
+                        updateStatusView(
+                                ScanButtonState.FAILED,
+                                "Verification failed: ${resource.message}"
+                        )
                         setButtonState(ScanButtonState.FAILED)
                     }
                     Status.INSUFFICIENT_CREDITS -> {
@@ -938,6 +978,7 @@ class MediaFragment : Fragment() {
                 }
             }
         }
+    }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.creditConsumedFlow.collect {
@@ -963,11 +1004,12 @@ class MediaFragment : Fragment() {
         // FAILED: Visible (Shows "Retry")
 
         // Crop Button Visibility: Only show when image is selected (VERIFY state)
-        binding.btnCrop.visibility = if (state == ScanButtonState.VERIFY && mediaType == MediaType.IMAGE) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+        binding.btnCrop.visibility =
+                if (state == ScanButtonState.VERIFY && mediaType == MediaType.IMAGE) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
         when (state) {
             ScanButtonState.VERIFY -> {
@@ -988,8 +1030,6 @@ class MediaFragment : Fragment() {
         }
         initChangeBtnColor()
     }
-
-
 
     private fun resetUI() {
         binding.imageViewMedia2.visibility = View.VISIBLE

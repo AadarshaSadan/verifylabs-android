@@ -112,44 +112,48 @@ class HistorySingleFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.verifyResponseFlow.collectLatest { resource ->
-                    when (resource.status) {
-                        Status.SUCCESS -> {
-                            val response = resource.data
-                            if (response != null) {
-                                if (response.has("error") && !response.get("error").isJsonNull) {
-                                     val errorMsg = response.get("error").asString
-                                     handleReverificationError(errorMsg)
-                                } else if (response.has("score")) {
-                                    val score = response.get("score").asDouble
-                                    val band = response.get("band")?.asInt ?: 1
-                                    val bandName = response.get("band_name")?.asString ?: "Result"
-                                    val bandDescription =
-                                            response.get("band_description")?.asString ?: ""
-                                    val credits = response.get("credits")?.asInt ?: 0
-                                    val creditsMonthly = response.get("credits_monthly")?.asInt ?: 0
-                                    handleReverificationSuccess(
-                                            score,
-                                            band,
-                                            bandName,
-                                            bandDescription,
-                                            credits,
-                                            creditsMonthly
-                                    )
+                    resource?.let { res ->
+                        when (res.status) {
+                            Status.SUCCESS -> {
+                                val response = res.data
+                                if (response != null) {
+                                    if (response.has("error") && !response.get("error").isJsonNull) {
+                                        val errorMsg = response.get("error").asString
+                                        handleReverificationError(errorMsg)
+                                    } else if (response.has("score")) {
+                                        val score = response.get("score").asDouble
+                                        val band = response.get("band")?.asInt ?: 1
+                                        val bandName = response.get("band_name")?.asString ?: "Result"
+                                        val bandDescription =
+                                                response.get("band_description")?.asString ?: ""
+                                        val credits = response.get("credits")?.asInt ?: 0
+                                        val creditsMonthly = response.get("credits_monthly")?.asInt ?: 0
+                                        handleReverificationSuccess(
+                                                score,
+                                                band,
+                                                bandName,
+                                                bandDescription,
+                                                credits,
+                                                creditsMonthly
+                                        )
+                                    } else {
+                                        handleReverificationError(
+                                                "Invalid response from server (Missing score)"
+                                        )
+                                    }
                                 } else {
-                                    handleReverificationError("Invalid response from server (Missing score)")
+                                    handleReverificationError("Empty response from server")
                                 }
-                            } else {
-                                handleReverificationError("Empty response from server")
                             }
-                        }
-                        Status.ERROR -> {
-                            handleReverificationError(resource.message ?: "Verification failed")
-                        }
-                        Status.LOADING -> {
-                            binding.tvReverificationStatus.text = "Verifying..."
-                        }
-                        Status.INSUFFICIENT_CREDITS -> {
-                            handleReverificationError("Insufficient credits")
+                            Status.ERROR -> {
+                                handleReverificationError(res.message ?: "Verification failed")
+                            }
+                            Status.LOADING -> {
+                                binding.tvReverificationStatus.text = "Verifying..."
+                            }
+                            Status.INSUFFICIENT_CREDITS -> {
+                                handleReverificationError("Insufficient credits")
+                            }
                         }
                     }
                 }

@@ -65,33 +65,49 @@ class MainActivity : AppCompatActivity() {
         windowInsetsController.isAppearanceLightStatusBars = !isDarkMode
 
         // Load default fragment
-        replaceFragment(HomeFragment())
-        selectNavItem(binding.navHome)
+        if (savedInstanceState == null) {
+            val homeFragment = HomeFragment()
+            loadFragment(homeFragment, "HOME")
+            selectNavItem(binding.navHome)
+        } else {
+            // Restore state
+            val tag = when (currentSelectedIndex) {
+                1 -> "MEDIA"
+                2 -> "AUDIO"
+                3 -> "HISTORY"
+                4 -> "SETTINGS"
+                else -> "HOME"
+            }
+            val fragment = supportFragmentManager.findFragmentByTag(tag)
+            if (fragment != null) {
+                activeFragment = fragment
+            }
+        }
 
         // Bottom navigation clicks
         binding.navHome.setOnClickListener {
             selectNavItem(it)
-            replaceFragment(HomeFragment())
+            loadFragment(HomeFragment(), "HOME")
         }
 
         binding.navMedia.setOnClickListener {
             selectNavItem(it)
-            replaceFragment(MediaFragment())
+            loadFragment(MediaFragment(), "MEDIA")
         }
 
         binding.navAudio.setOnClickListener {
             selectNavItem(it)
-            replaceFragment(FragmentAudio())
+            loadFragment(FragmentAudio(), "AUDIO")
         }
 
         binding.navHistory.setOnClickListener {
             selectNavItem(it)
-            replaceFragment(HistoryFragment())
+            loadFragment(HistoryFragment(), "HISTORY")
         }
 
         binding.navSettings.setOnClickListener {
             selectNavItem(it)
-            replaceFragment(SettingsFragment())
+            loadFragment(SettingsFragment(), "SETTINGS")
         }
 
         setupBottomNavTouchSensitivity()
@@ -248,9 +264,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Fragment replacement */
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
+    private var activeFragment: Fragment? = null
+
+    /** Fragment management using add/hide/show to preserve state */
+    private fun loadFragment(fragment: Fragment, tag: String) {
+        val fragmentManager = supportFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+
+        val existingFragment = fragmentManager.findFragmentByTag(tag)
+
+        // Hide current active fragment
+        activeFragment?.let {
+            if (it != existingFragment) {
+                transaction.hide(it)
+            }
+        }
+
+        if (existingFragment == null) {
+            // Add new fragment if it doesn't exist
+            transaction.add(R.id.container, fragment, tag)
+            activeFragment = fragment
+        } else {
+            // Show existing fragment
+            transaction.show(existingFragment)
+            activeFragment = existingFragment
+        }
+
+        transaction.commit()
     }
 
     fun setBottomNavVisibility(isVisible: Boolean) {

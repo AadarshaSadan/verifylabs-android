@@ -1,7 +1,6 @@
 package com.verifylabs.ai.presentation.audio
 
 import android.Manifest
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -76,6 +75,8 @@ class FragmentAudio : Fragment() {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Log.e(TAG, "Coroutine failed: ${throwable.localizedMessage}", throwable)
     }
+
+    private var isVerificationPending = false
 
     // Segmented Recording (Long Record)
     private var isLongRecording = false
@@ -170,7 +171,13 @@ class FragmentAudio : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated()")
 
-        viewModel = ViewModelProvider(this)[MediaViewModel::class.java]
+        viewModel =
+                ViewModelProvider(
+                                requireActivity().viewModelStore,
+                                requireActivity().defaultViewModelProviderFactory,
+                                requireActivity().defaultViewModelCreationExtras
+                        )
+                        .get("AudioScope", MediaViewModel::class.java)
 
         binding.micButton.setOnClickListener {
             Log.d(TAG, "Mic button clicked | isRecording: $isRecording")
@@ -467,7 +474,12 @@ class FragmentAudio : Fragment() {
             Log.d(TAG, "Recording chunk ${allChunkFiles.size} to: ${outputFile.absolutePath}")
 
             recorder =
-                    MediaRecorder().apply {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        MediaRecorder(requireContext())
+                    } else {
+                        @Suppress("DEPRECATION")
+                        MediaRecorder()
+                    }.apply {
                         setAudioSource(MediaRecorder.AudioSource.MIC)
                         // Use AAC_ADTS container which supports binary concatenation
                         setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
@@ -629,13 +641,13 @@ class FragmentAudio : Fragment() {
         // Show Blue Analyzing Circle
         binding.layoutAnalyzing.visibility = View.VISIBLE
         binding.layoutAnalyzing.bringToFront() // Ensure it's on top
-        
+
         // Show Analyzing Card (Behind Blue Circle)
         binding.cardAudioAnalysis.visibility = View.VISIBLE
         binding.layoutAnalyzingStatus.visibility = View.VISIBLE
         binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE
         binding.audioAnalysisChart.visibility = View.GONE
-        
+
         Log.d(TAG, "Analyzing...")
         stopPulseAnimation()
     }
@@ -643,6 +655,7 @@ class FragmentAudio : Fragment() {
     // ========== UPLOAD ==========
     private fun uploadAudio(file: File) {
         Log.d(TAG, "uploadAudio() - Uploading: ${file.name} (${file.length()} bytes)")
+        isVerificationPending = true
         viewModel.uploadMedia(file.absolutePath, MediaType.AUDIO)
     }
 
@@ -660,18 +673,24 @@ class FragmentAudio : Fragment() {
                 Status.SUCCESS -> {
                     val url = resource.data?.get("uploadedUrl")?.asString.orEmpty()
                     Log.d(TAG, "Upload SUCCESS - URL: $url")
-                    //                    binding.txtStatus.text = "Verifying audio..."
-                    Log.d(TAG, "Verifying audio...")
-                    viewModel.verifyMedia(
-                            username = preferenceHelper.getUserName().orEmpty(),
-                            apiKey = preferenceHelper.getApiKey().orEmpty(),
-                            mediaType = MediaType.AUDIO.value,
-                            mediaUrl = url
-                    )
+                    
+                    if (isVerificationPending) {
+                        Log.d(TAG, "Verifying audio...")
+                        viewModel.verifyMedia(
+                                username = preferenceHelper.getUserName().orEmpty(),
+                                apiKey = preferenceHelper.getApiKey().orEmpty(),
+                                mediaType = MediaType.AUDIO.value,
+                                mediaUrl = url
+                        )
+                    } else {
+                        Log.d(TAG, "Skipping verify - not pending")
+                    }
                 }
                 Status.ERROR -> {
                     Log.e(TAG, "Upload FAILED: ${resource.message}")
                     showErrorResult(resource.message ?: "Upload failed")
+                    isVerificationPending = false
+                    resetMicButton()
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
@@ -685,20 +704,31 @@ class FragmentAudio : Fragment() {
         // Parallel Verification Results Handling (iOS Parity)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.verifyResponseFlow.collect { resource ->
-                Log.d(TAG, "Verify response collected: ${resource.status}")
+                resource?.let { res ->
+                    Log.d(TAG, "Verify response collected: ${res.status}")
 
-                when (resource.status) {
-                    Status.LOADING -> {
+                    when (res.status) {
+                        Status.LOADING -> {
                         Log.d(TAG, "Verify: LOADING")
                         // binding.txtStatus.text = "Verifying audio..."
                     }
                     Status.SUCCESS -> {
-                        if (isVerificationCompleted) return@collect
+                        if (isVerificationCompleted) {
+                            // Already completed locally? Sync with ViewModel state to be sure
+                            // But we want to allow UI to update if it's a restore.
+                            // Falling through...
+                        }
+
+                        if (!isVerificationPending) {
+                             Log.d(TAG, "Ignoring stale verify success")
+                             return@collect
+                        }
+                        isVerificationPending = false // Consumed
 
                         Log.d(TAG, "Verify: SUCCESS")
                         val response =
                                 Gson().fromJson(
-                                                resource.data.toString(),
+                                                res.data.toString(),
                                                 VerificationResponse::class.java
                                         )
 
@@ -720,7 +750,15 @@ class FragmentAudio : Fragment() {
                                 )
 
                                 if (!isRecording && !isLongRecording) {
-                                    finalizeAndSaveHistory(response)
+                                    if (!viewModel.isResultHandled) {
+                                        viewModel.isResultHandled = true
+                                        // Only save if no error
+                                        if (response.error == null) {
+                                            finalizeAndSaveHistory(response)
+                                        } else {
+                                            showErrorResult(response.error)
+                                        }
+                                    }
                                 }
                             } else {
                                 // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
@@ -730,7 +768,15 @@ class FragmentAudio : Fragment() {
                                 binding.layoutAnalysisPlaceholder.visibility =
                                         View.GONE // Hide placeholder
                                 binding.audioAnalysisChart.setScore(response.score)
-                                finalizeAndSaveHistory(response)
+                                if (!viewModel.isResultHandled) {
+                                    viewModel.isResultHandled = true
+                                    // Only save if no error
+                                    if (response.error == null) {
+                                        finalizeAndSaveHistory(response)
+                                    } else {
+                                        showErrorResult(response.error)
+                                    }
+                                }
                             }
                         }
 
@@ -744,6 +790,7 @@ class FragmentAudio : Fragment() {
                     Status.ERROR -> {
                         Log.e(TAG, "Verify FAILED: ${resource.message}")
                         showErrorResult(resource.message ?: "Verification failed")
+                        resetMicButton()
                     }
                     Status.INSUFFICIENT_CREDITS -> {
                         Log.w(TAG, "Verify: INSUFFICIENT_CREDITS")
@@ -760,6 +807,7 @@ class FragmentAudio : Fragment() {
                 }
             }
         }
+    }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.creditConsumedFlow.collect {
@@ -779,6 +827,7 @@ class FragmentAudio : Fragment() {
         displayResult(response)
 
         viewLifecycleOwner.lifecycleScope.launch(exceptionHandler) {
+            // Check handled by caller now
             try {
                 val context = context ?: return@launch
 
@@ -790,6 +839,11 @@ class FragmentAudio : Fragment() {
                         } else {
                             currentRecordedFile
                         }
+                
+                if (sourceFile == null || !sourceFile.exists() || sourceFile.length() == 0L) {
+                    Log.e(TAG, "Source file missing or empty, cannot save history")
+                    return@launch
+                }
 
                 val savedPath =
                         sourceFile?.let { file ->
@@ -829,6 +883,13 @@ class FragmentAudio : Fragment() {
                 // Cleanup
                 allChunkFiles.forEach { it.delete() }
                 File(context.externalCacheDir, "merged_audio.aac").delete()
+                
+                // Critical: Delete the source file to prevent "ghost" re-saves on fragment recreation
+                if (sourceFile?.exists() == true) {
+                    sourceFile.delete()
+                }
+                currentRecordedFile?.delete()
+                currentRecordedFile = null
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to finalize history", e)
             }
@@ -905,7 +966,7 @@ class FragmentAudio : Fragment() {
         binding.layoutAnalysisPlaceholder.visibility =
                 View.VISIBLE // Should be visible if card were visible, but card is GONE.
         // Actually initial state has placeholder VISIBLE inside hierarchy.
-        
+
         binding.layoutAnalyzingStatus.visibility = View.GONE
 
         // Reset Logic State
@@ -1012,21 +1073,22 @@ class FragmentAudio : Fragment() {
         binding.btnShowAnalysis.text = "Show analysis"
 
         when (response.band) {
-            0 ->{
+            0 -> {
                 showErrorResult("short recording")
-
             }
-
             1, 2 -> { // Human - Green
                 binding.cardResultStatus.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
                 binding.imgResultIcon.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_smile_icon_green_white)
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.verifylabs_smile_icon_green_white
+                        )
                 )
-//                binding.imgResultIcon.imageTintList =
-//                        ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                //                binding.imgResultIcon.imageTintList =
+                //                        ColorStateList.valueOf(Color.parseColor("#4CAF50"))
 
-                binding.imgResultIcon.imageTintList =null
+                binding.imgResultIcon.imageTintList = null
                 binding.txtResultMessage.setTextColor(Color.parseColor("#4CAF50"))
             }
             3 -> { // Unsure - Gray? (Requirement only specified Success/Error layouts, but handling
@@ -1042,13 +1104,15 @@ class FragmentAudio : Fragment() {
                 binding.cardResultStatus.background =
                         ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_human)
                 binding.imgResultIcon.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.verifylabs_robot_icon_red_white)
+                        ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.verifylabs_robot_icon_red_white
+                        )
                 )
-//                binding.imgResultIcon.imageTintList =
-//                        ColorStateList.valueOf(Color.parseColor("#FF5252"))
+                //                binding.imgResultIcon.imageTintList =
+                //                        ColorStateList.valueOf(Color.parseColor("#FF5252"))
 
-
-                binding.imgResultIcon.imageTintList =null
+                binding.imgResultIcon.imageTintList = null
                 binding.txtResultMessage.setTextColor(
                         Color.WHITE
                 ) // White text on Red card usually? Or Red text?

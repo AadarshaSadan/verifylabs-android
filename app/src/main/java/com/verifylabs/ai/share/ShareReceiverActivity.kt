@@ -273,34 +273,41 @@ class ShareReceiverActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             mediaViewModel.verifyResponseFlow.collect { resource ->
-                when (resource.status) {
-                    Status.LOADING -> {
-                        binding.textStatusMessage.text = "Verifying..."
-                        binding.lottieAnimationView.visibility = android.view.View.VISIBLE
-                    }
-                    Status.SUCCESS -> {
-                        val response = Gson().fromJson(resource.data.toString(), VerificationResponse::class.java)
+                resource?.let { res ->
+                    when (res.status) {
+                        Status.LOADING -> {
+                            binding.textStatusMessage.text = "Verifying..."
+                            binding.lottieAnimationView.visibility = android.view.View.VISIBLE
+                        }
+                        Status.SUCCESS -> {
+                            val response = Gson().fromJson(res.data.toString(), VerificationResponse::class.java)
 
-                        if(response.error != null) {
-                            binding.layoutInfoStatus.visibility = android.view.View.VISIBLE
-                            binding.textStatusMessage.text = "An error occurred during verification."
-                            binding.txtIdentifixation.text = "${response.error}"
+                            if (response.error != null) {
+                                binding.layoutInfoStatus.visibility = android.view.View.VISIBLE
+                                binding.textStatusMessage.text = "An error occurred during verification."
+                                binding.txtIdentifixation.text = "${response.error}"
+                                binding.lottieAnimationView.visibility = android.view.View.GONE
+                                binding.btnDone.visibility = View.VISIBLE
+                            } else {
+                                binding.lottieAnimationView.visibility = android.view.View.GONE
+                                displayVerificationResult(response)
+                            }
+                        }
+                        Status.ERROR -> {
+                            binding.textStatusMessage.text = "Verification failed: ${res.message}"
+                            binding.lottieAnimationView.visibility = android.view.View.GONE
+                        }
+                        Status.INSUFFICIENT_CREDITS -> {
+                            binding.textStatusMessage.text = "Insufficient Credits"
+                            Toast.makeText(
+                                    this@ShareReceiverActivity,
+                                    "Please purchase more credits in the main app",
+                                    Toast.LENGTH_LONG
+                            )
+                                    .show()
                             binding.lottieAnimationView.visibility = android.view.View.GONE
                             binding.btnDone.visibility = View.VISIBLE
-                        } else {
-                            binding.lottieAnimationView.visibility = android.view.View.GONE
-                            displayVerificationResult(response)
                         }
-                    }
-                    Status.ERROR -> {
-                        binding.textStatusMessage.text = "Verification failed: ${resource.message}"
-                        binding.lottieAnimationView.visibility = android.view.View.GONE
-                    }
-                    Status.INSUFFICIENT_CREDITS -> {
-                        binding.textStatusMessage.text = "Insufficient Credits"
-                        Toast.makeText(this@ShareReceiverActivity, "Please purchase more credits in the main app", Toast.LENGTH_LONG).show()
-                        binding.lottieAnimationView.visibility = android.view.View.GONE
-                        binding.btnDone.visibility = View.VISIBLE
                     }
                 }
             }
