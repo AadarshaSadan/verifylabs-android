@@ -182,7 +182,10 @@ class FragmentAudio : Fragment() {
                         .get("AudioScope", MediaViewModel::class.java)
 
         binding.micButton.setOnClickListener {
-            Log.d(TAG, "Interaction: Regular Mic (Long Recording) clicked. Current RecordingState: $isRecording")
+            Log.d(
+                    TAG,
+                    "Interaction: Regular Mic (Long Recording) clicked. Current RecordingState: $isRecording"
+            )
             if (binding.layoutAnalyzing.visibility == View.VISIBLE) {
                 Log.d(TAG, "Interaction: Mic click blocked (Analyzing state)")
                 return@setOnClickListener
@@ -202,7 +205,10 @@ class FragmentAudio : Fragment() {
         }
 
         binding.micPulsebtn.setOnClickListener {
-            Log.d(TAG, "Interaction: Quick Mic clicked. Current RecordingState: $isRecording, IsQuickExecuting: $isQuickRecording")
+            Log.d(
+                    TAG,
+                    "Interaction: Quick Mic clicked. Current RecordingState: $isRecording, IsQuickExecuting: $isQuickRecording"
+            )
             if (binding.layoutAnalyzing.visibility == View.VISIBLE) {
                 Log.d(TAG, "Interaction: Quick mic click blocked (Analyzing state)")
                 return@setOnClickListener
@@ -380,10 +386,13 @@ class FragmentAudio : Fragment() {
                     start()
                 }
 
-        quickRecordStopHandler.postDelayed({
-            Log.d(TAG, "Internal Event: Quick record timer expired ($durationSeconds s)")
-            stopRecording()
-        }, durationSeconds * 1000L)
+        quickRecordStopHandler.postDelayed(
+                {
+                    Log.d(TAG, "Internal Event: Quick record timer expired ($durationSeconds s)")
+                    stopRecording()
+                },
+                durationSeconds * 1000L
+        )
     }
 
     // ========== CREDIT CHECK ==========
@@ -521,7 +530,10 @@ class FragmentAudio : Fragment() {
                                 start()
                             }
 
-            Log.d(TAG, "Recording started. Output: ${outputFile.name}, IsQuick: $isQuickRecording, IsLong: $isLongRecording")
+            Log.d(
+                    TAG,
+                    "Recording started. Output: ${outputFile.name}, IsQuick: $isQuickRecording, IsLong: $isLongRecording"
+            )
             binding.micButton.setImageResource(R.drawable.ic_audio)
             binding.txtTimer.visibility = View.VISIBLE
             Log.d(
@@ -600,90 +612,118 @@ class FragmentAudio : Fragment() {
                 .show()
     }
 
-    private fun stopRecording() {
-        Log.d(TAG, "stopRecording()")
+    private fun stopRecording(fromReset: Boolean = false) {
+        Log.d(TAG, "stopRecording(fromReset=$fromReset)")
 
+        // 1. Reset timer/handlers immediately to stop UI ticks
+        segmentationHandler.removeCallbacksAndMessages(null)
+        silenceCheckHandler.removeCallbacks(silenceCheckRunnable)
+        handler.removeCallbacks(timerRunnable)
+        quickRecordStopHandler.removeCallbacks(quickRecordStopRunnable)
+
+        // 2. Stop Recorder Safely
         try {
-            segmentationHandler.removeCallbacksAndMessages(null)
-            silenceCheckHandler.removeCallbacks(silenceCheckRunnable)
-
-            recorder?.stop()
-            recorder?.release()
-            recorder = null
-            isRecording = false
-            handler.removeCallbacks(timerRunnable)
-            quickRecordStopHandler.removeCallbacks(quickRecordStopRunnable)
-
-            binding.micButton.setImageResource(R.drawable.ic_mic)
-            stopPulseAnimation()
-
-            if (isQuickRecording) {
-                isQuickRecording = false
-                binding.micTimer.setImageResource(R.drawable.q3_icons)
-                binding.micPulsebtn.clearAnimation()
-                quickMicBlinkAnimator?.cancel()
-                binding.micPulsebtn.background.clearColorFilter()
+            // Note: stop() can throw RuntimeException if called immediately after start()
+            if (recorder != null) {
+                recorder?.stop()
             }
+        } catch (e: RuntimeException) {
+            Log.e(TAG, "Recorder stop failed (likely too short): ${e.message}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Recorder error: ${e.message}")
+        } finally {
+            // Ensure release always happens
+            try {
+                recorder?.release()
+            } catch (e: Exception) {
+                Log.e(TAG, "Recorder release failed", e)
+            }
+            recorder = null
+        }
 
+        // 3. CRITICAL: Reset Flags & UI *after* recorder attempt, ensuring it always runs
+        isRecording = false
+        binding.micButton.setImageResource(R.drawable.ic_mic)
+        stopPulseAnimation()
+
+        // 4. Cleanup Quick Recording UI
+        if (isQuickRecording) {
+            isQuickRecording = false
+            binding.micTimer.setImageResource(R.drawable.q3_icons)
+            binding.micPulsebtn.clearAnimation()
+            quickMicBlinkAnimator?.cancel()
+            binding.micPulsebtn.background.clearColorFilter()
+        }
+
+        // 5. Check implementation for Reset
+        if (fromReset) {
+            Log.d(TAG, "stopRecording called from Reset. skipping file processing.")
+            // Deep cleanup of files
+            val file = currentRecordedFile
+            file?.delete()
+            allChunkFiles.forEach { runCatching { it.delete() } }
+            allChunkFiles.clear()
+            currentRecordedFile = null
+            return
+        }
+
+        // 6. Process Result File
+        try {
             val file = currentRecordedFile
             val segmentDuration = System.currentTimeMillis() - currentChunkStartTime
             val totalDuration = System.currentTimeMillis() - startTime
-            
-            Log.d(TAG, "Recording stop details: TotalDuration=${totalDuration}ms, SegmentDuration=${segmentDuration}ms, Chunks=${allChunkFiles.size}")
 
-            if (totalDuration <= 4000) {
-                Log.w(TAG, "Recording too short (<= 4s). Rejecting.")
-                isRecording = false
-                isQuickRecording = false
-                isLongRecording = false
-                
-                // Cleanup current file and chunks
+            Log.d(
+                    TAG,
+                    "Recording stop details: TotalDuration=${totalDuration}ms, SegmentDuration=${segmentDuration}ms, Chunks=${allChunkFiles.size}"
+            )
+
+            // Threshold Check
+            if (totalDuration <= 1000) {
+                Log.w(TAG, "Recording too short (<= 1s). Rejecting.")
+                // cleanup
                 file?.delete()
-                allChunkFiles.forEach { it.delete() }
+                allChunkFiles.forEach { runCatching { it.delete() } }
                 allChunkFiles.clear()
                 currentRecordedFile = null
-                
-                // Show error state
-                showErrorResult("short recording")
+
+                // Only show error if it wasn't a "silent" quick reset (duration > 100ms)
+                if (totalDuration > 100) {
+                    showErrorResult("short recording")
+                }
                 return
             }
 
             if (file != null && file.exists()) {
-                if (segmentDuration < 5000 && allChunkFiles.size > 1) {
-                    Log.w(
-                            TAG,
-                            "Final chunk too short ($segmentDuration ms). Skipping verification."
-                    )
+                if (segmentDuration < 1000 && allChunkFiles.size > 1) {
+                    Log.w(TAG, "Final chunk too short. Skipping.")
                     allChunkFiles.remove(file)
                     file.delete()
                 } else {
-                    Log.d(
-                            TAG,
-                            "Final chunk ready: ${file.length()} bytes, Duration: ${segmentDuration}ms"
-                    )
                     uploadAudio(file)
                 }
             }
 
             if (isLongRecording) {
-                // Post-process: Merge all chunks into one for history
-                Log.d(TAG, "Long Recording Stopped. Chunks Collected: ${allChunkFiles.size}. Starting Merge...")
+                Log.d(
+                        TAG,
+                        "Long Recording Stopped. Chunks Collected: ${allChunkFiles.size}. Starting Merge..."
+                )
                 isLongRecording = false
-                // Final verification for long recording will set isFinalizing = true in mergeAndSaveChunks
+                isFinalizing = true
                 mergeAndSaveChunks()
-            } else if (currentRecordedFile == null) {
-                Log.e(TAG, "StopRecording Error: Audio file not found")
-            } else {
-                // Final Verification State for regular/quick recording
-                Log.d(TAG, "Quick/Regular Recording Stopped. File: ${currentRecordedFile?.name}. Starting Final Verification...")
-                isFinalizing = true // THIS is the final result for short sessions
+            } else if (currentRecordedFile != null) {
+                Log.d(
+                        TAG,
+                        "Quick/Regular Recording Stopped. File: ${currentRecordedFile?.name}. Starting Final Verification..."
+                )
+                isFinalizing = true
                 binding.root.post { showAnalyzingState() }
+            } else {
+                Log.e(TAG, "StopRecording Error: Audio file not found")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error stopping recording", e)
-            if (_binding != null) {
-                Log.e(TAG, "Stop failed")
-            }
+            Log.e(TAG, "Error processing recording result", e)
         }
     }
 
@@ -740,9 +780,12 @@ class FragmentAudio : Fragment() {
                 Status.SUCCESS -> {
                     val url = resource.data?.get("uploadedUrl")?.asString.orEmpty()
                     Log.d(TAG, "Upload Success: Media URL received -> $url")
-                    
+
                     if (isVerificationPending) {
-                        Log.d(TAG, "Verification: Triggering verification API for uploaded media...")
+                        Log.d(
+                                TAG,
+                                "Verification: Triggering verification API for uploaded media..."
+                        )
                         viewModel.verifyMedia(
                                 username = preferenceHelper.getUserName().orEmpty(),
                                 apiKey = preferenceHelper.getApiKey().orEmpty(),
@@ -769,10 +812,6 @@ class FragmentAudio : Fragment() {
 
                     // 3. Show the error UI once (remove the second showErrorResult call)
                     showErrorResult(resource.message ?: "Check your internet connection")
-
-
-
-
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
@@ -814,7 +853,10 @@ class FragmentAudio : Fragment() {
                                                     VerificationResponse::class.java
                                             )
 
-                            Log.d(TAG, "Verification Success: Band=${response.band}, Score=${response.score}")
+                            Log.d(
+                                    TAG,
+                                    "Verification Success: Band=${response.band}, Score=${response.score}"
+                            )
 
                             // Thread-safe update to temporal scores
                             synchronized(temporalScores) {
@@ -836,15 +878,20 @@ class FragmentAudio : Fragment() {
                                             viewModel.isResultHandled = true
                                             // Only save if no error
                                             if (response.error == null) {
-                                                Log.d(TAG, "Verification: Finalizing history for session.")
+                                                Log.d(
+                                                        TAG,
+                                                        "Verification: Finalizing history for session."
+                                                )
                                                 finalizeAndSaveHistory(response)
                                             } else {
                                                 showErrorResult(response.error)
                                             }
-                                        } else {
-                                        }
+                                        } else {}
                                     } else {
-                                        Log.d(TAG, "Verification: Temporal chunk result collected (Recording=${isRecording}, Long=${isLongRecording}, Finalizing=${isFinalizing})")
+                                        Log.d(
+                                                TAG,
+                                                "Verification: Temporal chunk result collected (Recording=${isRecording}, Long=${isLongRecording}, Finalizing=${isFinalizing})"
+                                        )
                                     }
                                 } else {
                                     // binding.cardAudioAnalysis.visibility = View.VISIBLE // Don't
@@ -858,16 +905,20 @@ class FragmentAudio : Fragment() {
                                         viewModel.isResultHandled = true
                                         // Only save if no error
                                         if (response.error == null) {
-                                            Log.d(TAG, "Verification: Finalizing history for session.")
+                                            Log.d(
+                                                    TAG,
+                                                    "Verification: Finalizing history for session."
+                                            )
                                             finalizeAndSaveHistory(response)
                                         } else {
                                             showErrorResult(response.error)
                                         }
                                     } else if (!isFinalizing) {
-                                        Log.d(TAG, "Verification: Ignoring intermediate result for short recording (Finalizing=false)")
-                                    } else {
-
-                                    }
+                                        Log.d(
+                                                TAG,
+                                                "Verification: Ignoring intermediate result for short recording (Finalizing=false)"
+                                        )
+                                    } else {}
                                 }
                             }
 
@@ -970,7 +1021,10 @@ class FragmentAudio : Fragment() {
                                         else null
                         )
                 verificationRepository.saveVerification(entity)
-                Log.d(TAG, "History: Session saved successfully with ID: ${entity.id}. Source: ${sourceFile?.name}")
+                Log.d(
+                        TAG,
+                        "History: Session saved successfully with ID: ${entity.id}. Source: ${sourceFile?.name}"
+                )
 
                 // Cleanup
                 allChunkFiles.forEach { it.delete() }
@@ -1019,9 +1073,13 @@ class FragmentAudio : Fragment() {
                 }
                 fos.close()
                 // fos.close() was already called above
-                Log.d(TAG, "Merge Success: Created merged file at ${mergedFile.absolutePath} (Size: ${mergedFile.length()} bytes)")
-                
-                currentRecordedFile = mergedFile // CRITICAL: Update so finalizeAndSaveHistory finds it
+                Log.d(
+                        TAG,
+                        "Merge Success: Created merged file at ${mergedFile.absolutePath} (Size: ${mergedFile.length()} bytes)"
+                )
+
+                currentRecordedFile =
+                        mergedFile // CRITICAL: Update so finalizeAndSaveHistory finds it
                 isFinalizing = true // CRITICAL: Mark that the upcoming result is the ONE to save
 
                 // Final Verification for Long Recording
@@ -1043,37 +1101,57 @@ class FragmentAudio : Fragment() {
     private fun resetMicButton() {
         Log.d(TAG, "resetMicButton()")
 
-        // Restore Mic UI
+        // 1. Force Stop any active recording/animations first
+        try {
+            stopRecording(fromReset = true) // Explicitly skip processing to avoid race conditions
+        } catch (e: Exception) {
+            Log.e(TAG, "Error force stopping in reset", e)
+        }
+
+        // 2. Clear Animations explicitly
+        binding.micPulsebtn.clearAnimation()
+        binding.micPulse.clearAnimation()
+        binding.micPulsebtn.background.clearColorFilter()
+        quickMicBlinkAnimator?.cancel()
+
+        // 3. Clear Callbacks
+        quickRecordStopHandler.removeCallbacksAndMessages(null)
+        handler.removeCallbacksAndMessages(null)
+        segmentationHandler.removeCallbacksAndMessages(null)
+        silenceCheckHandler.removeCallbacksAndMessages(null)
+
+        // 4. Restore Mic UI
         showMicControls(true)
         binding.micButton.setImageResource(R.drawable.ic_mic)
         binding.micButton.isEnabled = true
         binding.micPulsebtn.isEnabled = true
         binding.txtTimer.visibility = View.GONE
+        binding.micTimer.setImageResource(R.drawable.q3_icons) // Reset quick icon
 
-        // Reset Status Text
-        //        binding.txtStatus.text = ""
-        //        binding.txtStatus.visibility = View.VISIBLE
+        // 5. Reset Status/Results UI
         Log.d(TAG, "Resetting Mic Button Status")
-
-        // Hide Analysis/Results
         binding.layoutAnalyzing.visibility = View.GONE
         binding.layoutResultsContainer.visibility = View.GONE
         binding.cardAudioAnalysis.visibility = View.GONE
-        binding.layoutStatsRow.visibility = View.GONE // Reset stats visibility
-        binding.layoutAnalysisPlaceholder.visibility =
-                View.VISIBLE // Should be visible if card were visible, but card is GONE.
-        // Actually initial state has placeholder VISIBLE inside hierarchy.
-
+        binding.layoutStatsRow.visibility = View.GONE
+        binding.layoutAnalysisPlaceholder.visibility = View.VISIBLE
         binding.layoutAnalyzingStatus.visibility = View.GONE
+        binding.layoutNoCreditStatus.visibility = View.GONE
 
-        // Reset Logic State
+        // 6. Reset Logic Flags
         binding.audioAnalysisChart.reset()
         isLongRecording = false
         isQuickRecording = false
         isVerificationCompleted = false
         isFinalizing = false
+        isRecording = false
+        isVerificationPending = false
+
+        // 7. Cleanup Data
+        allChunkFiles.forEach { runCatching { it.delete() } }
         allChunkFiles.clear()
         temporalScores.clear()
+        currentRecordedFile = null
     }
 
     private fun getBandResult(band: Int?): String {
@@ -1104,25 +1182,27 @@ class FragmentAudio : Fragment() {
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
         )
-//        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(@color/card_stroke_ai)
+        //        binding.imgResultIcon.imageTintList =
+        // ColorStateList.valueOf(@color/card_stroke_ai)
 
-        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
-        )
+        binding.imgResultIcon.imageTintList =
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
+                )
 
         binding.txtResultTitle.text = "Verification failed"
         binding.txtResultTitle.visibility = View.VISIBLE
 
         // Applying the same color resource
         binding.txtResultTitle.setTextColor(
-            ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
+                ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
         )
 
         binding.txtResultMessage.text =
                 "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)"
         // Use ContextCompat to get the color correctly from your resources
         // or Color.parseColor if you want to use the hex string directly.
-                binding.txtResultMessage.setTextColor(Color.parseColor("#757575"))
+        binding.txtResultMessage.setTextColor(Color.parseColor("#757575"))
 
         binding.btnReset.visibility = View.VISIBLE
         binding.btnReset.visibility = View.VISIBLE
