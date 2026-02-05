@@ -188,7 +188,7 @@
                             android:layout_marginBottom="4dp"
                             android:text="@string/verification_failed_title"
                             android:textColor="@android:color/white"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold"
                             android:visibility="gone" />
 

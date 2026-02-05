@@ -1,6 +1,7 @@
 package com.verifylabs.ai.presentation.audio
 
 import android.Manifest
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -753,10 +754,25 @@ class FragmentAudio : Fragment() {
                     }
                 }
                 Status.ERROR -> {
+
                     Log.e(TAG, "Upload FAILED: ${resource.message}")
-                    showErrorResult(resource.message ?: "Upload failed")
+
+                    // 1. Stop the long recording timers immediately
+                    segmentationHandler.removeCallbacksAndMessages(null)
+
+                    // 2. Stop the actual recording if it's still running
+                    if (isRecording) {
+                        stopRecording()
+                    }
+
                     isVerificationPending = false
-                    resetMicButton()
+
+                    // 3. Show the error UI once (remove the second showErrorResult call)
+                    showErrorResult(resource.message ?: "Check your internet connection")
+
+
+
+
                 }
                 Status.INSUFFICIENT_CREDITS -> {
                     Log.e(TAG, "Upload FAILED (Credits): ${resource.message}")
@@ -1084,18 +1100,29 @@ class FragmentAudio : Fragment() {
         showMicControls(false)
 
         binding.cardResultStatus.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_ai)
+                ContextCompat.getDrawable(requireContext(), R.drawable.bg_result_card_likely_ai)
         binding.imgResultIcon.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_warning)
         )
-        //        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(Color.GREEN)
+//        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(@color/card_stroke_ai)
+
+        binding.imgResultIcon.imageTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
+        )
 
         binding.txtResultTitle.text = "Verification failed"
         binding.txtResultTitle.visibility = View.VISIBLE
 
+        // Applying the same color resource
+        binding.txtResultTitle.setTextColor(
+            ContextCompat.getColor(requireContext(), R.color.card_stroke_ai)
+        )
+
         binding.txtResultMessage.text =
-                "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)."
-        binding.txtResultMessage.setTextColor(Color.WHITE)
+                "This usually means the audio couldn't be analyzed (too short, wrong format, or poor quality)"
+        // Use ContextCompat to get the color correctly from your resources
+        // or Color.parseColor if you want to use the hex string directly.
+                binding.txtResultMessage.setTextColor(Color.parseColor("#757575"))
 
         binding.btnReset.visibility = View.VISIBLE
         binding.btnReset.visibility = View.VISIBLE

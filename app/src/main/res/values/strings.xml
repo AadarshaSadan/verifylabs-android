@@ -76,15 +76,15 @@
     <string name="media_type_video">VIDEO</string>
     <string name="media_type_image">IMAGE</string>
     <string name="image_type_label">Image</string>
-    <string name="media_quality_tips_title">Media Quality Tips</string>
+    <string name="media_quality_tips_title">Media quality tips</string>
     <string name="select_media_file">Select media file</string>
-    <string name="verify_media_button">Verify Media</string>
-    <string name="use_full_image_button">Use Full Image</string>
+    <string name="verify_media_button">Verify media</string>
+    <string name="use_full_image_button">Use full image</string>
     <string name="test_another">Test another?</string>
     <string name="retry_button">Retry</string>
     <string name="hd_quality">HD</string>
-    <string name="media_type_label">Media Type</string>
-    <string name="robot_type_label">Robot Type</string>
+    <string name="media_type_label">Media type</string>
+    <string name="robot_type_label">Robot type</string>
     <string name="credits_remaining">Credits remaining: %1$s</string>
     <string name="credits_remaining_0">Credits remaining: 2500</string>
     <string name="insufficient_credits_msg">Insufficient credits. Please upgrade or buy More.</string>
@@ -94,7 +94,7 @@
     <string name="the_file_into_the_verifylabs_extension_instead">the file into the verifyLabs extension instead</string>
     
     <!-- Media Verification Results & Bands -->
-    <string name="ai_score_label">AI Score</string>
+    <string name="ai_score_label">AI score</string>
     <string name="verification_failed_title">Verification failed</string>
     <string name="band_human_made">Human made</string>
     <string name="band_likely_human_made">Likely human made</string>
@@ -138,7 +138,7 @@
     <string name="sign_up_here"> Sign Up Here</string>
     <string name="signing_in">SIGNING IN…</string>
     <string name="creating_account_now">CREATING ACCOUNT…</string>
-    <string name="creating_account">Creating Account…</string>
+    <string name="creating_account">Creating account…</string>
     <string name="login_failed">Login failed</string>
     <string name="invalid_login_toast">Invalid credentials. Please log in again.</string>
 
@@ -162,16 +162,16 @@
     <string name="enter_email">Email*</string>
     <string name="email_required_hint">Email address*</string>
     
-    <string name="full_name">Full Name</string>
+    <string name="full_name">Full name</string>
     <string name="full_name_label">Full name</string>
     <string name="full_name_input">Full name input</string>
     <string name="choose_username">Full Name*</string>
-    <string name="full_name_required_hint">Full Name*</string>
+    <string name="full_name_required_hint">Full name*</string>
     
     <string name="confirm_password">Confirm Password*</string>
-    <string name="confirm_your_password">Confirm Password*</string>
+    <string name="confirm_your_password">Confirm password*</string>
     <string name="confirm_password_input">Confirm password input</string>
-    <string name="confirm_password_required_hint">Confirm Password*</string>
+    <string name="confirm_password_required_hint">Confirm password*</string>
     <string name="password_mismatch_error">Passwords don\'t match</string>
 
     <string name="agree_terms_prefix">I agree to the </string>
@@ -180,16 +180,16 @@
     <string name="privacy_policy_link">Privacy Policy</string>
 
     <!-- Forgot/Change Password -->
-    <string name="change_password_title">Change Password</string>
+    <string name="change_password_title">Change password</string>
     <string name="change_password_action">Change password</string>
-    <string name="change_password_button">Change Password</string>
-    <string name="current_password_label">Current Password</string>
+    <string name="change_password_button">Change password</string>
+    <string name="current_password_label">Current password</string>
     <string name="current_password_hint">Enter current password</string>
     <string name="new_password_label">New Password</string>
     <string name="new_password_hint">Enter new password</string>
     <string name="confirm_password_hint">Confirm new password</string>
-    <string name="password_requirements">Password Requirements</string>
-    <string name="password_requirements_label">Password Requirements:</string>
+    <string name="password_requirements">Password requirements</string>
+    <string name="password_requirements_label">Password requirements:</string>
     <string name="password_requirements_bullets">• At least 8 characters\n• At least one uppercase letter\n• At least one number</string>
     <string name="req_8_chars">  At least 8 characters</string>
     <string name="req_uppercase">  At least one uppercase letter</string>
@@ -197,15 +197,15 @@
     <string name="req_match">  Passwords match</string>
 
     <!-- Verify Email -->
-    <string name="verify_email_title">Verify Your Email</string>
+    <string name="verify_email_title">Verify your email</string>
     <string name="verify_email_subtitle">We\'ve sent a verification link to:</string>
     <string name="verify_email_desc">Please check your email and click the verification link before logging in.</string>
     <string name="verify_email_important">Important</string>
     <string name="verify_email_expiry">The link expires in 24 hours</string>
     <string name="verify_email_must_verify">You must verify before logging in</string>
     <string name="verify_email_spam">Check your spam folder if not received</string>
-    <string name="open_email_app">Open Email App</string>
-    <string name="verify_later">I\'ll Verify Later</string>
+    <string name="open_email_app">Open email app</string>
+    <string name="verify_later">I\'ll Verify later</string>
 
     <!-- Home Fragment -->
     <string name="section_account">ACCOUNT</string>
@@ -220,16 +220,16 @@
     <string name="best_results_guidelines_link">Best results guidelines</string>
     <string name="guidelines_desc">This tool requires high-quality media. Low-quality input will give you incorrect results.</string>
     <string name="guidelines_label_images">Images:</string>
-    <string name="guidelines_text_images">use high resolution only. Anything under 1 megapixel (e.g., 1024×1024 pixels) is too small and will produce unreliable detections. Always use the original, clearest file.</string>
+    <string name="guidelines_text_images">Use high resolution only. Anything under 1 megapixel (e.g., 1024×1024 pixels) is too small and will produce unreliable detections. Always use the original, clearest file.</string>
     <string name="guidelines_label_videos">Videos:</string>
-    <string name="guidelines_text_videos">upload 10 seconds or more. Never upload a still frame taken from a video; the analysis will be inaccurate.</string>
+    <string name="guidelines_text_videos">Upload 10 seconds or more. Never upload a still frame taken from a video; the analysis will be inaccurate.</string>
     <string name="guidelines_label_audio">Audio:</string>
-    <string name="guidelines_text_audio">share 4 seconds or more via the share extension or record straight from the app. The quick record button will record for a given duration and automatically stop. In these two modes, long silences will result in a failure. The long record button will record up to 600 seconds and verify every 10 seconds. Silent segments will be ignored.</string>
+    <string name="guidelines_text_audio">Share 4 seconds or more via the share extension or record straight from the app. The quick record button will record for a given duration and automatically stop. In these two modes, long silences will result in a failure. The long record button will record up to 600 seconds and verify every 10 seconds. Silent segments will be ignored.</string>
 
     <!-- Audio Fragment -->
-    <string name="audio_analysis_title">Audio Analysis</string>
+    <string name="audio_analysis_title">Audio analysis</string>
     <string name="record_audio_prompt">Record audio to see analysis</string>
-    <string name="audio_file_label">Audio File</string>
+    <string name="audio_file_label">Audio file</string>
     <string name="start_recording">start_recording\n\n</string>
     <string name="avg_label">Avg: </string>
     <string name="min_label">Min: </string>
@@ -260,11 +260,11 @@
     <string name="no_items_subtitle">Try selecting a different filter</string>
     <string name="no_history_yet">No History Yet</string>
     <string name="no_history_desc">Your verification history will appear here</string>
-    <string name="verification_details_title">Verification Details</string>
+    <string name="verification_details_title">Verification details</string>
     <string name="media_section_title">Media</string>
     <string name="quick_record_audio_label">Quick record audio</string>
     <string name="media_not_available">Media not available</string>
-    <string name="original_result_section">Original Result</string>
+    <string name="original_result_section">Original result</string>
     <string name="reverification_section">Re-verification</string>
     <string name="verify_again_button">Verify Again</string>
     <string name="save_as_new_history_button">Save as New History Entry</string>
@@ -324,7 +324,7 @@
     <string name="website_url_label">verifylabs.ai</string>
     <string name="contact_support_title">Contact Support</string>
     <string name="support_email_label">support@verifylabs.ai</string>
-    <string name="_2025_verifylabs_n_nall_rights_reserved">© 2025 VerifyLabs. \n\nAll rights reserved.</string>
+    <string name="_2025_verifylabs_n_nall_rights_reserved">© 2026 VerifyLabs. \n\nAll rights reserved.</string>
 
     <!-- Dialogs -->
     <string name="error_title">Error</string>
