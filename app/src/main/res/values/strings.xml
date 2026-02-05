@@ -266,7 +266,7 @@
     <string name="media_not_available">Media not available</string>
     <string name="original_result_section">Original result</string>
     <string name="reverification_section">Re-verification</string>
-    <string name="verify_again_button">Verify Again</string>
+    <string name="verify_again_button">Verify again</string>
     <string name="save_as_new_history_button">Save as New History Entry</string>
     <string name="uploading_verifying_status">Uploading and verifying...</string>
     <string name="details_section">Details</string>

@@ -34,12 +34,22 @@ class ChangePasswordBottomSheet : BottomSheetDialogFragment() {
         _binding = BottomsheetChangePasswordBinding.inflate(inflater, container, false)
         return binding.root
     }
+//
+//    override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
+//        val dialog = super.onCreateDialog(savedInstanceState)
+//        dialog.window?.setSoftInputMode(
+//                android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+//        )
+//        return dialog
+//    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window?.setSoftInputMode(
-                android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-        )
+        dialog.setOnShowListener {
+            val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            // This makes the container background transparent so your drawable shows through
+            bottomSheet?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        }
         return dialog
     }
 

@@ -8,7 +8,6 @@
     android:background="@color/ios_settings_background"
     android:fitsSystemWindows="true">
 
-    <!-- Custom Toolbar for Parity -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -51,7 +50,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Media Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,7 +110,6 @@
                         android:scaleType="fitCenter"
                         android:visibility="gone" />
 
-                    <!-- Audio Section -->
                     <LinearLayout
                         android:id="@+id/audioPlayerLayout"
                         android:layout_width="match_parent"
@@ -161,7 +158,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:paddingHorizontal="16dp">
-                            
+
                             <TextView
                                 android:id="@+id/tvCurrentTime"
                                 android:layout_width="wrap_content"
@@ -169,7 +166,7 @@
                                 android:text="@string/time_placeholder"
                                 android:textColor="@color/secondary_text"
                                 android:textSize="10sp" />
-                            
+
                             <View
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
@@ -196,7 +193,6 @@
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Original Result Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -215,54 +211,75 @@
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="@android:color/transparent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layoutResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="20dp">
+                    android:paddingVertical="12dp"
+                    android:paddingHorizontal="12dp"
+                    android:background="@drawable/bg_result_card_green">
 
-                    <ImageView
-                        android:id="@+id/imgIcon"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
+                    <LinearLayout
 
-                    <TextView
-                        android:id="@+id/tvBandName"
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/layoutResultHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/report_human_generated"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/header_text" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvBandName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_result_capsule_green"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="6dp"
+                            android:text="@string/report_human_generated"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/imgIcon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvDescription"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/human_verification_result_desc"
-                        android:textSize="13sp"
-                        android:textColor="@color/secondary_text"
+                        android:layout_marginTop="18dp"
                         android:gravity="center"
-                        android:paddingHorizontal="20dp" />
+                        android:text="@string/human_verification_result_desc"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/layoutResultHeader"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvVerifiedDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         android:text="@string/verified_on_placeholder"
-                        android:textSize="11sp"
-                        android:textColor="@color/secondary_text" />
-                </LinearLayout>
+                        android:textSize="10sp"
+                        android:textColor="@color/secondary_text"
+                        app:layout_constraintTop_toBottomOf="@id/tvDescription"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Re-verification Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -279,8 +296,10 @@
                 android:text="@string/verify_again_button"
                 android:textAllCaps="false"
                 android:textSize="16sp"
+                android:textColor="#fff"
                 android:textStyle="bold"
                 app:icon="@drawable/ic_restore"
+                app:iconTint="#fff"
                 app:iconGravity="textStart"
                 app:cornerRadius="12dp"
                 android:backgroundTint="@color/verifylabs_logo_green"
@@ -296,7 +315,6 @@
                 android:visibility="gone"
                 android:layout_marginBottom="16dp" />
 
-            <!-- New Result Section (Initially Hidden) -->
             <LinearLayout
                 android:id="@+id/layoutNewResult"
                 android:layout_width="match_parent"
@@ -313,49 +331,71 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="@android:color/transparent">
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layoutNewResultInner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="20dp">
+                        android:paddingVertical="12dp"
+                        android:paddingHorizontal="12dp"
+                        android:background="@drawable/bg_result_card_green">
 
-                        <ImageView
-                            android:id="@+id/imgNewIcon"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
-
-                        <TextView
-                            android:id="@+id/tvNewBandName"
+                        <LinearLayout
+                            android:layout_marginTop="20dp"
+                            android:id="@+id/layoutNewResultHeader"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="@string/report_human_generated"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/header_text" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+
+                            <TextView
+                                android:id="@+id/tvNewBandName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_result_capsule_green"
+                                android:paddingHorizontal="16dp"
+                                android:paddingVertical="6dp"
+                                android:text="@string/report_human_generated"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/imgNewIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/verifylabs_smile_icon_light_grey_rgb_1__traced_" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvNewDescription"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="18dp"
+                            android:gravity="center"
                             android:text="@string/description_placeholder"
                             android:textSize="12sp"
                             android:textColor="@color/secondary_text"
-                            android:gravity="center" />
+                            app:layout_constraintTop_toBottomOf="@id/layoutNewResultHeader"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
 
                         <TextView
                             android:id="@+id/tvComparison"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="8dp"
                             android:text="@string/same_result_as_original"
-                            android:textSize="12sp"
-                            android:textColor="@color/secondary_text" />
-                    </LinearLayout>
+                            android:textSize="11sp"
+                            android:textColor="@color/secondary_text"
+                            app:layout_constraintTop_toBottomOf="@id/tvNewDescription"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
                 <com.google.android.material.button.MaterialButton
@@ -365,17 +405,16 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/save_as_new_history_button"
                     android:textAllCaps="false"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp"
                     android:backgroundTint="#007AFF"
                     android:textColor="@color/white"
-                    app:icon="@drawable/ic_restore"
+                    app:icon="@drawable/ic_plus_circle_new_entry"
                     app:iconGravity="textStart"
                     app:iconTint="@color/white" />
             </LinearLayout>
 
-            <!-- Loading State (Initially Hidden) -->
             <LinearLayout
                 android:id="@+id/layoutReverifying"
                 android:layout_width="match_parent"
@@ -386,12 +425,12 @@
                 android:visibility="gone"
                 android:layout_marginBottom="24dp"
                 android:background="#1A808080">
-                
+
                 <ProgressBar
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:indeterminateTint="@color/verifylabs_logo_green" />
-                
+
                 <TextView
                     android:id="@+id/tvReverificationStatus"
                     android:layout_width="wrap_content"
@@ -402,136 +441,6 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Details Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/details_section"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/header_text"
-                android:layout_marginBottom="12dp"
-                android:visibility="gone" />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/app_background_3">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <!-- Type -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/media_type_label"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="15sp" />
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/tvTypeValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/image_type_label"
-                            android:textColor="@color/header_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Resolution -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/resolution_label"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="15sp" />
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/tvResolutionValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--"
-                            android:textColor="@color/header_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Size -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/filename_label"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="15sp" />
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/tvSizeValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/empty_placeholder"
-                            android:textColor="@color/header_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Robot Type -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/robot_type_label"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="15sp" />
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-                        <TextView
-                            android:id="@+id/tvRobotValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/empty_placeholder"
-                            android:textColor="@color/header_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

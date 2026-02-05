@@ -160,11 +160,11 @@ class HistoryFragment : Fragment() {
                             ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete)
                     private val intrinsicWidth = deleteIcon?.intrinsicWidth ?: 0
                     private val intrinsicHeight = deleteIcon?.intrinsicHeight ?: 0
-                    private val backgroundColor = Color.parseColor("#FF3B30") // iOS System Red
+                    private val backgroundColor = Color.parseColor("#f44336") // Previous Red
                     private val clearPaint =
                             Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
                     private val boxMargin = 24f // Initial margin
-                    
+
                     override fun onMove(
                             recyclerView: RecyclerView,
                             viewHolder: RecyclerView.ViewHolder,
@@ -174,16 +174,20 @@ class HistoryFragment : Fragment() {
                     // --- CONFIGURATION ---
                     private val configTextSize = 20f // Change this to increase/decrease text size
                     private val iconScale = 1.0f // Change this to 0.8f, 1.2f etc. to resize icon
-                    private val visibilityThreshold = 120f // Swipe distance to start showing text/icon
-                    private val boxVerticalMargin = 48f // Increase this to make the background thinner (less height)
-                    private val customCornerRadius = -1f // Set to > 0 to use a fixed radius. Set to -1f for automatic pill shape (full circle ends).
+                    private val visibilityThreshold =
+                            120f // Swipe distance to start showing text/icon
+                    private val boxVerticalMargin =
+                            48f // Increase this to make the background thinner (less height)
+                    private val customCornerRadius =
+                            -1f // Set to > 0 to use a fixed radius. Set to -1f for automatic pill
+                    // shape (full circle ends).
                     private val textColorHex = "#8E8E93" // Configurable text color
                     // ---------------------
 
                     private val textPaint =
                             Paint().apply {
                                 color = Color.WHITE
-                                textSize = configTextSize 
+                                textSize = configTextSize
                                 isAntiAlias = true
                                 textAlign = Paint.Align.CENTER
                                 typeface =
@@ -240,8 +244,9 @@ class HistoryFragment : Fragment() {
                         val isLeftSwipe = dX < 0
                         if (isLeftSwipe) {
                             val swipeWidth = kotlin.math.abs(dX)
-                            
-                            // The minimal swipe width needed before the red box appears (due to margins)
+
+                            // The minimal swipe width needed before the red box appears (due to
+                            // margins)
                             val startAppearance = boxMargin * 2
 
                             // Define button bounds with margins
@@ -253,11 +258,15 @@ class HistoryFragment : Fragment() {
                             // Only draw if we have positive width
                             if (buttonLeft < buttonRight) {
                                 // ANIMATION LOGIC
-                                // Calculate progress based on swipe width relative to visibilityThreshold
-                                // We offset by startAppearance so animation starts smoothly when box appears
+                                // Calculate progress based on swipe width relative to
+                                // visibilityThreshold
+                                // We offset by startAppearance so animation starts smoothly when
+                                // box appears
                                 val animationRange = visibilityThreshold - startAppearance
-                                val safeRange = if (animationRange > 0) animationRange else 1f // avoid div/0
-                                
+                                val safeRange =
+                                        if (animationRange > 0) animationRange
+                                        else 1f // avoid div/0
+
                                 val rawProgress = (swipeWidth - startAppearance) / safeRange
                                 val progress = rawProgress.coerceIn(0f, 1f)
 
@@ -265,12 +274,12 @@ class HistoryFragment : Fragment() {
                                 // We want the background to grow from center.
                                 val maxButtonHeight = buttonBottom - buttonTop
                                 val currentButtonHeight = maxButtonHeight * progress
-                                
+
                                 // Recalculate Top/Bottom to center it
                                 val centerY = (buttonTop + buttonBottom) / 2
                                 val currentTop = centerY - (currentButtonHeight / 2)
                                 val currentBottom = centerY + (currentButtonHeight / 2)
-                                
+
                                 val rect =
                                         android.graphics.RectF(
                                                 buttonLeft,
@@ -278,19 +287,22 @@ class HistoryFragment : Fragment() {
                                                 buttonRight,
                                                 currentBottom
                                         )
-                                // Calculate radius: Use custom if set, otherwise dynamic pill shape based on current height
-                                val dynamicRadius = if (customCornerRadius > 0) customCornerRadius else currentButtonHeight / 2f
-                                
+                                // Calculate radius: Use custom if set, otherwise dynamic pill shape
+                                // based on current height
+                                val dynamicRadius =
+                                        if (customCornerRadius > 0) customCornerRadius
+                                        else currentButtonHeight / 2f
+
                                 // Calculate Background Alpha
                                 val bgAlpha = (255 * progress).toInt()
-                                
+
                                 val paint =
                                         Paint().apply {
                                             color = backgroundColor
                                             alpha = bgAlpha // Apply Fade In
                                             isAntiAlias = true
                                         }
-                                
+
                                 // Only draw if visible
                                 if (currentButtonHeight > 0 && bgAlpha > 0) {
                                     c.drawRoundRect(rect, dynamicRadius, dynamicRadius, paint)
@@ -326,11 +338,14 @@ class HistoryFragment : Fragment() {
                                     deleteIcon?.setTint(Color.WHITE)
                                     deleteIcon?.alpha = currentAlpha
                                     deleteIcon?.draw(c)
-                                    
+
                                     // Text Animation: Fade in
-                                    // Start fading text slightly later, e.g., when icon is 50% visible
+                                    // Start fading text slightly later, e.g., when icon is 50%
+                                    // visible
                                     val textStartProgress = 0.5f
-                                    val textRawProgress = (rawProgress - textStartProgress) / (1f - textStartProgress)
+                                    val textRawProgress =
+                                            (rawProgress - textStartProgress) /
+                                                    (1f - textStartProgress)
                                     val textProgress = textRawProgress.coerceIn(0f, 1f)
                                     val textAlpha = (255 * textProgress).toInt()
 
@@ -339,24 +354,24 @@ class HistoryFragment : Fragment() {
                                         val textBounds = android.graphics.Rect()
                                         textPaint.getTextBounds(text, 0, text.length, textBounds)
                                         val textHeight = textBounds.height()
-                                        
+
                                         // Text Position: OUTSIDE and BELOW the background
                                         val textTopMargin = 8f
                                         val textY = buttonBottom + textTopMargin + textHeight
-                                        
+
                                         val originalColor = textPaint.color
                                         val originalAlpha = textPaint.alpha
-                                        
+
                                         try {
                                             textPaint.color = Color.parseColor(textColorHex)
                                         } catch (e: Exception) {
-                                            textPaint.color = Color.GRAY 
+                                            textPaint.color = Color.GRAY
                                         }
                                         textPaint.alpha = textAlpha
-                                        
+
                                         c.drawText(text, centerX, textY, textPaint)
-                                        
-                                        // Restore 
+
+                                        // Restore
                                         textPaint.color = originalColor
                                     }
                                 }

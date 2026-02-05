@@ -117,17 +117,20 @@ class HistorySingleFragment : Fragment() {
                             Status.SUCCESS -> {
                                 val response = res.data
                                 if (response != null) {
-                                    if (response.has("error") && !response.get("error").isJsonNull) {
+                                    if (response.has("error") && !response.get("error").isJsonNull
+                                    ) {
                                         val errorMsg = response.get("error").asString
                                         handleReverificationError(errorMsg)
                                     } else if (response.has("score")) {
                                         val score = response.get("score").asDouble
                                         val band = response.get("band")?.asInt ?: 1
-                                        val bandName = response.get("band_name")?.asString ?: "Result"
+                                        val bandName =
+                                                response.get("band_name")?.asString ?: "Result"
                                         val bandDescription =
                                                 response.get("band_description")?.asString ?: ""
                                         val credits = response.get("credits")?.asInt ?: 0
-                                        val creditsMonthly = response.get("credits_monthly")?.asInt ?: 0
+                                        val creditsMonthly =
+                                                response.get("credits_monthly")?.asInt ?: 0
                                         handleReverificationSuccess(
                                                 score,
                                                 band,
@@ -244,6 +247,14 @@ class HistorySingleFragment : Fragment() {
 
     private fun updateNewResultDisplay(score: Double, bandName: String, bandDescription: String) {
         binding.tvNewBandName.text = bandName
+        
+        val backgroundRes =
+            when {
+                score > 0.85 -> R.drawable.bg_result_capsule_red
+                score > 0.65 -> R.drawable.bg_result_capsule_gray
+                else -> R.drawable.bg_result_capsule_green
+            }
+        binding.tvNewBandName.setBackgroundResource(backgroundRes)
         binding.tvNewDescription.text = bandDescription
 
         val colorRes =
@@ -267,7 +278,7 @@ class HistorySingleFragment : Fragment() {
                     setColor(backgroundColor)
                     setStroke((1 * resources.displayMetrics.density).toInt(), strokeColor)
                 }
-        binding.cardNewResult.background = shape
+        binding.layoutNewResultInner.background = shape
 
         val originalScore = currentEntity?.aiScore ?: 0.0
         val diff = Math.abs(score - originalScore)
@@ -327,8 +338,9 @@ class HistorySingleFragment : Fragment() {
                     return@launch
                 }
 
-                // binding.tvTypeValue.text = entity.mediaType.uppercase() // Hidden per user request 
-                
+                // binding.tvTypeValue.text = entity.mediaType.uppercase() // Hidden per user
+                // request
+
                 when (entity.mediaType) {
                     "Image" -> {
                         binding.imageView.isVisible = true
@@ -517,7 +529,16 @@ class HistorySingleFragment : Fragment() {
                 }
 
         binding.layoutResult.background = resultDrawable
-        binding.tvBandName.setTextColor(baseColor)
+        // Text color should remain white as defined in XML
+        // binding.tvBandName.setTextColor(baseColor) 
+        
+        val backgroundRes =
+            when {
+                score > 0.85 -> R.drawable.bg_result_capsule_red
+                score > 0.65 -> R.drawable.bg_result_capsule_gray
+                else -> R.drawable.bg_result_capsule_green
+            }
+        binding.tvBandName.setBackgroundResource(backgroundRes)
 
         when {
             score > 0.85 -> {
@@ -547,7 +568,8 @@ class HistorySingleFragment : Fragment() {
         (activity as? MainActivity)?.setBottomNavVisibility(false)
         (activity as? MainActivity)?.setAppBarVisibility(false)
 
-        // Sync Status Bar, System Nav Bar, and Root Background to match this fragment's @color/ios_settings_background
+        // Sync Status Bar, System Nav Bar, and Root Background to match this fragment's
+        // @color/ios_settings_background
         (activity as? MainActivity)?.updateStatusBarColor(R.color.ios_settings_background)
         (activity as? MainActivity)?.updateMainBackgroundColor(R.color.ios_settings_background)
     }
