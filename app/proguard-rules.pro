@@ -5,19 +5,59 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# --- General & Kotlin ---
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+-keep class kotlin.Metadata { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes *Annotation*
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# --- Retrofit ---
+# Keep Retrofit interfaces
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# --- OkHttp ---
+-keepattributes EnclosingMethod
 
+# --- Gson ---
+# Keep generated serialization checking
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type
+
+# --- Project Specific Data Models ---
+# Keep data classes used for serialization/deserialization and database
+-keep class com.verifylabs.ai.data.network.** { *; }
+-keep class com.verifylabs.ai.data.database.** { *; }
+-keep class com.verifylabs.ai.presentation.model.** { *; }
+
+# --- Glide ---
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# --- Room ---
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keepclassmembers class * {
+    @androidx.room.PrimaryKey *;
+}
+
+# --- Hilt / Dagger ---
+-keep class dagger.hilt.internal.aggregatedroot.codegen.** { *; }
+-keep class dagger.hilt.android.internal.builders.** { *; }
+
+# --- Lottie ---
+-keep class com.airbnb.lottie.** { *; }
+
+# --- RevenueCat ---
 -keep class com.revenuecat.purchases.** { *; }
+
+# --- Android Image Cropper ---
+-keep class com.canhub.cropper.** { *; }

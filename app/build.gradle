@@ -17,27 +17,10 @@ android {
         applicationId "com.verifylabs.ai"
         minSdk 24
         targetSdk 35
-        versionCode 8
+        versionCode 9
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = '11'
-    }
-    buildFeatures {
-        viewBinding true
     }
 
     signingConfigs {
@@ -49,10 +32,17 @@ android {
         }
 
         release {
-            storeFile file("/Users/aadarshabajagain/AndroidStudioProjects/verifylabs/verifylabskey")
-            storePassword "L@bSr2D#8"   // replace with your actual password
-            keyAlias "verifylabs"                 // replace with your key alias
-            keyPassword "L@bSr2D#8"           // replace with your key password
+            // Load signing config from local.properties
+            def localProperties = new Properties()
+            def localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localProperties.load(new FileInputStream(localPropertiesFile))
+            }
+
+            storeFile file(localProperties['storeFile'] ?: "verifylabskey")
+            storePassword localProperties['storePassword']
+            keyAlias localProperties['keyAlias']
+            keyPassword localProperties['keyPassword']
         }
     }
 
@@ -62,10 +52,22 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
