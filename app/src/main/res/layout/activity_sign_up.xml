@@ -258,19 +258,21 @@
                     android:enabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Password Mismatch Error Text -->
             <TextView
                 android:id="@+id/tvPasswordError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:text="@string/password_mismatch_error"
                 android:textColor="#FF3B30"
                 android:textSize="12sp"
+                android:gravity="center_vertical"
                 android:visibility="gone"
-                app:drawableStartCompat="@drawable/ic_red_cross_tranparent"
-                android:drawablePadding="4dp" />
+                app:drawableStartCompat="@drawable/ic_error"
+                android:drawablePadding="6dp"
+                app:drawableTint="#FF3B30" />
 
             <!-- Checkbox for Terms & Privacy -->
             <LinearLayout
@@ -315,6 +317,7 @@
                         android:text="@string/terms_conditions_link"
                         android:textColor="@color/txtGreen"
                         android:textSize="14sp"
+                        android:layout_marginStart="5dp"
                         android:clickable="true"
                         android:focusable="true" />
 
@@ -328,6 +331,7 @@
                         android:textSize="14sp" />
                     <!-- Privacy -->
                     <TextView
+                        android:layout_marginStart="5dp"
                         android:id="@+id/tvPrivacy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

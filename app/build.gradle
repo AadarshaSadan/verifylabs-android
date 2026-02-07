@@ -127,4 +127,5 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
+    implementation("org.jsoup:jsoup:1.15.4")
 }

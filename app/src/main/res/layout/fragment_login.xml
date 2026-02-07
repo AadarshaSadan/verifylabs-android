@@ -124,7 +124,7 @@
             android:background="@drawable/bg_ios_green_button"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="24dp">
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -146,13 +146,34 @@
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
 
+
+        <!-- Forgot password -->
+        <LinearLayout
+            android:id="@+id/btnForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="start">
+
+            <TextView
+                android:layout_marginStart="5dp"
+                android:id="@+id/tvforgotpassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot Password?"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/txtGreen" />
+        </LinearLayout>
+
         <!-- Sign Up Prompt -->
         <LinearLayout
             android:id="@+id/btnCreateAccount"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:orientation="horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="0dp"
             android:gravity="center">
 
             <TextView

@@ -175,9 +175,9 @@
     <string name="password_mismatch_error">Passwords don\'t match</string>
 
     <string name="agree_terms_prefix">I agree to the </string>
-    <string name="terms_conditions_link">Terms and \\nConditions</string>
+    <string name="terms_conditions_link">Terms &amp;\n Conditions</string>
     <string name="and_connector"> and </string>
-    <string name="privacy_policy_link">Privacy Policy</string>
+    <string name="privacy_policy_link"> Privacy policy</string>
 
     <!-- Forgot/Change Password -->
     <string name="change_password_title">Change password</string>

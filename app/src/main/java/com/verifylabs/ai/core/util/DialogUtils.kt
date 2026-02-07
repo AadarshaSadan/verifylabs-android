@@ -10,7 +10,12 @@ import com.verifylabs.ai.R
 
 object DialogUtils {
 
-    fun showIosErrorDialog(context: Context, title: String, message: String) {
+    fun showIosErrorDialog(
+        context: Context,
+        title: String,
+        message: String,
+        onDismiss: (() -> Unit)? = null // Default null for backward compatibility
+    ) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_ios_error, null)
         
         val tvTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
@@ -27,6 +32,7 @@ object DialogUtils {
 
         btnOk.setOnClickListener {
             dialog.dismiss()
+            onDismiss?.invoke()
         }
 
         // Essential for rounded corners with card view
